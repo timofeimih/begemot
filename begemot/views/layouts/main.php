@@ -31,8 +31,8 @@
                         array('label'=>'HTML', 'url'=>array('/pages')),
                         array('label'=>'Файлы', 'url'=>array('/elfinder')),
                         array('label'=>'Галлерея', 'url'=>array('/gallery')),
-                        array('label'=>'Login', 'url'=>array('/site/login'), 'visible'=>Yii::app()->user->isGuest),
-                        array('label'=>'Logout ('.Yii::app()->user->name.')', 'url'=>array('/site/logout'), 'visible'=>!Yii::app()->user->isGuest)
+                        array('label'=>'Login', 'url'=>array('/begemot'), 'visible'=>Yii::app()->user->isGuest),
+                        array('label'=>'Logout ('.Yii::app()->user->name.')', 'url'=>array('/begemot/default/logout'), 'visible'=>!Yii::app()->user->isGuest)
                 ),
         ),
     ),
