@@ -1,0 +1,1 @@
+<iframe width="1000" height="1000" style="border: 0;" src="/elfinder/default/cke"></iframe>

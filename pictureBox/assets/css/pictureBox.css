@@ -1,0 +1,176 @@
+
+/* Container
+-----------------------------------------------------------------------------*/
+.pictureBox {
+  width: 701px;
+  margin: 50px auto;
+  border: 0px dashed #999;
+}
+.pictureBox .content {
+  border-bottom: 1px solid #cdced0;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+.pictureBox .content p {
+  margin-left: 325px;
+}
+.pictureBox .content p a {
+  color: #373c48;
+  font-size: 16px;
+  font-weight: 700;
+}
+.pictureBox .content p span a {
+  color: #cc3300;
+  font-size: 11px;
+}
+
+.pictureBox .content ol {
+  list-style: decimal;
+  list-style-position: inside;
+  margin-left: 325px;
+  width: 331px;
+}
+.pictureBox .content ol.nav li {
+  border-bottom: 1px solid #cdced0;
+  line-height: 31px;
+  padding-right: 10px;
+}
+.pictureBox .content ol.nav li span {
+
+  padding-right: 10px;
+}
+
+.pictureBox .content ul.lib {
+  margin-top: 25px;
+  margin-left: 325px;
+}
+.pictureBox .content ul.lib li {
+  display: inline;
+  margin: 0 5px;
+}
+.pictureBox .content ul.lib span.bord {
+ height: 15px;
+ float: left;
+ margin: 0 20px;
+ border-left: 1px solid #373c48;
+}
+
+/* Paginator
+-----------------------------------------------------------------------------*/
+.pictureBox ul.pagi {
+  text-align: center;
+  clear: both;
+  margin-bottom: 45px;
+}
+.pictureBox ul.pagi li {
+  border: 1px solid #737780;
+  color: #373c48;
+  display: inline;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 1px 4px 1px 4px;
+  margin: 0 4px;
+}
+.pictureBox ul.pagi li:hover {
+  background: #e3e4e8;
+}
+.pictureBox ul.pagi li a {
+  color: #373c48;
+  text-decoration: none;
+}
+.pictureBox ul.pagi li.like a {
+  color: #f7941e;
+}
+.pictureBox ul.pagi li.like:after {
+  content: url(../images/star.png);
+  position: absolute;
+  margin-top: 18px;
+  margin-left: -8px;
+}
+.pictureBox ul.pagi li.link {
+  border: 0;
+  background: url(../images/pagi.jpg) bottom center no-repeat;
+  padding: 9px 8px 4px 8px !important;
+}
+
+.pictureBox img {
+  border: 1px solid #fff;
+  float: left
+}
+
+/* Button
+-----------------------------------------------------------------------------*/
+.pictureBox .upload {
+  width: 117px;
+  height: 27px;
+  display: block;
+  float: right;
+  margin-right: 100px;
+  background: url(../images/upload.png) 0px 0px no-repeat;
+}
+.pictureBox .upload:hover {
+  background: url(../images/upload.png) 0px -40px no-repeat;
+}
+.pictureBox .upload:active {
+  background: url(../images/upload.png) 0px -79px no-repeat;
+}
+
+
+.pictureBox a.add {
+  height: 10px;
+  padding-left: 19px;
+  background: url(../images/icons.png) 0px 0px no-repeat;
+}
+
+.pictureBox a.del {
+  height: 10px;
+  padding-left: 13px;
+  margin-left: 33px;
+  background: url(../images/icons.png) 0px -18px no-repeat;
+}
+
+.pictureBox a.sel {
+  height: 10px;
+  float: left;
+  font-size: 11px;
+  text-decoration: none;
+  padding-left: 13px;
+  margin-top: 1px;
+  margin-left: 5px;
+  background: url(../images/icons.png) 0px -34px no-repeat;
+}
+.pictureBox a.sel span {
+  border-bottom: 1px dashed #3399cc;
+}
+.pictureBox a:hover.sel span {
+  border-bottom: 0px dashed #3399cc;
+}
+
+.pictureBox a.prev {
+  width: 36px;
+  height: 17px;
+  display: block;
+  float: left;
+  background: url(../images/nav.png) 0px 0px no-repeat;
+}
+.pictureBox a.prev:hover {
+  background: url(../images/nav.png) 0px -48px no-repeat;
+}
+
+.pictureBox a.next {
+  width: 36px;
+  height: 17px;
+  display: block;
+  float: left;
+  background: url(../images/nav.png) 0px -24px no-repeat;
+}
+.pictureBox a.next:hover {
+  background: url(../images/nav.png) 0px -72px no-repeat;
+}
+
+.pictureBox form div {
+    
+    width:200px;
+    display:inline;
+}
