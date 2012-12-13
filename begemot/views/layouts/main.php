@@ -26,8 +26,9 @@
         array(
             'class'=>'bootstrap.widgets.TbMenu',
             'items'=>array(
-                        array('label'=>'About', 'url'=>array('/site/page', 'view'=>'about')),
+                        //array('label'=>'About', 'url'=>array('/site/page', 'view'=>'about')),
                         array('label'=>'Каталог', 'url'=>array('/catalog/catItem')),
+                        array('label'=>'Статьи', 'url'=>array('/post/admin')),
                         array('label'=>'HTML', 'url'=>array('/pages')),
                         array('label'=>'Файлы', 'url'=>array('/elfinder')),
                         array('label'=>'Галлерея', 'url'=>array('/gallery')),
