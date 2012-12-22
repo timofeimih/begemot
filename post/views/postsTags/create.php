@@ -1,14 +1,5 @@
 <?php
-$this->breadcrumbs=array(
-	'Posts Tags'=>array('index'),
-	'Create',
-);
-
-$this->menu=array(
-	array('label'=>'Публикации', 'url'=>array('posts/admin')),
-	array('label'=>'List PostsTags', 'url'=>array('index')),
-	array('label'=>'Manage PostsTags', 'url'=>array('admin')),
-);
+require Yii::getPathOfAlias('webroot').'/protected/modules/post/views/default/_postsMenu.php';
 ?>
 
 <h1>Create PostsTags</h1>

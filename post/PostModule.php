@@ -2,6 +2,11 @@
 
 class PostModule extends CWebModule
 {
+        static public $postLayout = 'application.views.layouts.postLayout';
+        static public $postViewLayout = 'application.views.layouts.postViewLayout';
+        //static public $catalogCategoryViewLayout = 'application.views.layouts.catalogCategoryViewLayout';
+        //static public $catalogItemViewLayout = 'application.views.layouts.catalogItemViewLayout';
+
 	public function init()
 	{
 		// this method is called when the module is being created

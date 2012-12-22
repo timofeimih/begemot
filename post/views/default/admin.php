@@ -1,14 +1,10 @@
 <?php
 
-
 require '_postsMenu.php';
-
 
 ?>
 
 <h1>Управление статьями</h1>
-
-
 
 <?php
 $this->widget('bootstrap.widgets.TbGridView', array(

@@ -17,10 +17,17 @@ foreach ($tags as $tag){
 }
 
 $this->menu = array_merge (
+  array(
+    array('label' => 'Статьи'),   
+    array('label' => 'Все', 'url' => array('default/admin')),      
+  ),
+  $tagsMenu,      
   $adminMenu,
   array(
-    
-    array('label' => 'Создать', 'url' => array('create')),
-    array('label' => 'Все', 'url' => array('default/admin')),
-),$tagsMenu);
+    array('label' => 'Создать статью', 'url' => array('/post/default/create')),
+    array('label' => 'Разделы'),  
+    array('label' => 'Разделы', 'url' => array('/post/postsTags/admin')),
+    array('label' => 'Создать раздел', 'url' => array('/post/postsTags/create')),
+
+));
 ?>

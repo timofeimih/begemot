@@ -49,11 +49,6 @@
     </div>
 
     <div class="row">
-        <?php echo $form->labelEx($model, 'date'); ?>
-        <?php echo $form->textField($model, 'date'); ?>
-        <?php echo $form->error($model, 'date'); ?>
-    </div>
-    <div class="row">
         <?php echo $form->labelEx($model, 'Источник'); ?>
         <?php echo $form->textField($model, 'from'); ?>
         <?php echo $form->error($model, 'from'); ?>
@@ -70,48 +65,8 @@
     <?php $this->endWidget(); ?>
 
     <?php
-    $picturesConfig = array(
-        'divId' => 'pictureBox',
-        'nativeFilters' => array(
-            'bigInner' => true,
-            'small' => true,
-            'list' => true,
-        ),
-        'filtersTitles' => array(
-            'bigInner' => 'Большая. Внутренняя',
-            'small' => 'Маленькая. Главная',
-            'list' => 'Средняя. Список статей. ',
-        ),
-        'imageFilters' => array(
-            'bigInner' => array(
-                1 => array(
-                    'filter' => 'CropResize',
-                    'param' => array(
-                        'width' => 619,
-                        'height' => 388,
-                    ),
-                ),
-            ),
-            'small' => array(
-                1 => array(
-                    'filter' => 'CropResize',
-                    'param' => array(
-                        'width' => 219,
-                        'height' => 178,
-                    ),
-                ),
-            ),
-            'list' => array(
-                1 => array(
-                    'filter' => 'CropResize',
-                    'param' => array(
-                        'width' => 369,
-                        'height' => 278,
-                    ),
-                ),
-            ),
-        )
-    );
+    
+    require Yii::getPathOfAlias('webroot').'/protected/config/postConfig.php';
 
     if (!$model->isNewRecord)
         $this->widget(
