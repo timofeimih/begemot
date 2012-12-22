@@ -18,7 +18,7 @@ $this->menu = require dirname(__FILE__).'/../commonMenu.php';
         array(
             'name'=>'filePath', 
             'header'=>'Файл',
-            'value'=>"Yii::app()->urlManager->createUrl('site/page',array('view'=>str_replace('.php','.html',basename(\$data['filePath']))))",
+            'value'=>"Yii::app()->urlManager->createUrl('site/page',array('view'=>str_replace('.php','',basename(\$data['filePath']))))",
             ),
         array(
             'class'=>'bootstrap.widgets.TbButtonColumn',
