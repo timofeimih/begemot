@@ -28,7 +28,7 @@ $this->menu = require dirname(__FILE__).'/../catItem/commonMenu.php';
                     'class' => 'EImageColumn',
                     'htmlOptions'=>array('width'=>120),
                     // see below.
-                    'imagePathExpression' => '$data->item->getItemMainPicture("small")',
+                    'imagePathExpression' => '$data->item->getItemMainPicture()',
                     // Text used when cell is empty.
                     // Optional.
                     'emptyText' => '—',
