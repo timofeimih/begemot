@@ -127,7 +127,7 @@ class CatItemController extends Controller
 	public function actionIndex()
 	{  
                 
-                $dataProvider = new CActiveDataProvider('CatItem');                
+                $dataProvider = new CActiveDataProvider('CatItem',array('criteria'=>array('order'=>'`id` desc')));                
 
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
