@@ -189,7 +189,7 @@ class CatItem extends CActiveRecord
             }
             
             if (is_null($tag)){
-                return $itemImage;
+                return array_shift($itemImage);
             }
             else{
                 if (isset($itemImage[$tag]))
