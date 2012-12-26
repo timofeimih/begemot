@@ -325,7 +325,7 @@ class CatCategory extends CActiveRecord
                 
             }
             if (is_null($tag)){
-                return $catalogImage;
+                return array_shift($catalogImage);
             }
             else{
                 if (isset($catalogImage[$tag]))

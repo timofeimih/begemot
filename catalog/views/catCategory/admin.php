@@ -56,7 +56,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
             'class' => 'EImageColumn',
             'htmlOptions'=>array('width'=>120),
             // see below.
-            'imagePathExpression' => '$data->getCatMainPicture("small")',
+            'imagePathExpression' => '$data->getCatMainPicture()',
             // Text used when cell is empty.
             // Optional.
             'emptyText' => '—',
