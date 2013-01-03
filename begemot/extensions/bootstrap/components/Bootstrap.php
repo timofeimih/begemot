@@ -144,7 +144,7 @@ class Bootstrap extends CApplicationComponent
 	{
 		/** @var CClientScript $cs */
 		$cs = Yii::app()->getClientScript();
-		$cs->registerCoreScript('jquery');
+		//$cs->registerCoreScript('jquery');
 		$cs->registerScriptFile($this->getAssetsUrl().'/js/bootstrap.js', $position);
 	}
 
@@ -310,7 +310,7 @@ class Bootstrap extends CApplicationComponent
 		{
 			$key = __CLASS__.'.'.md5($name.$selector.serialize($options).$defaultSelector);
 			$options = !empty($options) ? CJavaScript::encode($options) : '';
-			Yii::app()->clientScript->registerScript($key, "jQuery('{$selector}').{$name}({$options});");
+			//Yii::app()->clientScript->registerScript($key, "jQuery('{$selector}').{$name}({$options});");
 		}
 	}
 

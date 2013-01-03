@@ -21,16 +21,9 @@ class DefaultController extends Controller
      */
     public function accessRules() {
         return array(
-            array('allow', // allow all users to perform 'index' and 'view' actions
-                'actions' => array('index', 'view','tagIndex'),
-                'users' => array('*'),
-            ),
-            array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('create', 'update'),
-                'users' => array('@'),
-            ),
+
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
-                'actions' => array('admin', 'delete'),
+                'actions' => array('create', 'update','admin', 'delete','index', 'view','tagIndex'),
                 'users' => array('admin'),
             ),
             array('deny', // deny all users
@@ -55,11 +48,9 @@ class DefaultController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      */
     public function actionCreate() {
-        
-        $model = new Posts;
 
-        // Uncomment the following line if AJAX validation is needed
-        // $this->performAjaxValidation($model);
+        //echo Yii::getPathOfAlias($this->layout);
+        $model = new Posts;
 
         if (isset($_POST['Posts'])) {
             $model->attributes = $_POST['Posts'];
@@ -78,6 +69,7 @@ class DefaultController extends Controller
      * @param integer $id the ID of the model to be updated
      */
     public function actionUpdate($id) {
+        
         $model = $this->loadModel($id);
 
         // Uncomment the following line if AJAX validation is needed

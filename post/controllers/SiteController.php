@@ -21,41 +21,6 @@ class SiteController extends Controller
     }
 
 
-    /**
-     * Lists all models.
-     */
-    public function actionIndex($tagId=null) {
-
-        $this->layout = PostModule::$postLayout;
-        
-        if ($tagId!=null){
-             $criteria = new CDbCriteria(array(
-                    'select' => '*',
-                    'distinct' => true,
-                    'condition'=>'tag_id = '.$tagId
-                ));
-        } else{
-             $criteria = new CDbCriteria();   
-        }
-
-        $count = Posts::model()->count($criteria);
-
-        $pages = new CPagination($count);
-        // элементов на страницу
-        $pages->pageSize = 10;
-        $pages->applyLimit($criteria);
-
-        $models = Posts::model()->findAll($criteria);
-
-
-        $dataProvider = new CActiveDataProvider('Posts');
-        $this->render('index', array(
-            'models' => $models,
-            'pages' => $pages,
-    
-        ));
-
-    }
     
     public function actionTagIndex($id=null) {
         $this->layout = PostModule::$postLayout;

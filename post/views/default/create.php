@@ -1,12 +1,9 @@
 <?php
-$this->breadcrumbs=array(
-	'Posts'=>array('index'),
-	'Create',
-);
+
 
 require '_postsMenu.php';
 ?>
 
-<h1>Create Posts</h1>
+<h1>Создать статью</h1>
 
 <?php echo $this->renderPartial('_form', array('model'=>$model)); ?>

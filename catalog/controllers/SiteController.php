@@ -2,15 +2,15 @@
 
 class SiteController extends Controller {
 
-    public function filters() {
-        return array(
-            array(
-                'COutputCache + index',
-                'duration' => 60,
-             //   'varyByParam' => array('id'),
-            ),
-        );
-    }
+//    public function filters() {
+//        return array(
+//            array(
+//                'COutputCache + index',
+//                'duration' => 60,
+//             //   'varyByParam' => array('id'),
+//            ),
+//        );
+//    }
 
     public function actionIndex() {
         $this->layout = CatalogModule::$catalogLayout;
