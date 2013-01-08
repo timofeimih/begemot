@@ -8,8 +8,8 @@ $cs->registerCssFile($assetsDir.'/css/elfinder.min.css');
 $cs->registerCssFile('http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/themes/smoothness/jquery-ui.css');
 
 
-$cs->registerCoreScript('jquery');
-$cs->registerCoreScript('jquery.ui');
+//$cs->registerCoreScript('jquery');
+//$cs->registerCoreScript('jquery.ui');
 
 $cs->registerScriptFile($assetsDir.'/js/elfinder.min.js');
 $cs->registerScriptFile($assetsDir.'/js/i18n/elfinder.ru.js');

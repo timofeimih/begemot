@@ -31,17 +31,18 @@ class SiteController extends Controller {
     }
 
     public function actionCategoryView($catId = 0) {
-
+      
         $this->layout = CatalogModule::$catalogCategoryViewLayout;
 
         $category = CatCategory::model()->findByPk($catId);
 
-        $dataProvider = new CActiveDataProvider('CatItemsToCat', array('criteria' => array('select' => 't.itemId', 'condition' => '`t`.`catId` = ' . $catId . '', 'with' => 'item', 'order' => 't.order')));
+        $dataProvider = new CActiveDataProvider('CatItemsToCat', array('criteria' => array('select' => 't.itemId', 'condition' => '`t`.`catId` = ' . $catId . '', 'with' => 'item', 'order' => 't.order'),'pagination'=>array( 'pageSize'=>1000)));
 
         $this->render('categoryView', array('categoryItems' => $dataProvider->getData(), 'category' => $category));
     }
 
     public function actionRCategoryView($catId = 0) {
+        
         $this->layout = CatalogModule::$catalogCategoryViewLayout;
 
         $category = CatCategory::model()->findByPk($catId);
