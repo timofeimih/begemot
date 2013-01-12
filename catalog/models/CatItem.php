@@ -151,14 +151,17 @@ class CatItem extends CActiveRecord
             $imagesDataPath = Yii::getPathOfAlias('webroot').'/files/pictureBox/catalogItem/'.$this->id;
             $favFilePath = $imagesDataPath.'/data.php'; 
             $images = array();
+           
             if (file_exists($favFilePath)){
+                
                  $images = require($favFilePath);
                  if (isset($images['images']))
                     return $images['images'];      
                  else
                      return array();
             } else {
-    
+        
+                
                  return array();
             }
 
@@ -166,6 +169,7 @@ class CatItem extends CActiveRecord
         
         //get path of one main picture, wich take from fav or common images list
         public function getItemMainPicture($tag=null){
+        
             
             $imagesDataPath = Yii::getPathOfAlias('webroot').'/files/pictureBox/catalogItem/'.$this->id;
             $favFilePath = $imagesDataPath.'/favData.php'; 
@@ -178,7 +182,6 @@ class CatItem extends CActiveRecord
               $imagesArray = array_values($images);
               $itemImage = $imagesArray[0];
             }
-            
             if (count($images)==0){
                 
                     $images = $this->getItemPictures();
