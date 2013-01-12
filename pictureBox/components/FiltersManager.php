@@ -34,35 +34,41 @@ class FiltersManager {
         $fileExt = $filePathInfo['extension'];
         $fileNameClear = $this->delFileExt($fileName);
 
-
-
         foreach ($this->config['imageFilters'] as $filterName => $filters) {
-           
-                foreach ($filters as $filter) {
 
-                    $resultFileName = $filePath . '/' . $fileNameClear . '_' . $filterName . '.' . $fileExt;
-                    $resultFileNameForOutput = $fileNameClear . '_' . $filterName . '.' . $fileExt;
+            foreach ($filters as $filter) {
 
-                    $filterClassName = $filter['filter'] . 'Filter';
+                $resultFileName = $filePath . '/' . $fileNameClear . '_' . $filterName . '.' . $fileExt;
+                $resultFileNameForOutput = $fileNameClear . '_' . $filterName . '.' . $fileExt;
+
+                $filterClassName = $filter['filter'] . 'Filter';
 
 
-                    if (file_exists($resultFileName)) {
+                if (file_exists($resultFileName)) {
 
-                        /**
-                         * Если существует, то фильтруем существующий
-                         * т.к. очередь фильтров уже началась 
-                         */
-                        $filterInstance = new $filterClassName($resultFileName, $resultFileName, $filter['param']);
-                    } else {
-                        /**
-                         * Если не существует, то фильтруем оригинал
-                         */
-                        $filterInstance = new $filterClassName($this->fileName, $resultFileName, $filter['param']);
-                    }
-
-                    $filterInstance->make();
-                    $this->resultFiles[$filterName] = $resultFileNameForOutput;
+                    /**
+                     * Если существует, то фильтруем существующий
+                     * т.к. очередь фильтров уже началась 
+                     */
+                    $filterInstance = new $filterClassName($resultFileName, $resultFileName, $filter['param']);
+                } else {
+                    /**
+                     * Если не существует, то фильтруем оригинал
+                     */
+                    $filterInstance = new $filterClassName($this->fileName, $resultFileName, $filter['param']);
                 }
+
+                $filterInstance->make();
+                $this->resultFiles[$filterName] = $resultFileNameForOutput;
+            }
+        }
+
+        if (isset($this->config['original'])) {
+            foreach ($this->config['original'] as $originalFilter) {
+                $filterClassName = $originalFilter['filter'] . 'Filter';
+                $filterInstance = new $filterClassName($this->fileName, $this->fileName, $originalFilter['param']);
+                $filterInstance->make();
+            }
         }
     }
 
