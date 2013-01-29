@@ -1,4 +1,11 @@
 <?php /** @var BootActiveForm $form */
+
+if (!Yii::app()->user->isGuest){
+    echo '<h1>Добро пожаловать в админку CMS BEGEMOT</h1>';
+    echo '<p>Для навигации по модулям вашего сайта используйте верхнее меню.</p>';
+    return;
+} 
+
 Yii::import('begemot.models.BegemotLoginForm');
 $model = new BegemotLoginForm();
 $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
