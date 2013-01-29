@@ -8,10 +8,32 @@ class DefaultController extends Controller {
     }
 
     public function actionTest() {
-
-        echo 'тестовый лейаут';
+        $id = 'catalogItem';
+        $config = Yii::getPathOfAlias('application').'/config/catalog/categoryItemPictureSettings.php';
+        $this->renderImageAgain($id, $config);
+        
     }
+    
 
+    //Функция пересборки изображений 
+    public function renderImageAgain($id,$config){
+        
+         $fileHelper = new CFileHelper();
+         $dataPath = Yii::getPathOfAlias('webroot').'/files/pictureBox/'.$id;
+        foreach (glob($dataPath.'/*') as $filename){
+            echo $filename.'<br>';
+        }
+         
+//         foreach ($files as $file){
+//              
+//         } 
+        
+//        /Yii::getPathOfAlias('webroot').'/files/pictureBox/catalogItem/'
+//       echo $config;
+//        $data = require $config;
+//        print_r($data);
+    }
+    
     public function actionAjaxFlipImages($id, $elementId, $pictureid1, $pictureid2) {
 
 
