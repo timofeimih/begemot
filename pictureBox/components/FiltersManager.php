@@ -36,13 +36,23 @@ class FiltersManager {
 
         foreach ($this->config['imageFilters'] as $filterName => $filters) {
 
+            $filterCount = 0;
             foreach ($filters as $filter) {
 
+                $filterCount++;
+                
                 $resultFileName = $filePath . '/' . $fileNameClear . '_' . $filterName . '.' . $fileExt;
                 $resultFileNameForOutput = $fileNameClear . '_' . $filterName . '.' . $fileExt;
 
                 $filterClassName = $filter['filter'] . 'Filter';
-
+                
+                // Если мы рендерим фотки из оригинала повторно, то нужно удалить
+                // старые варианты, иначе менеджер будет считать старые изображения
+                // результатом текущей уже запущенной очереди.  
+                
+                if ($filterCount == 1 && file_exists($resultFileName)) {
+                    unlink($resultFileName);
+                }
 
                 if (file_exists($resultFileName)) {
 

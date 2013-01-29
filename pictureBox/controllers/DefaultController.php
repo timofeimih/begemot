@@ -1,4 +1,4 @@
-    <?php
+<?php
 
 class DefaultController extends Controller {
 
@@ -9,31 +9,21 @@ class DefaultController extends Controller {
 
     public function actionTest() {
         $id = 'catalogItem';
-        $config = Yii::getPathOfAlias('application').'/config/catalog/categoryItemPictureSettings.php';
-        $this->renderImageAgain($id, $config);
-        
+        $elemId = 100;
+        $pictureId = 2;
+        $config = require Yii::getPathOfAlias('application') . '/config/catalog/categoryItemPictureSettings.php';
+       
+        $this->renderImageAgain($id, $elemId,$pictureId, $config);
     }
-    
 
     //Функция пересборки изображений 
-    public function renderImageAgain($id,$config){
-        
-         $fileHelper = new CFileHelper();
-         $dataPath = Yii::getPathOfAlias('webroot').'/files/pictureBox/'.$id;
-        foreach (glob($dataPath.'/*') as $filename){
-            echo $filename.'<br>';
-        }
-         
-//         foreach ($files as $file){
-//              
-//         } 
-        
-//        /Yii::getPathOfAlias('webroot').'/files/pictureBox/catalogItem/'
-//       echo $config;
-//        $data = require $config;
-//        print_r($data);
+    public function renderImageAgain($id, $elemId, $pictureId, $config) {
+
+        $filterManager = new FiltersManager(Yii::getPathOfAlias('webroot').'/files/pictureBox/catalogItem/100/2.jpg', $config);
+        $filters = $filterManager->getFilteredImages();
+
     }
-    
+
     public function actionAjaxFlipImages($id, $elementId, $pictureid1, $pictureid2) {
 
 
@@ -90,35 +80,36 @@ class DefaultController extends Controller {
     }
 
     public function actionUpload() {
-        
-        $this->layout = 'pictureBox.views.layouts.ajax';        
-        
+
+        $this->layout = 'pictureBox.views.layouts.ajax';
+
         $id = $_POST['id'];
         $elementId = $_POST['elementId'];
-        
-        $config = unserialize ($_POST['config']);
-        file_put_contents(Yii::getPathOfAlias('webroot').'/log.log3',var_export($config,true));
-        
+
+        $config = unserialize($_POST['config']);
+        file_put_contents(Yii::getPathOfAlias('webroot') . '/log.log3', var_export($config, true));
+
         $dir = Yii::app()->basePath . '/../files/pictureBox';
 
         if (!file_exists($dir))
-            mkdir($dir,0777);
+            mkdir($dir, 0777);
 
         $dir = Yii::app()->basePath . '/../files/pictureBox/' . $id . '/';
 
         if (!file_exists($dir))
-            mkdir($dir,0777);
+            mkdir($dir, 0777);
         $dir = Yii::app()->basePath . '/../files/pictureBox/' . $id . '/' . $elementId . '/';
 
         if (!file_exists($dir))
-            mkdir($dir,0777);
-        
+            mkdir($dir, 0777);
+
         if (!empty($_FILES)) {
             $model = new UploadifyFile;
 
-            $model->uploadifyFile = $uploadedFile=CUploadedFile::getInstanceByName('Filedata');;
-            if ($model->validate()){
-                
+            $model->uploadifyFile = $uploadedFile = CUploadedFile::getInstanceByName('Filedata');
+            ;
+            if ($model->validate()) {
+
                 Yii::import('application.modules.pictureBox.components.picturebox');
                 $imageExt = end(explode('.', $model->uploadifyFile));
 
@@ -127,14 +118,13 @@ class DefaultController extends Controller {
                 move_uploaded_file($model->uploadifyFile->tempName, $dir . "/" . $newImageId . '.' . $imageExt);
                 chmod($dir . "/" . $newImageId . '.' . $imageExt, 0777);
 
-                
+
                 $resultFiltersStack = array();
 
-                foreach ($config['nativeFilters'] as $filterName=>$toggle){
-                    if ($toggle && isset($config['imageFilters'][$filterName]))
-                        {
-                            $resultFiltersStack[$filterName] = $config['imageFilters'][$filterName];
-                        } 
+                foreach ($config['nativeFilters'] as $filterName => $toggle) {
+                    if ($toggle && isset($config['imageFilters'][$filterName])) {
+                        $resultFiltersStack[$filterName] = $config['imageFilters'][$filterName];
+                    }
                 }
 
                 $config['imageFilters'] = $resultFiltersStack;
@@ -144,14 +134,10 @@ class DefaultController extends Controller {
 
                 foreach ($filters as $filterName => $filteredImageFile) {
                     $this->addFilteredImage($newImageId, $filterName, '/files/pictureBox/' . $id . '/' . $elementId . '/' . $filteredImageFile, $dir);
-                    chmod(Yii::getPathOfAlias('webroot').'/files/pictureBox/' . $id . '/' . $elementId . '/' . $filteredImageFile, 0777);
-                    
+                    chmod(Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/' . $filteredImageFile, 0777);
                 }
             }
-
         }
-        
-
     }
 
     public function actionAjaxLayout($id, $elementId, $imageNumber = 1) {
@@ -162,20 +148,20 @@ class DefaultController extends Controller {
 
         $pictureBoxDir = Yii::app()->basePath . '/../files/pictureBox';
         if (!file_exists($pictureBoxDir)) {
-            mkdir($pictureBoxDir,0777);
+            mkdir($pictureBoxDir, 0777);
         }
 
         $idDir = Yii::app()->basePath . '/../files/pictureBox/' . $id;
 
         if (!file_exists($idDir)) {
-            mkdir($idDir,0777);
+            mkdir($idDir, 0777);
         }
 
         $elementIdDir = Yii::app()->basePath . '/../files/pictureBox/' . $id . '/' . $elementId;
 
         if (!file_exists($elementIdDir)) {
 
-            mkdir($elementIdDir,0777);
+            mkdir($elementIdDir, 0777);
         }
 
 
@@ -190,7 +176,7 @@ class DefaultController extends Controller {
         }
 
         $config = $this->getConfigFromSession($id, $elementId);
-      
+
         $this->render('ajaxLayout', array('elementId' => $elementId, 'id' => $id, 'imageNumber' => $imageNumber, 'data' => $data, 'config' => $config));
     }
 
@@ -253,49 +239,44 @@ class DefaultController extends Controller {
     }
 
     public function actionAjaxSetTitle() {
-          $this->layout = 'pictureBox.views.layouts.ajax';
+        $this->layout = 'pictureBox.views.layouts.ajax';
         if (Yii::app()->request->isAjaxRequest) {
 
             $id = $_REQUEST['id'];
             $elementId = $_REQUEST['elementId'];
             $pictureId = $_REQUEST['pictureId'];
-            $filesList = Yii::getPathOfAlias('webroot') . '/files/pictureBox/'.$id.'/'.$elementId.'/data.php' ;
-            
-            if (file_exists($filesList)){
+            $filesList = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/data.php';
+
+            if (file_exists($filesList)) {
                 $data = require ($filesList);
                 $images = $data['images'];
-                
+
                 $imagesCounter = 0;
-                foreach ($images as $imageKey=>$image){
+                foreach ($images as $imageKey => $image) {
                     $imagesCounter++;
-                    if ($imagesCounter==$pictureId){
+                    if ($imagesCounter == $pictureId) {
 
                         if (isset($_REQUEST['title']))
                             $image['title'] = $_REQUEST['title'];
-                        
+
                         if (isset($_REQUEST['alt']))
                             $image['alt'] = $_REQUEST['alt'];
-                        
+
                         $data['images'][$imageKey] = $image;
                         PictureBox::crPhpArr($data, $filesList);
                         break;
                     }
-                    
                 }
-                
             } else {
-                
-                return false;
-                
-            }
-            
 
+                return false;
+            }
         }
     }
 
     public function actionAjaxDeleteImage($id, $elementId, $pictureId) {
 
-          $this->layout = 'pictureBox.views.layouts.ajax';
+        $this->layout = 'pictureBox.views.layouts.ajax';
         if (Yii::app()->request->isAjaxRequest) {
             $dataFile = Yii::app()->basePath . '/../files/pictureBox/' . $id . '/' . $elementId . '/data.php';
             $data = require ($dataFile);
