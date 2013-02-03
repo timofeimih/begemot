@@ -8,7 +8,7 @@ class DefaultController extends Controller {
         $this->render('index');
     }
 
-    public function actionRenderImages() {
+    public function actionRenderImages($action = 'none') {
 
         Yii::import('begemot.extensions.CLongTaskQueue');
 
@@ -16,50 +16,64 @@ class DefaultController extends Controller {
         $queue = new CLongTaskQueue($queueId);
 
         $activeTask = '';
-        
+
         $webroot = Yii::getPathOfAlias('webroot');
+
+        $progress = 0;
+
+        if ($action == 'start') {
+            if (!$queue->isQueueExist()) {
+                $data = CatItem::model()->findAll();
+
+                $taskArray = array();
+
+                foreach ($data as $dataItem) {
+                    if ($dataItem->id != 47)
+                        continue;
+                    $itemDataFile = $webroot . '/files/pictureBox/catalogItem/' . $dataItem->id . '/data.php';
+                    $data = require ($itemDataFile);
+                    foreach ($data['images'] as $image) {
+                        $taskArray[] = $image['original'];
+                    }
+                }
+
+                $queue->startNewQueue($taskArray);
+            }
+        }
         
-        if (!$queue->isQueueExist()) {
+        if ($action == 'continue') {
+            if ($queue->isQueueExist()) {
+                Yii::import('pictureBox.components.FiltersManager');
+                Yii::import('pictureBox.components.filters.*');
 
+                $activeTask = $queue->getNewActiveTask();
 
-            $data = CatItem::model()->findAll();
+                $config = require Yii::getPathOfAlias('application') . '/config/catalog/categoryItemPictureSettings.php';
 
-            $taskArray = array();
-            
-            foreach ($data as $dataItem) {
-                if ($dataItem->id!=47) continue;
-                $itemDataFile = $webroot . '/files/pictureBox/catalogItem/' . $dataItem->id . '/data.php';
-                $data = require ($itemDataFile);
-                foreach ($data['images'] as $image) {
-                    $taskArray[] = $image['original'];
+                $this->renderImageAgain($id, $elemId, $pictureId, $config);
+
+                $filterManager = new FiltersManager($webroot . $activeTask, $config);
+                $filters = $filterManager->getFilteredImages();
+
+                if ($queue->activeTaskCompleted()){
+                    $progress = $queue->getProgress();
+                } else{
+                    $action='complete';
                 }
             }
-
-            $queue->startNewQueue($taskArray);
-        } else {
-            Yii::import('pictureBox.components.FiltersManager');
-            Yii::import('pictureBox.components.filters.*');
-            
-            $activeTask = $queue->getNewActiveTask();
-
-            $config = require Yii::getPathOfAlias('application') . '/config/catalog/categoryItemPictureSettings.php';
-
-            $this->renderImageAgain($id, $elemId, $pictureId, $config);
-            
-            $filterManager = new FiltersManager($webroot.$activeTask, $config);
-            $filters = $filterManager->getFilteredImages();
-            
-            $queue->activeTaskCompleted();
         }
 
-        print_r($taskArray);
-        $this->render('renderImages', array('activeTask' => $activeTask));
+        $this->render('renderImages', array(
+            'activeTask' => $activeTask,
+            'action' => $action,
+            'progress' => $progress,
+                )
+        );
     }
 
     //Функция пересборки изображений 
     public function renderImageAgain($id, $elemId, $pictureId, $config) {
-
-
+        
     }
 
 }

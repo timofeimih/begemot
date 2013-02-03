@@ -24,6 +24,7 @@ class CLongTaskQueue {
     
     private $activeTask = null;
 
+
     public function __construct($id) {
 
         if (!$this->systemCheck()) {
@@ -44,7 +45,18 @@ class CLongTaskQueue {
         }
         return true;
     }
-
+    
+    public function getProgress(){
+        $percent = 0;
+        
+        $taskCount = count($this->queueData);
+        if ($this->queueStatus['startTaskCount']!=0){
+            $percent = 100-($taskCount/$this->queueStatus['startTaskCount'])*100;
+        }
+        
+        return $percent;
+    }
+    
     public function isQueueExist() {
         if (file_exists($this->queueFilePath)) {
             return true;
@@ -66,9 +78,12 @@ class CLongTaskQueue {
 
     public function activeTaskCompleted() {
         if (count($this->queueData) > 0) {
+            
             $this->saveData();
+            return true;
         } else {
             unlink($this->queueFilePath);
+            return false;
         }
     }
 
@@ -84,7 +99,9 @@ class CLongTaskQueue {
         } else {
             $this->queueData[] = $task;
         }
-
+        
+        $this->queueStatus['startTaskCount'] = count($this->queueData);
+        
         //some actions
 
         if ($this->saveData()) {
@@ -105,7 +122,7 @@ class CLongTaskQueue {
     }
 
     private function saveData() {
-       // echo $this->queueFilePath;
+
         $dataToFile = array(
             'status'=>$this->queueStatus,
             'data'=>$this->queueData
@@ -123,7 +140,9 @@ class CLongTaskQueue {
          
         $this->queueData=$dataToFile['data'];
         $this->queueStatus=$dataToFile['status'];
-
+        
+       
+        
     }
 
 }

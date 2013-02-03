@@ -17,24 +17,26 @@ $menuPart1 = array(
             array(
                 'url' => '/catalog/catCategory/create',
                 'label' => 'Создать раздел',
-            ),            
-        ),
-    ),    
-    array(
-        'label' => 'Дополнительные поля', 
-        'items'=> array(
-            array(
-                'label' => 'Список полей', 
-                'url' => array('/catalog/catItemsRow/admin'),               
             ),
-            array(
-                'label' => 'Новое поле', 
-                'url' => array('/catalog/catItemsRow/create'),               
-            ),            
         ),
     ),
-    
-
+    array(
+        'label' => 'Дополнительные поля',
+        'items' => array(
+            array(
+                'label' => 'Список полей',
+                'url' => array('/catalog/catItemsRow/admin'),
+            ),
+            array(
+                'label' => 'Новое поле',
+                'url' => array('/catalog/catItemsRow/create'),
+            ),
+        ),
+    ),
+    array(
+        'label' => 'Пересборка',
+        'url' => array('/catalog/default/renderImages/action'),
+    ),
     array('label' => 'РАЗДЕЛЫ'),
 );
 
