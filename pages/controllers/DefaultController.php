@@ -61,9 +61,12 @@ class DefaultController extends Controller
                 $model->attributes=$_POST['NewFile'];
                 if($model->validate())
                 {
-                    $file = fopen('./protected/views/site/pages/'.$model->filename.'.php', 'w');
+                    
+                    $webroot = Yii::getPathOfAlias('webroot');
+                    $file = fopen($webroot.'/protected/views/site/pages/'.$model->filename.'.php', 'w');
                     fclose($file);
-                    chmod($file, 0777);
+                    chmod($webroot.'/protected/views/site/pages/'.$model->filename.'.php', 0777);
+                    
                     $this->redirect('/pages');
                     return;
                 }
@@ -75,13 +78,13 @@ class DefaultController extends Controller
 	{
             $file = str_replace("*","/",$file);
       
-            unlink($file);
+            unlink($file.'.php');
 	}        
         
 	public function actionUpdate($file)
 	{
 
-            $model=new updateForm($file);
+            $model=new updateForm($file.'.php');
 
 
             if(isset($_POST['ajax']) && $_POST['ajax']==='update-form-update-form')

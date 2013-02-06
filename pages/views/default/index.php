@@ -24,8 +24,8 @@ $this->menu = require dirname(__FILE__).'/../commonMenu.php';
             'class'=>'bootstrap.widgets.TbButtonColumn',
             'template'=>'{view}{update}{delete}',
              'viewButtonUrl'=>"Yii::app()->urlManager->createUrl('site/page',array('view'=>str_replace('.php','.html',basename(\$data['filePath']))))",
-             'deleteButtonUrl'=>'"/pages/default/delete/file/".str_replace("/","*",$data["filePath"])',
-             'updateButtonUrl'=>'"/pages/default/update/file/".str_replace("/","*",$data["filePath"])',
+             'deleteButtonUrl'=>'"/pages/default/delete/file/".str_replace("/","*",str_replace(".php","",$data["filePath"]))',
+             'updateButtonUrl'=>'"/pages/default/update/file/".str_replace("/","*",str_replace(".php","",$data["filePath"]))',
         ),
     ),
 )); 
