@@ -84,7 +84,7 @@ function imagesLinks($data, $imageNumber, $config, $id, $elementId) {
     $activeImage = null;
     //print_t($images);
 
-
+ 
     if (count($images) > 0) {
 
         foreach ($images as $imageKey => $image) {
@@ -97,6 +97,7 @@ function imagesLinks($data, $imageNumber, $config, $id, $elementId) {
                 break;
             }
         }
+        
         $PartsPath = pathinfo($image['original']);
 
 
@@ -105,8 +106,9 @@ function imagesLinks($data, $imageNumber, $config, $id, $elementId) {
         $linksHtml = '<ol class="nav">';
 
         $deleteAllHtml = '<br /><a  class="del" onClick="$.ajax({url:\'/pictureBox/default/ajaxDeleteImage/id/' . $id . '/elementId/' . $elementId . '/pictureId/' . $activeImage . '\',success: function(){;loadPage(PB_' . $config['divId'] . '.pictureBoxPage-1,PB_' . $config['divId'] . ',\'' . $config['divId'] . '\')}})" href="javascript:;">Удалить изображение</a>';
-
+        
         foreach ($config['imageFilters'] as $keyFilter => $filter) {
+
             if ($keyFilter!='admin'){
                 if (!isset($images[$activeImage][$keyFilter])) {
                     $delMakeHtml = '
@@ -122,13 +124,12 @@ function imagesLinks($data, $imageNumber, $config, $id, $elementId) {
                     <span style="margin-right: 6px;">(<a href="javaScript:;" onclick="$.ajax({url: \'/pictureBox/default/ajaxDeleteFilteredImage/id/' . $id . '/elementId/' . $elementId . '/pictureId/' . $activeImage . '/filterName/' . $keyFilter . '\',success: function(){refreshPictureBox(\'' . $config['divId'] . '\',PB_' . $config['divId'] . ')}})" class="del">Удалить</a>)</span>    
                      </li>';
                 }
+                   $linksHtml.= $delMakeHtml;
             }
 
-
-
-            $linksHtml.= $delMakeHtml;
+         
         }
-        
+
         $title = isset($image['title'])?$image['title']:'';
         $alt = isset($image['alt'])?$image['alt']:'';
         
@@ -208,6 +209,7 @@ function moveHtml($data, $imageNumber, $id, $elementId, $config) {
 
     return $output . '</ul>';
 }
+
 ?>
 <div class="pictureBox">
     <?php echo paginationHtml($id, $elementId, $data['images'], $imageNumber, $config); ?>
@@ -223,6 +225,7 @@ function moveHtml($data, $imageNumber, $id, $elementId, $config) {
     </div>
 
     <?php
+    
     $filters = array();
      foreach ($config['nativeFilters'] as $filterName => $accepted) {
                 if ($accepted) {
