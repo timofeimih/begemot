@@ -23,8 +23,9 @@ if (file_exists($dataFile)){
     $images = require ($dataFile);
     
     foreach ($images['images'] as $id=>$item){
-
-        $filesArray[]= $item;
+        $tmpArray = $item;
+        $tmpArray['id']='1';
+        $filesArray[]= $tmpArray;
     }
     
     if (count($filesArray)==0)
@@ -37,6 +38,7 @@ if (file_exists($dataFile)){
         'template'=>"{items}\n{pager}",
         'itemView'=>'_thumb',
     ));
+
     
 } else{
     Yii::app()->user->setFlash('error', '<strong>Ошибка!</strong> Изображения отсутствуют. Воспользуйтесь пунктом меню "загрузить"');
