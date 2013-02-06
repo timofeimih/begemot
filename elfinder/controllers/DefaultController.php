@@ -66,17 +66,19 @@ class DefaultController extends Controller
                         // 'debug' => true,
                         'roots' => array(
                                 array(
+                                        'mimeDetect' => "internal",
                                         'driver'        => 'LocalFileSystem',   // driver for accessing file system (REQUIRED)
                                         'path'          => Yii::getPathOfAlias('webroot').'/',         // path to files (REQUIRED)
                                         'URL'           => 'http://'.$_SERVER['SERVER_NAME'], // URL to files (REQUIRED)
                                         'accessControl' => 'access'             // disable and hide dot starting files (OPTIONAL)
+                              
                                 )
                         )
                 );
 
-            // run elFinder
-  
-            $connector = new elFinderConnector(new elFinder($opts));
+            
+            $elfinder = new elFinder($opts);
+            $connector = new elFinderConnector($elfinder);
             $connector->run();
 	}
 }
