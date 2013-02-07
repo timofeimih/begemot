@@ -22,8 +22,7 @@ function pictureHtml($data, $imageNumber) {
     $images = $data['images'];
 
     $imageCounter = 0;
- print_r($images);
- return;
+
     foreach ($images as $imageKey => $image) {
         $imageCounter++;
        
