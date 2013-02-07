@@ -8,7 +8,15 @@ class WaterMarkFilter extends BaseFilter {
         $image->readImage($this->fileName);
 
         $watermark = new Imagick();
-        $watermark->readImage(Yii::getPathOfAlias('webroot') . '/' . $this->param['watermark']);
+        
+        $watermarkFile = Yii::getPathOfAlias('webroot') . '/' . $this->param['watermark'];
+        
+        if (file_exists($watermarkFile)){
+            $watermark->readImage($watermarkFile);
+            
+        }else {
+           $watermark->newPseudoImage(100, 100, "magick:rose");  
+        }
 
         // how big are the images?
         $iWidth = $image->getImageWidth();

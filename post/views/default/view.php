@@ -18,7 +18,9 @@ if (file_exists($imagesData)) {
 
             <article class="single-post">
                 <h1><?php echo $model->title;?></h1>
-                <figure class="featured-thumbnail large"><span class="img-wrap"><span class="f-thumb-wrap"><img width="619" height="388" src="<?php echo $image['bigInner']; ?>" class="attachment-post-thumbnail-xl wp-post-image" alt="<?php echo $image['alt']; ?>" title="<?php echo $image['title']; ?>" /></span></span></figure>                
+                <figure class="featured-thumbnail large">
+                    <span class="img-wrap">
+                        <span class="f-thumb-wrap"><img width="619" height="388" src="<?php echo $image['bigInner']; ?>" class="attachment-post-thumbnail-xl wp-post-image" alt="<?php echo $image['alt']; ?>" title="<?php echo $image['title']; ?>" /></span></span></figure>                
                 <div class="indent-right">
 <?php echo $model->text; ?>
                 </div><!--.post-content-->

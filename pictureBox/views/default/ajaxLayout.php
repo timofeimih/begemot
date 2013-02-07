@@ -22,11 +22,13 @@ function pictureHtml($data, $imageNumber) {
     $images = $data['images'];
 
     $imageCounter = 0;
-
+ print_r($images);
+ return;
     foreach ($images as $imageKey => $image) {
         $imageCounter++;
-//
+       
         if ($imageNumber == $imageCounter) {
+            
             $output.= '
                          <img src="' . $image['admin'] . '?tmp=' . rand(0, 100) . '" alt=""  width="298" height="198"/>
                         <p><a href="' . $image['original'] . '?tmp=' . rand(0, 100) . '">Оригинал</a><!--&nbsp;<span>
