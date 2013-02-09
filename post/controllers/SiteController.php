@@ -40,7 +40,11 @@ class SiteController extends Controller
                 ));
 
         } else{
-             $criteria = new CDbCriteria();   
+            $criteria = new CDbCriteria(array(
+                    'select' => '*',
+                    'distinct' => true,
+                    'condition'=>'tag_id <>0'
+                ));
         }
 
         $count = Posts::model()->count($criteria);
