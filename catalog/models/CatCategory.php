@@ -190,13 +190,18 @@ class CatCategory extends CActiveRecord
         //Возвращаем категории входящие в раздел
         public function getCatChilds($id){
             
-            $filter = function($var) use (&$id){
-                if ($var['pid']==$id)
-                    return true;
-                else
-                    return false;
-                };   
-            return array_filter($this->getCatArray(),$filter );
+
+           $array = $this->getCatArray();
+           $resultArray= array();     
+           
+           foreach ($array as $element){
+                if ($element['pid']==$id){
+                    $resultArray[] = $element;
+                }
+       
+           }
+                
+            return $resultArray;//array_filter($this->getCatArray(),$filter );
         }
        
         //Возвращаем категории входящие в раздел

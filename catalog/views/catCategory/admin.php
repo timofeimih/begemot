@@ -49,7 +49,7 @@ Yii::import('begemot.extensions.grid.EImageColumn');
 $this->widget('bootstrap.widgets.TbGridView', array(
     'id' => 'cat-category-grid',
     'dataProvider' => $model->search($pid),
-    'filter' => $model,
+   // 'filter' => $model,
     'type'=>'striped bordered condensed',    
     'columns' => array(
         array(

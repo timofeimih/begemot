@@ -40,7 +40,6 @@ $menuPart1 = array(
     array('label' => 'РАЗДЕЛЫ'),
 );
 
-
-
 return array_merge($menuPart1, CatCategory::model()->categoriesMenu());
+
 ?>
