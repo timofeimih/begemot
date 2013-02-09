@@ -38,7 +38,7 @@ if (file_exists($imagesData)) {
 		<div class="container_12">
 			<div class="grid_3 left">
 				<ul class="menu">
-                                        <?php echo '<li>'.CHtml::link('Все',array('/post/site/index')).'</li>'; ?>
+                                        <?php echo '<li>'.CHtml::link('Все',array('/posts')).'</li>'; ?>
 					<?php echo $tagsOutput; ?>
 				</ul>
 			</div>
