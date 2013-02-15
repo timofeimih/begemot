@@ -27,11 +27,12 @@
             'class'=>'bootstrap.widgets.TbMenu',
             'items'=>array(
                         //array('label'=>'About', 'url'=>array('/site/page', 'view'=>'about')),
-                        array('label'=>'Каталог', 'url'=>array('/catalog/catItem')),
-                        array('label'=>'Статьи', 'url'=>array('/post/default/admin')),
-                        array('label'=>'HTML', 'url'=>array('/pages')),
-                        array('label'=>'Файлы', 'url'=>array('/elfinder')),
-                        array('label'=>'Галлерея', 'url'=>array('/gallery')),
+                        array('label'=>'Каталог', 'url'=>array('/catalog/catItem'),'visible'=>Yii::app()->hasModule('catalog')),
+                        array('label'=>'Статьи', 'url'=>array('/post/default/admin'),'visible'=>Yii::app()->hasModule('post')),
+                        array('label'=>'HTML', 'url'=>array('/pages'),'visible'=>Yii::app()->hasModule('pages')),
+                        array('label'=>'Файлы', 'url'=>array('/elfinder'),'visible'=>Yii::app()->hasModule('elfinder')),
+                        array('label'=>'Галлерея', 'url'=>array('/gallery'),'visible'=>Yii::app()->hasModule('gallery')),
+                        array('label'=>'SEO', 'url'=>array('/seo/seoPages/admin'),'visible'=>Yii::app()->hasModule('seo')),
                         array('label'=>'Login', 'url'=>array('/begemot'), 'visible'=>Yii::app()->user->isGuest),
                         array('label'=>'Logout ('.Yii::app()->user->name.')', 'url'=>array('/begemot/default/logout'), 'visible'=>!Yii::app()->user->isGuest)
                 ),
