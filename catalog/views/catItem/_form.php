@@ -37,6 +37,9 @@
         //        $this->widget('//home/atv/www/atvargo.ru/protected/extensions/ckeditor/CKEditor', 
                 array('model' => $model, 'attribute' => 'text', 'language' => 'ru', 'editorTemplate' => 'full',));
                 ?>
+            		<?php 
+                        $this->widget('begemot.components.htmlClearPanel.htmlClearPanel');
+                ?>
 		<?php echo $form->error($model,'text'); ?>
 	</div>   
         <div class="row">
