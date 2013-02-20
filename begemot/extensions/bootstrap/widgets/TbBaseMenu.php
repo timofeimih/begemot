@@ -134,7 +134,10 @@ abstract class TbBaseMenu extends CMenu
 
 		if (isset($item['items']) && !empty($item['items']))
 		{
-			$item['url'] = '#';
+			if(empty($item['url']))
+			{
+				$item['url'] = '#';
+			}
 
 			if (isset($item['linkOptions']['class']))
 				$item['linkOptions']['class'] .= ' dropdown-toggle';

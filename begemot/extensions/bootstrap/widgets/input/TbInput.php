@@ -23,10 +23,21 @@ abstract class TbInput extends CInputWidget
 	const TYPE_RADIO = 'radiobutton';
 	const TYPE_RADIOLIST = 'radiobuttonlist';
 	const TYPE_RADIOLIST_INLINE = 'radiobuttonlist_inline';
+	const TYPE_RADIOBUTTONGROUPSLIST = 'radiobuttongroupslist';
 	const TYPE_TEXTAREA = 'textarea';
 	const TYPE_TEXT = 'textfield';
 	const TYPE_CAPTCHA = 'captcha';
 	const TYPE_UNEDITABLE = 'uneditable';
+	const TYPE_DATEPICKER = 'datepicker';
+	const TYPE_REDACTOR = 'redactor';
+	const TYPE_MARKDOWNEDITOR = 'markdowneditor';
+	const TYPE_HTML5EDITOR = 'wysihtml5';
+	const TYPE_DATERANGEPICKER = 'daterangepicker';
+	const TYPE_TOGGLEBUTTON = 'togglebutton';
+	const TYPE_COLORPICKER = 'colorpicker';
+	const TYPE_CKEDITOR = 'ckeditor';
+	const TYPE_TIMEPICKER = 'timepicker';
+	const TYPE_SELECT2 = 'select2';
 
 	/**
 	 * @var TbActiveForm the associated form widget.
@@ -90,13 +101,13 @@ abstract class TbInput extends CInputWidget
 	public function init()
 	{
 		if (!isset($this->form))
-			throw new CException(__CLASS__.': Failed to initialize widget! Form is not set.');
+			throw new CException(__CLASS__ . ': Failed to initialize widget! Form is not set.');
 
 		if (!isset($this->model))
-			throw new CException(__CLASS__.': Failed to initialize widget! Model is not set.');
+			throw new CException(__CLASS__ . ': Failed to initialize widget! Model is not set.');
 
 		if (!isset($this->type))
-			throw new CException(__CLASS__.': Failed to initialize widget! Input type is not set.');
+			throw new CException(__CLASS__ . ': Failed to initialize widget! Input type is not set.');
 
 		if ($this->type === self::TYPE_UNEDITABLE)
 		{
@@ -214,6 +225,10 @@ abstract class TbInput extends CInputWidget
 				$this->radioButtonListInline();
 				break;
 
+			case self::TYPE_RADIOBUTTONGROUPSLIST:
+				$this->radioButtonGroupsList();
+				break;
+
 			case self::TYPE_TEXTAREA:
 				$this->textArea();
 				break;
@@ -230,8 +245,49 @@ abstract class TbInput extends CInputWidget
 				$this->uneditableField();
 				break;
 
+			case self::TYPE_DATEPICKER:
+				$this->datepickerField();
+				break;
+
+			case self::TYPE_REDACTOR:
+				$this->redactorJs();
+				break;
+
+			case self::TYPE_MARKDOWNEDITOR:
+				$this->markdownEditorJs();
+				break;
+
+			case self::TYPE_HTML5EDITOR:
+				$this->html5Editor();
+				break;
+
+			case self::TYPE_DATERANGEPICKER:
+				$this->dateRangeField();
+				break;
+
+			case self::TYPE_TOGGLEBUTTON:
+				$this->toggleButton();
+				break;
+
+			case self::TYPE_COLORPICKER:
+				$this->colorpickerField();
+				break;
+
+			case self::TYPE_CKEDITOR:
+				$this->ckEditor();
+				break;
+
+			// Adding timepicker (Sergii)
+			case self::TYPE_TIMEPICKER:
+				$this->timepickerField();
+				break;
+
+			case self::TYPE_SELECT2:
+				$this->select2Field();
+				break;
+
 			default:
-				throw new CException(__CLASS__.': Failed to run widget! Type is invalid.');
+				throw new CException(__CLASS__ . ': Failed to run widget! Type is invalid.');
 		}
 	}
 
@@ -265,13 +321,12 @@ abstract class TbInput extends CInputWidget
 				$htmlOptions['class'] = 'add-on';
 
 			ob_start();
-			echo '<div class="'.$this->getAddonCssClass().'">';
+			echo '<div class="' . $this->getAddonCssClass() . '">';
 			if (isset($this->prependText))
 				echo CHtml::tag('span', $htmlOptions, $this->prependText);
 
 			return ob_get_clean();
-		}
-		else
+		} else
 			return '';
 	}
 
@@ -296,21 +351,20 @@ abstract class TbInput extends CInputWidget
 
 			echo '</div>';
 			return ob_get_clean();
-		}
-		else
+		} else
 			return '';
 	}
-	
+
 	/**
 	 * Returns the id that should be used for the specified attribute
 	 * @param string $attribute the attribute
-	 * @return string the id 
+	 * @return string the id
 	 */
-	protected function getAttributeId($attribute) 
+	protected function getAttributeId($attribute)
 	{
 		return isset($this->htmlOptions['id'])
-				? $this->htmlOptions['id']
-				: CHtml::getIdByName(CHtml::resolveName($this->model, $attribute));
+			? $this->htmlOptions['id']
+			: CHtml::getIdByName(CHtml::resolveName($this->model, $attribute));
 	}
 
 	/**
@@ -338,8 +392,7 @@ abstract class TbInput extends CInputWidget
 				$htmlOptions['class'] = 'help-block';
 
 			return CHtml::tag('p', $htmlOptions, $this->hintText);
-		}
-		else
+		} else
 			return '';
 	}
 
@@ -383,6 +436,13 @@ abstract class TbInput extends CInputWidget
 	 * @abstract
 	 */
 	abstract protected function checkBox();
+
+	/**
+	 * Renders a toggle button.
+	 * @return string the rendered content
+	 * @abstract
+	 */
+	abstract protected function toggleButton();
 
 	/**
 	 * Renders a list of checkboxes.
@@ -441,6 +501,13 @@ abstract class TbInput extends CInputWidget
 	abstract protected function radioButtonListInline();
 
 	/**
+	 * Renders a list of radio buttons using Button Groups.
+	 * @return string the rendered content
+	 * @abstract
+	 */
+	abstract protected function radioButtonGroupsList();
+
+	/**
 	 * Renders a textarea.
 	 * @return string the rendered content
 	 * @abstract
@@ -467,4 +534,67 @@ abstract class TbInput extends CInputWidget
 	 * @abstract
 	 */
 	abstract protected function uneditableField();
+
+	/**
+	 * Renders a datepicker field.
+	 * @return string the rendered content
+	 * @abstract
+	 */
+	abstract protected function datepickerField();
+
+	/**
+	 * Renders a redactorJS wysiwyg field.
+	 * @abstract
+	 * @return mixed
+	 */
+	abstract protected function redactorJs();
+
+
+	/**
+	 * Renders a markdownEditorJS wysiwyg field.
+	 * @abstract
+	 * @return mixed
+	 */
+	abstract protected function markdownEditorJs();
+
+	/**
+	 * Renders a bootstrap CKEditor wysiwyg editor.
+	 * @abstract
+	 * @return mixed
+	 */
+	abstract protected function ckEditor();
+
+	/**
+	 * Renders a bootstrap wysihtml5 editor.
+	 * @abstract
+	 * @return mixed
+	 */
+	abstract protected function html5Editor();
+
+	/**
+	 * Renders a daterange picker field
+	 * @abstract
+	 * @return mixed
+	 */
+	abstract protected function dateRangeField();
+
+	/**
+	 * Renders a colorpicker field.
+	 * @return string the rendered content
+	 * @abstract
+	 */
+	abstract protected function colorpickerField();
+
+	/**
+	 * Renders a timepicker field.
+	 * @return string the rendered content
+	 * @abstract
+	 */
+	abstract protected function timepickerField();
+
+	/**
+	 * Renders a select2 field.
+	 * @return mixed
+	 */
+	abstract protected function select2Field();
 }

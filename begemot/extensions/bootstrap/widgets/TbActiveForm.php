@@ -35,7 +35,7 @@ class TbActiveForm extends CActiveForm
 	 */
 	public $input;
 	/**
-	 * @var boolean indicates whether to display errors as blocks.
+	 * @var boolean flag that indicates if the errors should be displayed as blocks.
 	 */
 	public $inlineErrors;
 
@@ -46,9 +46,9 @@ class TbActiveForm extends CActiveForm
 	public function init()
 	{
 		if (!isset($this->htmlOptions['class']))
-			$this->htmlOptions['class'] = 'form-'.$this->type;
+			$this->htmlOptions['class'] = 'form-' . $this->type;
 		else
-			$this->htmlOptions['class'] .= ' form-'.$this->type;
+			$this->htmlOptions['class'] .= ' form-' . $this->type;
 
 		if (!isset($this->inlineErrors))
 			$this->inlineErrors = $this->type === self::TYPE_HORIZONTAL;
@@ -71,6 +71,18 @@ class TbActiveForm extends CActiveForm
 	public function checkBoxRow($model, $attribute, $htmlOptions = array())
 	{
 		return $this->inputRow(TbInput::TYPE_CHECKBOX, $model, $attribute, null, $htmlOptions);
+	}
+
+	/**
+	 * Renders a toggle input row.
+	 * @param CModel $model the data model
+	 * @param string $attribute the attribute
+	 * @param array $htmlOptions additional HTML attributes (options key sets the options for the toggle component)
+	 * @return string the generated row
+	 */
+	public function toggleButtonRow($model, $attribute, $htmlOptions = array())
+	{
+		return $this->inputRow(TbInput::TYPE_TOGGLEBUTTON, $model, $attribute, null, $htmlOptions);
 	}
 
 	/**
@@ -175,6 +187,19 @@ class TbActiveForm extends CActiveForm
 	}
 
 	/**
+	 * Renders a radio button list input row using Button Groups.
+	 * @param CModel $model the data model
+	 * @param string $attribute the attribute
+	 * @param array $data the list data
+	 * @param array $htmlOptions additional HTML attributes
+	 * @return string the generated row
+	 */
+	public function radioButtonGroupsListRow($model, $attribute, $data = array(), $htmlOptions = array())
+	{
+		return $this->inputRow(TbInput::TYPE_RADIOBUTTONGROUPSLIST, $model, $attribute, $data, $htmlOptions);
+	}
+
+	/**
 	 * Renders a text field input row.
 	 * @param CModel $model the data model
 	 * @param string $attribute the attribute
@@ -196,6 +221,54 @@ class TbActiveForm extends CActiveForm
 	public function textAreaRow($model, $attribute, $htmlOptions = array())
 	{
 		return $this->inputRow(TbInput::TYPE_TEXTAREA, $model, $attribute, null, $htmlOptions);
+	}
+
+	/**
+	 * Renders a WYSIWYG redactor editor
+	 * @param $model
+	 * @param $attribute
+	 * @param array $htmlOptions
+	 * @return string
+	 */
+	public function redactorRow($model, $attribute, $htmlOptions = array())
+	{
+		return $this->inputRow(TbInput::TYPE_REDACTOR, $model, $attribute, null, $htmlOptions);
+	}
+
+	/**
+	* Renders a WYSIWYG Markdown editor
+	* @param $model
+	* @param $attribute
+	* @param array $htmlOptions
+	* @return string
+	*/
+	public function markdownEditorRow($model, $attribute, $htmlOptions = array())
+	{
+		return $this->inputRow(TbInput::TYPE_MARKDOWNEDITOR, $model, $attribute, null, $htmlOptions);
+	}
+
+	/**
+	 * Renders a WYSIWYG bootstrap editor
+	 * @param $model
+	 * @param $attribute
+	 * @param array $htmlOptions
+	 * @return string
+	 */
+	public function html5EditorRow($model, $attribute, $htmlOptions = array())
+	{
+		return $this->inputRow(TbInput::TYPE_HTML5EDITOR, $model, $attribute, null, $htmlOptions);
+	}
+
+	/**
+	 * Renders a WYSIWYG  ckeditor
+	 * @param $model
+	 * @param $attribute
+	 * @param array $htmlOptions
+	 * @return string
+	 */
+	public function ckEditorRow($model, $attribute, $htmlOptions = array())
+	{
+		return $this->inputRow(TbInput::TYPE_CKEDITOR, $model, $attribute, null, $htmlOptions);
 	}
 
 	/**
@@ -222,6 +295,70 @@ class TbActiveForm extends CActiveForm
 	public function uneditableRow($model, $attribute, $htmlOptions = array())
 	{
 		return $this->inputRow(TbInput::TYPE_UNEDITABLE, $model, $attribute, null, $htmlOptions);
+	}
+
+	/**
+	 * Renders a datepicker field row.
+	 * @param CModel $model the data model
+	 * @param string $attribute the attribute
+	 * @param array $htmlOptions additional HTML attributes. 'events' and 'options' key specify the events
+	 * and configuration options of datepicker respectively.
+	 * @return string the generated row
+	 * @since 1.0.2 Booster
+	 */
+	public function datepickerRow($model, $attribute, $htmlOptions = array())
+	{
+		return $this->inputRow(TbInput::TYPE_DATEPICKER, $model, $attribute, null, $htmlOptions);
+	}
+
+	/**
+	 * Renders a colorpicker field row.
+	 * @param CModel $model the data model
+	 * @param string $attribute the attribute
+	 * @param array $htmlOptions additional HTML attributes. 'events' and 'options' key specify the events
+	 * and configuration options of colorpicker respectively.
+	 * @return string the generated row
+	 * @since 1.0.3 Booster
+	 */
+	public function colorpickerRow($model, $attribute, $htmlOptions = array())
+	{
+		return $this->inputRow(TbInput::TYPE_COLORPICKER, $model, $attribute, null, $htmlOptions);
+	}
+
+	/**
+	 * @param $model
+	 * @param $attribute
+	 * @param array $htmlOptions addition HTML attributes. In order to pass initialization parameters to dateRange, you
+	 * need to set the HTML 'options' key with an array of configuration options. 'options' also has a
+	 */
+	public function dateRangeRow($model, $attribute, $htmlOptions = array())
+	{
+		return $this->inputRow(TbInput::TYPE_DATERANGEPICKER, $model, $attribute, null, $htmlOptions);
+	}
+
+	/**
+	 * Renders a timepicker field row.
+	 * @param CModel $model the data model
+	 * @param string $attribute the attribute
+	 * @param array $htmlOptions additional HTML attributes
+	 * @return string the generated row
+	 * @since 0.10.0
+	 */
+	public function timepickerRow($model, $attribute, $htmlOptions = array())
+	{
+		return $this->inputRow(TbInput::TYPE_TIMEPICKER, $model, $attribute, null, $htmlOptions);
+	}
+
+	/**
+	 * Renders a select2 field row
+	 * @param $model
+	 * @param $attribute
+	 * @param array $htmlOptions
+	 * @return string
+	 */
+	public function select2Row($model, $attribute, $htmlOptions = array())
+	{
+		return $this->inputRow(TbInput::TYPE_SELECT2, $model, $attribute, null, $htmlOptions);
 	}
 
 	/**
@@ -259,6 +396,54 @@ class TbActiveForm extends CActiveForm
 	}
 
 	/**
+	 * Renders a radio button list for a model attribute using Button Groups.
+	 * @param CModel $model the data model
+	 * @param string $attribute the attribute
+	 * @param array $data value-label pairs used to generate the radio button list.
+	 * @param array $htmlOptions additional HTML options.
+	 * @return string the generated radio button list
+	 * @since 0.9.5
+	 */
+	public function radioButtonGroupsList($model, $attribute, $data, $htmlOptions = array())
+	{
+		$buttons = array();
+		$scripts = array();
+
+		$hiddenFieldId = CHtml::getIdByName(get_class($model) . '[' . $attribute . ']');
+		$buttonType = isset($htmlOptions['type']) ? $htmlOptions['type'] : null;
+
+		foreach ($data as $key => $value) {
+			$btnId = CHtml::getIdByName(get_class($model) . '[' . $attribute . '][' . $key . ']');
+
+			$button = array();
+			$button['label'] = $value;
+			$button['htmlOptions'] = array(
+				'value' => $key,
+				'id' => $btnId,
+				'class' => (isset($model->$attribute) && $model->$attribute == $key ? 'active': ''),
+			);
+			$buttons[] = $button;
+
+			// event as ordinary input
+			$scripts[] = "\$('#" . $btnId . "').click(function(){
+                \$('#" . $hiddenFieldId . "').val('" . $key . "').trigger('change');
+            });";
+		}
+
+		Yii::app()->controller->widget('bootstrap.widgets.TbButtonGroup', array(
+			'buttonType' => 'button',
+			'toggle' => 'radio',
+			'htmlOptions' => $htmlOptions,
+			'buttons' => $buttons,
+			'type' => $buttonType,
+		));
+
+		echo $this->hiddenField($model, $attribute);
+
+		Yii::app()->clientScript->registerScript('radiobuttongrouplist-' . $attribute, implode("\n", $scripts));
+	}
+
+	/**
 	 * Renders an input list.
 	 * @param boolean $checkbox flag that indicates if the list is a checkbox-list.
 	 * @param CModel $model the data model
@@ -276,7 +461,7 @@ class TbActiveForm extends CActiveForm
 		if ($model->hasErrors($attribute))
 		{
 			if (isset($htmlOptions['class']))
-				$htmlOptions['class'] .= ' '.CHtml::$errorCss;
+				$htmlOptions['class'] .= ' ' . CHtml::$errorCss;
 			else
 				$htmlOptions['class'] = CHtml::$errorCss;
 		}
@@ -288,11 +473,10 @@ class TbActiveForm extends CActiveForm
 		{
 			$uncheck = $htmlOptions['uncheckValue'];
 			unset($htmlOptions['uncheckValue']);
-		}
-		else
+		} else
 			$uncheck = '';
 
-		$hiddenOptions = isset($htmlOptions['id']) ? array('id' => CHtml::ID_PREFIX.$htmlOptions['id']) : array('id' => false);
+		$hiddenOptions = isset($htmlOptions['id']) ? array('id' => CHtml::ID_PREFIX . $htmlOptions['id']) : array('id' => false);
 		$hidden = $uncheck !== null ? CHtml::hiddenField($name, $uncheck, $hiddenOptions) : '';
 
 		if (isset($htmlOptions['template']))
@@ -326,7 +510,7 @@ class TbActiveForm extends CActiveForm
 		{
 			$checked = !is_array($select) && !strcmp($value, $select) || is_array($select) && in_array($value, $select);
 			$htmlOptions['value'] = $value;
-			$htmlOptions['id'] = $baseID.'_'.$id++;
+			$htmlOptions['id'] = $baseID . '_' . $id++;
 			$option = CHtml::$method($name, $checked, $htmlOptions);
 			$label = CHtml::label($label, $htmlOptions['id'], $labelOptions);
 			$items[] = strtr($template, array(
@@ -336,7 +520,7 @@ class TbActiveForm extends CActiveForm
 			));
 		}
 
-		return $hidden.implode('', $items);
+		return $hidden . implode('', $items);
 	}
 
 	/**
@@ -382,20 +566,20 @@ class TbActiveForm extends CActiveForm
 		if (!$enableAjaxValidation && !$enableClientValidation)
 			return $this->renderError($model, $attribute, $htmlOptions);
 
-		$id = CHtml::activeId($model,$attribute);
+		$id = CHtml::activeId($model, $attribute);
 		$inputID = isset($htmlOptions['inputID']) ? $htmlOptions['inputID'] : $id;
 		unset($htmlOptions['inputID']);
 		if (!isset($htmlOptions['id']))
-			$htmlOptions['id'] = $inputID.'_em_';
+			$htmlOptions['id'] = $inputID . '_em_';
 
 		$option = array(
-			'id'=>$id,
-			'inputID'=>$inputID,
-			'errorID'=>$htmlOptions['id'],
-			'model'=>get_class($model),
-			'name'=>CHtml::resolveName($model, $attribute),
-			'enableAjaxValidation'=>$enableAjaxValidation,
-			'inputContainer'=>'div.control-group', // Bootstrap requires this
+			'id' => $id,
+			'inputID' => $inputID,
+			'errorID' => $htmlOptions['id'],
+			'model' => get_class($model),
+			'name' => CHtml::resolveName($model, $attribute),
+			'enableAjaxValidation' => $enableAjaxValidation,
+			'inputContainer' => 'div.control-group', // Bootstrap requires this
 		);
 
 		$optionNames = array(
@@ -439,7 +623,7 @@ class TbActiveForm extends CActiveForm
 			}
 
 			if ($validators !== array())
-				$option['clientValidation'] = "js:function(value, messages, attribute) {\n".implode("\n", $validators)."\n}";
+				$option['clientValidation'] = "js:function(value, messages, attribute) {\n" . implode("\n", $validators) . "\n}";
 		}
 
 		$html = $this->renderError($model, $attribute, $htmlOptions);
@@ -447,7 +631,7 @@ class TbActiveForm extends CActiveForm
 		if ($html === '')
 		{
 			if (isset($htmlOptions['style']))
-				$htmlOptions['style'] = rtrim($htmlOptions['style'], ';').'; display: none';
+				$htmlOptions['style'] = rtrim($htmlOptions['style'], ';') . '; display: none';
 			else
 				$htmlOptions['style'] = 'display: none';
 
@@ -488,12 +672,12 @@ class TbActiveForm extends CActiveForm
 	{
 		ob_start();
 		Yii::app()->controller->widget($this->getInputClassName(), array(
-			'type'=>$type,
-			'form'=>$this,
-			'model'=>$model,
-			'attribute'=>$attribute,
-			'data'=>$data,
-			'htmlOptions'=>$htmlOptions,
+			'type' => $type,
+			'form' => $this,
+			'model' => $model,
+			'attribute' => $attribute,
+			'data' => $data,
+			'htmlOptions' => $htmlOptions,
 		));
 		return ob_get_clean();
 	}

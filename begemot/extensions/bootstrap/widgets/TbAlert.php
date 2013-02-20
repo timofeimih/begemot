@@ -45,6 +45,8 @@ class TbAlert extends CWidget
 	 */
 	public $htmlOptions = array();
 
+	private static $_containerId = 0;
+
 	/**
 	 * Initializes the widget.
 	 */
@@ -115,8 +117,10 @@ class TbAlert extends CWidget
 
 				if ($this->closeText !== false && !isset($alert['closeText']))
 					$alert['closeText'] = $this->closeText;
+				else
+					$alert['closeText'] = false;
 
-				if ($alert['closeText'] !== false)
+				if (isset($alert['closeText']) && $alert['closeText'] !== false)
 					echo '<a class="close" data-dismiss="alert">'.$alert['closeText'].'</a>';
 
 				echo Yii::app()->user->getFlash($type);
@@ -128,6 +132,7 @@ class TbAlert extends CWidget
 		echo '</div>';
 
 		$selector = "#{$id} .alert";
+		$id .= '_'.self::$_containerId++;
 
 		/** @var CClientScript $cs */
 		$cs = Yii::app()->getClientScript();
