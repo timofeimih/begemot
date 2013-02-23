@@ -1,4 +1,5 @@
 <?php
+echo 123;
 $this->breadcrumbs=array(
 	'Seo Pages'=>array('index'),
 	$model->title,
