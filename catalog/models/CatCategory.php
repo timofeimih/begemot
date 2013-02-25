@@ -302,8 +302,11 @@ class CatCategory extends CActiveRecord
             if (file_exists($favFilePath)){
                  $images = require($favFilePath);
                };
-
-            return $images['images'];        
+            if (isset($images['images'])){
+                return $images['images'];
+            } else{
+                return null;
+            }
         }       
         
         //get path of one main picture, wich take from fav or common images list
@@ -324,9 +327,12 @@ class CatCategory extends CActiveRecord
             if (count($images)==0){
                 
                     $images = $this->getCatPictures();
-                    
-                    $imagesArray = array_values($images);
-                    $catalogImage = $imagesArray[0];
+                    if ($images!==null){
+                        $imagesArray = array_values($images);
+                        $catalogImage = $imagesArray[0];
+                    } else {
+                        return '#';
+                    }
                 
             }
             if (is_null($tag)){

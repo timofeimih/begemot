@@ -185,9 +185,12 @@ class CatItem extends CActiveRecord
             if (count($images)==0){
                 
                     $images = $this->getItemPictures();
-                    
-                    $imagesArray = array_values($images);
-                    $itemImage = $imagesArray[0];
+                    if (count($images)>0){
+                        $imagesArray = array_values($images);
+                        $itemImage = $imagesArray[0];
+                    } else{
+                        return '#'; 
+                    }
                 
             }
             
