@@ -1,12 +1,12 @@
 <?php
 $this->breadcrumbs=array(
-	'Seo Links'=>array('index'),
+	'Seo Word Groups'=>array('index'),
 	'Manage',
 );
 
 $this->menu=array(
-	array('label'=>'List SeoLinks','url'=>array('index')),
-	array('label'=>'Create SeoLinks','url'=>array('create')),
+	array('label'=>'List SeoWordGroup','url'=>array('index')),
+	array('label'=>'Create SeoWordGroup','url'=>array('create')),
 );
 
 Yii::app()->clientScript->registerScript('search', "
@@ -15,7 +15,7 @@ $('.search-button').click(function(){
 	return false;
 });
 $('.search-form form').submit(function(){
-	$.fn.yiiGridView.update('seo-links-grid', {
+	$.fn.yiiGridView.update('seo-word-group-grid', {
 		data: $(this).serialize()
 	});
 	return false;
@@ -23,7 +23,7 @@ $('.search-form form').submit(function(){
 ");
 ?>
 
-<h1>Manage Seo Links</h1>
+<h1>Manage Seo Word Groups</h1>
 
 <p>
 You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>
@@ -38,15 +38,15 @@ or <b>=</b>) at the beginning of each of your search values to specify how the c
 </div><!-- search-form -->
 
 <?php $this->widget('bootstrap.widgets.TbGridView',array(
-	'id'=>'seo-links-grid',
+	'id'=>'seo-word-group-grid',
 	'dataProvider'=>$model->search(),
 	'filter'=>$model,
 	'columns'=>array(
 		'id',
-		'url',
-		'href',
-		'anchor',
-		'type',
+		'name',
+		'rgt',
+		'level',
+		'lft',
 		array(
 			'class'=>'bootstrap.widgets.TbButtonColumn',
 		),

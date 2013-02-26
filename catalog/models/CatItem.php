@@ -33,8 +33,9 @@ class CatItem extends CActiveRecord
         public function behaviors(){
             return array(
                 'slug'=>array(
-                         'class' => 'begemot.extensions.SlugBehavior',
-                ),
+                    'class' => 'begemot.extensions.SlugBehavior',
+                ),                
+
             );
         }
         

@@ -6,6 +6,9 @@
  * The followings are the available columns in table 'seo_word_group':
  * @property integer $id
  * @property string $title
+ * @property integer $rgt
+ * @property integer $level
+ * @property integer $lft
  */
 class SeoWordGroup extends CActiveRecord
 {
@@ -25,14 +28,32 @@ class SeoWordGroup extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('title', 'safe'),
+			array('title, rgt, level, lft', 'required'),
+			array('rgt, level, lft', 'numerical', 'integerOnly'=>true),
+			array('title', 'length', 'max'=>50),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, title', 'safe', 'on'=>'search'),
+			array('id, title, rgt, level, lft', 'safe', 'on'=>'search'),
 		);
 	}
 
-	/**
+
+        public function behaviors(){
+            return array(
+                 'NestedSetBehavior' => array(
+                      'class' => 'application.modules.begemot.components.NestedDynaTree.NestedSetBehavior',
+                      'leftAttribute' => 'lft',
+                      'rightAttribute' => 'rgt',
+                      'levelAttribute' => 'level',
+                  ),
+                  'DynaTreeBehavior' => array(
+                      'class' => 'application.modules.begemot.components.NestedDynaTree.NestedTreeBehavior',
+                      'titleAttribute' => 'title'
+                  )               
+
+            );
+        }                        
+                        /**
 	 * @return array relational rules.
 	 */
 	public function relations()
@@ -51,6 +72,9 @@ class SeoWordGroup extends CActiveRecord
 		return array(
 			'id' => 'ID',
 			'title' => 'Title',
+			'rgt' => 'Rgt',
+			'level' => 'Level',
+			'lft' => 'Lft',
 		);
 	}
 
@@ -74,6 +98,9 @@ class SeoWordGroup extends CActiveRecord
 
 		$criteria->compare('id',$this->id);
 		$criteria->compare('title',$this->title,true);
+		$criteria->compare('rgt',$this->rgt);
+		$criteria->compare('level',$this->level);
+		$criteria->compare('lft',$this->lft);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,

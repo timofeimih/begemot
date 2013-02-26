@@ -13,7 +13,10 @@ class SeoModule extends CWebModule {
             'seo.components.*',
         ));
     }
-
+    public  $controllerMap= array(
+                'AXtree'=>array ('class' => 'application.modules.begemot.components.NestedDynaTree.AXcontroller')
+            );
+    
     public function beforeControllerAction($controller, $action) {
 
         if ($controller->id != 'site') {
