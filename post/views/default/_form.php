@@ -34,7 +34,7 @@
     </div>
 
     <div class="row">
-        <?php echo $form->labelEx($model, 'author'); ?>
+        <label for="Posts_author">Раздел</label>
         <?php
         $tags = PostsTags::getTags();
         echo $form->dropDownList($model, 'tag_id', $tags);
@@ -42,22 +42,8 @@
         <?php echo $form->error($model, 'author'); ?>
     </div>
 
-    <div class="row">
-        <?php echo $form->labelEx($model, 'author'); ?>
-        <?php echo $form->textField($model, 'author'); ?>
-        <?php echo $form->error($model, 'author'); ?>
-    </div>
 
-    <div class="row">
-        <?php echo $form->labelEx($model, 'Источник'); ?>
-        <?php echo $form->textField($model, 'from'); ?>
-        <?php echo $form->error($model, 'from'); ?>
-    </div>
-    <div class="row">
-        <?php echo $form->labelEx($model, 'Ссылка на источник'); ?>
-        <?php echo $form->textField($model, 'from_url'); ?>
-        <?php echo $form->error($model, 'from_url'); ?>
-    </div>    
+   
     <div class="row buttons">
         <?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save'); ?>
     </div>

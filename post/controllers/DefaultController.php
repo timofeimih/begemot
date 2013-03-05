@@ -77,8 +77,8 @@ class DefaultController extends Controller
 
         if (isset($_POST['Posts'])) {
             $model->attributes = $_POST['Posts'];
-            if ($model->save())
-                $this->redirect(array('view', 'id' => $model->id));
+           $model->save();
+              
         }
 
         $this->render('update', array(

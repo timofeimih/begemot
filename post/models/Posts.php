@@ -60,7 +60,7 @@ class Posts extends CActiveRecord {
     public function attributeLabels() {
         return array(
             'id' => 'ID',
-            'title' => 'Title',
+            'title' => 'Title(H1)',
             'text' => 'Text',
             'author' => 'Author',
             'date' => 'Date',
