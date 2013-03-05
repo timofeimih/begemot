@@ -12,6 +12,17 @@ $this->menu = require dirname(__FILE__) . '/../commonMenu.php';
 
 
 <?php
+
+
+$categories = SeoWordGroup::model()->findAll(array('order' => 'lft'));
+echo '<div style="float:left;width:50%;">';
+$this->widget('begemot.components.NestedDynaTree.widget.WNestedSelect', 
+        array(
+            'id'=>'test',
+            'nestedData'=>$categories,
+            'default'=>'root'
+        ));
+
 $gridLeft = 'left-grid';
 
  $this->widget('bootstrap.widgets.TbExtendedGridView', array(
@@ -61,10 +72,19 @@ $gridLeft = 'left-grid';
             'template' => ' {right}',
         ),
     ),
-    'htmlOptions' => array('style' => " float: left;width: 50%;")
+    'htmlOptions' => array('style' => " float: left;")
         ));
- 
+echo '</div>';
     $gridRight = 'grid-right';
+
+$categories = SeoWordGroup::model()->findAll(array('order' => 'lft'));
+
+$this->widget('begemot.components.NestedDynaTree.widget.WNestedSelect', 
+        array(
+            'id'=>'test1',
+            'nestedData'=>$categories,
+            'default'=>'root'
+        ));    
     
  $this->widget('bootstrap.widgets.TbExtendedGridView', array(
     'id'=>$gridRight,

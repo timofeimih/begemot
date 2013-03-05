@@ -29,18 +29,7 @@ $this->widget('application.modules.begemot.components.NestedDynaTree.NestedDynaT
 <div id="updateTree" class="span9">
 
 </div>
-<?php 
 
-$categories = SeoWordGroup::model()->findAll(array('order' => 'lft'));
-
-$this->widget('begemot.components.NestedDynaTree.widget.WNestedSelect', 
-        array(
-            'id'=>'test',
-            'nestedData'=>$categories,
-            'default'=>'root'
-        ));
-
-?>
 
 
 

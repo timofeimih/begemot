@@ -1,5 +1,5 @@
-<div style="width:50px;display:inline;" id="<?php echo $id;?>"><?php echo $default;?></div>
-<div class="btn-group">
+
+<div class="btn-group dropdown">
     <?php
     echo '<a data-toggle="dropdown" class="btn btn-mini dropdown-toggle"  href="#">выбрать<span class="caret"></span></a>';
     $categories = $data;
@@ -9,7 +9,7 @@
         if ($category->level == $level)
             echo CHtml::closeTag('li') . "\n";
         else if ($category->level > $level)
-            echo CHtml::openTag('ul', array('class' => 'dropdown-menu')) . "\n";
+            echo CHtml::openTag('ul', array('class' => 'dropdown-menu dropdown')) . "\n";
         else {
             echo CHtml::closeTag('li') . "\n";
 
@@ -20,7 +20,7 @@
         }
 
             if (!$category->isLeaf()){
-                $class=array('class'=>'dropdown-submenu');
+                $class=array('class'=>'dropdown-submenu dropdown');
             } else{
                 $class=array();
             }
@@ -40,3 +40,4 @@
     }
     ?>
 </div>
+<div style="width:50px;display:inline;" id="<?php echo $id;?>"><?php echo $default;?></div>
