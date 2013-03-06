@@ -17,7 +17,7 @@
  */
 class GiixCrudGenerator extends CCodeGenerator {
 
-	public $codeModel = 'ext.giix.generators.giixCrud.GiixCrudCode';
+	public $codeModel = 'application.modules.begemot.extensions.giix.generators.giixCrud.GiixCrudCode';
 
 	/**
 	 * Returns the model names in an array.
