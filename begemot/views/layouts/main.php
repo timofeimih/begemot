@@ -31,7 +31,15 @@
                         array('label'=>'Статьи', 'url'=>array('/post/default/admin'),'visible'=>Yii::app()->hasModule('post')),
                         array('label'=>'HTML', 'url'=>array('/pages'),'visible'=>Yii::app()->hasModule('pages')),
                         array('label'=>'Файлы', 'url'=>array('/elfinder'),'visible'=>Yii::app()->hasModule('elfinder')),
-                        array('label'=>'Галлерея', 'url'=>array('/gallery'),'visible'=>Yii::app()->hasModule('gallery')),
+                
+                        array('label'=>'Галлерея',
+                            'items'=>array(
+                                array('url'=>array('/gallery'),'visible'=>Yii::app()->hasModule('gallery'),'label'=>'Фото'),
+                                array('url'=>array('/videoGallery/videoGalleryVideo/admin'),'label'=>'Видео'),
+                                
+                            ),
+                        ),   
+                
                         array('label'=>'SEO', 'url'=>array('/seo/seoPages/admin'),'visible'=>Yii::app()->hasModule('seo')),
                         array('label'=>'Login', 'url'=>array('/begemot'), 'visible'=>Yii::app()->user->isGuest),
                         array('label'=>'Logout ('.Yii::app()->user->name.')', 'url'=>array('/begemot/default/logout'), 'visible'=>!Yii::app()->user->isGuest)

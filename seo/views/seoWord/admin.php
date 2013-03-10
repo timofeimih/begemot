@@ -14,7 +14,7 @@ $this->menu = require dirname(__FILE__) . '/../commonMenu.php';
 <?php
 
 
-$categories = SeoWordGroup::model()->findAll(array('order' => 'lft'));
+$categories = SeoWordGroup::model()->findAll(array('order' => 'lft','condition'=>'`id`<>0'));
 echo '<div style="float:left;width:50%;">';
 $this->widget('begemot.components.NestedDynaTree.widget.WNestedSelect', 
         array(
@@ -77,7 +77,7 @@ $gridLeft = 'left-grid';
 echo '</div>';
     $gridRight = 'grid-right';
 
-$categories = SeoWordGroup::model()->findAll(array('order' => 'lft'));
+$categories = SeoWordGroup::model()->findAll(array('order' => 'lft','condition'=>'`id`<>0'));
 
 $this->widget('begemot.components.NestedDynaTree.widget.WNestedSelect', 
         array(
