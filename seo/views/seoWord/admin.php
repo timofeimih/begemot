@@ -12,15 +12,43 @@ $this->menu = require dirname(__FILE__) . '/../commonMenu.php';
 
 
 <?php
+if (!isset($_REQUEST['leftCatId'])){    
+    $leftCatId=0;
+} else{
+   $leftCatId=$_REQUEST['leftCatId'];
+}
 
+if (!isset($_REQUEST['rightCatId'])){
+    $rightCatId=0;
+} else{
+    $rightCatId=$_REQUEST['rightCatId'];    
+}
+
+echo '
+    <script>
+        var leftCatId='.$leftCatId.';
+        var rightCatId='.$rightCatId.';
+    </script>
+';
 
 $categories = SeoWordGroup::model()->findAll(array('order' => 'lft','condition'=>'`id`<>0'));
 echo '<div style="float:left;width:50%;">';
+$this->widget('bootstrap.widgets.TbButton',array(
+	'label' => 'Корень',
+	'type' => 'primary',
+	'size' => 'small',
+        'url' => '?rightCatId='.$rightCatId.'&leftCatId=0'
+));
+
+$leftCat = SeoWordGroup::model()->findByPk($leftCatId);
+$leftCatName = $leftCat->title;
+
 $this->widget('begemot.components.NestedDynaTree.widget.WNestedSelect', 
         array(
             'id'=>'test',
             'nestedData'=>$categories,
-            'default'=>'root'
+            'default'=>$leftCatName,
+            'callBackJs'=>'categoryLeftSelect'
         ));
 
 $gridLeft = 'left-grid';
@@ -28,7 +56,7 @@ $gridLeft = 'left-grid';
  $this->widget('bootstrap.widgets.TbExtendedGridView', array(
     'id'=>$gridLeft,
     'type' => 'striped bordered',
-    'dataProvider' => $model->search(0),
+    'dataProvider' => $model->search($leftCatId),
     'template' => "{items}",
     'bulkActions' => array(
         'actionButtons' => array(
@@ -37,7 +65,7 @@ $gridLeft = 'left-grid';
                 'type' => 'primary',
                 'size' => 'small',
                 'label' => 'Переместить',
-                'click' => 'js:function(values){ajaxGroupChange(values,1);}'
+                'click' => 'js:function(values){ajaxGroupChange(values,'.$rightCatId.');}'
             )
         ),
         // if grid doesn't have a checkbox column type, it will attach
@@ -54,7 +82,7 @@ $gridLeft = 'left-grid';
             'buttons'=>array(
                 'right'=>array(
                     'icon'=>'icon-arrow-right',
-                    'url'=>'Yii::app()->controller->createUrl("changeGroup",array("groupId"=>1,"id"=>$data->id))',
+                    'url'=>'Yii::app()->controller->createUrl("changeGroup",array("groupId"=>'.$rightCatId.',"id"=>$data->id))',
                     'click'=>"function(){
                         $.fn.yiiGridView.update('".$gridLeft."', {  //change my-grid to your grid's name
                             type:'POST',
@@ -79,17 +107,28 @@ echo '</div>';
 
 $categories = SeoWordGroup::model()->findAll(array('order' => 'lft','condition'=>'`id`<>0'));
 
+$this->widget('bootstrap.widgets.TbButton',array(
+	'label' => 'Корень',
+	'type' => 'primary',
+	'size' => 'small',
+        'url' => '?leftCatId='.$leftCatId.'&rightCatId=0'
+));
+
+$rightCat = SeoWordGroup::model()->findByPk($rightCatId);
+$rightCatName = $rightCat->title;
+
 $this->widget('begemot.components.NestedDynaTree.widget.WNestedSelect', 
         array(
             'id'=>'test1',
             'nestedData'=>$categories,
-            'default'=>'root'
+            'default'=>$rightCatName,
+            'callBackJs'=>'categoryRightSelect'
         ));    
     
  $this->widget('bootstrap.widgets.TbExtendedGridView', array(
     'id'=>$gridRight,
     'type' => 'striped bordered',
-    'dataProvider' => $model->search(1),
+    'dataProvider' => $model->search($rightCatId),
     'template' => "{items}",
     'bulkActions' => array(
         'actionButtons' => array(
@@ -98,7 +137,7 @@ $this->widget('begemot.components.NestedDynaTree.widget.WNestedSelect',
                 'type' => 'primary',
                 'size' => 'small',
                 'label' => 'Переместить',
-                'click' => 'js:function(values){ajaxGroupChange(values,0);}'
+                'click' => 'js:function(values){ajaxGroupChange(values,'.$leftCatId.');}'
             )
         ),
         // if grid doesn't have a checkbox column type, it will attach
@@ -113,7 +152,7 @@ $this->widget('begemot.components.NestedDynaTree.widget.WNestedSelect',
             'buttons'=>array(
                 'left'=>array(
                     'icon'=>'icon-arrow-left',
-                    'url'=>'Yii::app()->controller->createUrl("changeGroup",array("groupId"=>0,"id"=>$data->id))',
+                    'url'=>'Yii::app()->controller->createUrl("changeGroup",array("groupId"=>'.$leftCatId.',"id"=>$data->id))',
                     'click'=>"function(){
                         $.fn.yiiGridView.update('".$gridRight."', {  //change my-grid to your grid's name
                             type:'POST',
@@ -172,6 +211,13 @@ $url = Yii::app()->controller->createUrl('changeGroup');
         
     }  
     
+    function categoryLeftSelect(id){
+        document.location.href ='?rightCatId=<?php echo $rightCatId;?>&leftCatId='+id;
+        
+    }
+    function categoryRightSelect(id){
+        document.location.href ='?rightCatId='+id+'&leftCatId=<?php echo $leftCatId;?>';
+    }  
 
     
 

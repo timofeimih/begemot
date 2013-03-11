@@ -5,6 +5,7 @@ class WNestedSelect extends CWidget {
     public $id;
     public $nestedData;
     public $default = 'нет значения';
+    public $callBackJs = 'categorySelect';
 
     public function init() {
         
@@ -21,7 +22,15 @@ class WNestedSelect extends CWidget {
     }
 
     public function run() {
-        $this->render('nestedSelect',array('id'=>$this->id,'data'=>$this->nestedData,'default'=>$this->default));
+        $this->render(
+                'nestedSelect',
+                    array(
+                        'id'=>$this->id,
+                        'data'=>$this->nestedData,
+                        'default'=>$this->default,
+                        'callback'=>$this->callBackJs
+                    )
+                );
     }
 
 }

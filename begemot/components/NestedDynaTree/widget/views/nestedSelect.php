@@ -29,7 +29,7 @@
             );
         
         echo CHtml::openTag('li',  array_merge($htmlOptions, $class));
-        echo '<a tabindex="-1" href="#" data="'.$category->id.'">'.$category->title.'</a>';
+        echo '<a tabindex="-1" href="javascript:;" onClick="'.$callback.'('.$category->id.')" data="'.$category->id.'">'.$category->title.'</a>';
         //echo CHtml::encode($category->title . ' ' . $category->lft . ' ' . $category->level . ' ' . $level);
         $level = $category->level;
     }
