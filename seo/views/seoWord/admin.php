@@ -97,8 +97,9 @@ $gridLeft = 'left-grid';
                     ",
                 ),
             ),
-            'template' => ' {right}',
+            'template' => ' {right} {delete}',
         ),
+        
     ),
     'htmlOptions' => array('style' => " float: left;")
         ));
@@ -165,9 +166,9 @@ $this->widget('begemot.components.NestedDynaTree.widget.WNestedSelect',
                         return false;
                       }
                     ",
-                ),
+                ),  
             ),
-            'template' => ' {left}',
+            'template' => ' {left} {delete}',
         ),        
         'word',
         'weight',

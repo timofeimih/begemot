@@ -35,7 +35,7 @@ class SeoWordController extends Controller
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('admin','delete','changeGroup'),
+				'actions'=>array('admin','delete','changeGroup','csvUpload'),
 				'users'=>array('admin'),
 			),
 			array('deny',  // deny all users
@@ -147,7 +147,42 @@ class SeoWordController extends Controller
 			'model'=>$model,
 		));
 	}
-        
+	public function actionCsvUpload()
+	{
+            $model = new CsvForm();
+            $form = new CForm('seo.models.csvFormData', $model);
+            
+            $csvOutput = '';
+            
+            if($form->submitted('CsvForm') && $form->validate()){
+
+                $path = Yii::getPathOfAlias('webroot').'/files/csv.csv';
+                file_put_contents($path, $model->csv);
+                $row = 1;
+                if (($handle = fopen($path, "r")) !== FALSE) {
+                    while (($data = fgetcsv($handle, 1000, ";")) !== FALSE) {
+                        $num = count(array_diff($data, array('')));
+                        $csvOutput .= "<p> $num полей в строке $row: <br /></p>\n";
+                        $row++;
+                        for ($c=0; $c < $num; $c++) {
+                            $csvOutput .= $data[$c] . "<br />\n";
+                        }
+                        
+                        $word = new SeoWord();
+                        $word->word = $data[0];
+                        $word->weight = $data[1];
+                        $word->group_id = $model->catId;
+                        $word->save();
+                    }
+                    fclose($handle);
+                }
+            
+                $this->render('csvUploaded', array('csv'=>$csvOutput));
+            }
+            else
+                $this->render('csvUpload', array('form'=>$form));
+	}
+
 	public function actionChangeGroup($groupId)
 	{
 
