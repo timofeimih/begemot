@@ -5,6 +5,11 @@ $this->menu = require dirname(__FILE__) . '/../commonMenu.php';
 //echo $form->render();
 echo $form->renderBegin();
 
+if (!isset($_REQUEST['сatId'])){    
+    $сatId=0;
+} else{
+   $сatId=$_REQUEST['сatId'];
+}
 
 $categories = SeoWordGroup::model()->findAll(array('order' => 'lft','condition'=>'`id`<>0'));
 
@@ -12,7 +17,7 @@ $this->widget('bootstrap.widgets.TbButton',array(
 	'label' => 'Корень',
 	'type' => 'primary',
 	'size' => 'small',
-        'url' => '?rightCatId=&leftCatId=0'
+        'url' => '?сatId=0'
 ));
 
 $this->widget('begemot.components.NestedDynaTree.widget.WNestedSelect', 
@@ -20,7 +25,7 @@ $this->widget('begemot.components.NestedDynaTree.widget.WNestedSelect',
             'id'=>'test',
             'nestedData'=>$categories,
             'default'=>'корень',
-            'callBackJs'=>'categoryLeftSelect'
+            'callBackJs'=>'setCatId'
         ));
 
 foreach($form->getElements() as $element)
@@ -30,3 +35,9 @@ echo '<br/><input type="submit"/>';
 
 echo $form->renderEnd();
 ?>
+<script>
+    function setCatId(id){
+        document.getElementById("CsvForm_catId").value = id;
+        
+    }
+</script>
