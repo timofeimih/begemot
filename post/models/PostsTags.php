@@ -15,6 +15,7 @@ class PostsTags extends CActiveRecord {
      * @return PostsTags the static model class
      */
     private static $tags = null;
+    private static $tagsT = null;
 
     public static function model($className = __CLASS__) {
         return parent::model($className);
@@ -90,10 +91,13 @@ class PostsTags extends CActiveRecord {
             
             $models = PostsTags::model()->findAll();
             $items = array(0 => 'Черновик');
+            $itemsT = array();
             foreach ($models as $model) {
                 $items[$model->id] = $model->tag_name;
+                $itemsT[$model->id] = $model->tag_name_t;
             }
             self::$tags = $items;
+            self::$tagsT = $itemsT;
         } 
         return self::$tags;
     }
@@ -103,7 +107,12 @@ class PostsTags extends CActiveRecord {
        
        return $tags[$id];
     }
-
+    
+    public static function getTagNameT($id){
+       self::loadTags();
+       
+       return self::$tagsT[$id];
+    }
     
        public function beforeSave() {
 
