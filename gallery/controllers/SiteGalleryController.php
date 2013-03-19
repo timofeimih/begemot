@@ -9,7 +9,7 @@ class SiteGalleryController extends Controller
         public function actionIndex()
 	{
             
-            $this->layout = GalleryModule::$galleryLayout;
+            $this->layout = GalleryModules::$galleryLayout;
 		$this->render('index',array(
                     'allGall'=>Gallery::model()->findAll(array('order'=>'`order`')),
 			

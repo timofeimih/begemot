@@ -40,3 +40,17 @@ echo GxHtml::submitButton('Save');
 $this->endWidget();
 ?>
 </div><!-- form -->
+
+    <?php
+    
+    $videoConfig = require Yii::getPathOfAlias('webroot').'/protected/config/videoConfig.php';
+
+    if (!$model->isNewRecord)
+        $this->widget(
+                'application.modules.pictureBox.components.PictureBox', array(
+            'id' => 'videoGallery',
+            'elementId' => $model->id,
+            'config' => $videoConfig,
+                )
+        );
+    ?>
