@@ -28,8 +28,7 @@ class DefaultController extends Controller {
                 $taskArray = array();
 
                 foreach ($data as $dataItem) {
-                    if ($dataItem->id != 47)
-                        continue;
+
                     $itemDataFile = $webroot . '/files/pictureBox/catalogItem/' . $dataItem->id . '/data.php';
                     $data = require ($itemDataFile);
                     foreach ($data['images'] as $image) {
@@ -50,7 +49,7 @@ class DefaultController extends Controller {
 
                 $config = require Yii::getPathOfAlias('application') . '/config/catalog/categoryItemPictureSettings.php';
 
-                $this->renderImageAgain($id, $elemId, $pictureId, $config);
+                //$this->renderImageAgain($id, $elemId, $pictureId, $config);
 
                 $filterManager = new FiltersManager($webroot . $activeTask, $config);
                 $filters = $filterManager->getFilteredImages();
