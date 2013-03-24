@@ -74,6 +74,7 @@ class CommentsModule extends CWebModule
 			'comments.models.*',
 			'comments.components.*',
 		));
+
 	}
         
         /*
@@ -118,4 +119,11 @@ class CommentsModule extends CWebModule
             if(is_array($config))
                 $this->_defaultModelConfig = array_merge($this->_defaultModelConfig, $config);
         }
+
+    public function beforeControllerAction($controller, $action) {
+        if ($action->id == 'admin') {
+            Yii::app()->getComponent('bootstrap');
+        }
+        return true;
+    }
 }

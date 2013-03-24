@@ -46,17 +46,17 @@ class Comment extends CActiveRecord {
      * @var captcha action
      */
     public $captchaAction;
-    
+
     /*
      * Holds current model config
      */
     private $_config;
-    
+
     /*
      * Holds comments owner model
      */
     private $_ownerModel = false;
-    
+
     private $_statuses = array(
         self::STATUS_NOT_APPROWED=>'New',
         self::STATUS_APPROWED=>'Approved',
@@ -178,7 +178,7 @@ class Comment extends CActiveRecord {
                     ),
                 ));
     }
-    
+
     /**
      * Checks config
      * This is the 'checkConfig' validator as declared in rules().
@@ -218,9 +218,11 @@ class Comment extends CActiveRecord {
         if (($attribute === 'user_name' || $attribute === 'user_email') && ($this->config['registeredOnly'] === false && Yii::app()->user->isGuest === true))
         {
             unset($this->creator_id);
-            $requiredValidator = new CRequiredValidator();
-            $requiredValidator->attributes = array($attribute);
-            $requiredValidator->validate($this);
+            if($attribute === 'comment_text'){
+                $requiredValidator = new CRequiredValidator();
+                $requiredValidator->attributes = array($attribute);
+                $requiredValidator->validate($this);
+            }
             $stringValidator = new CStringValidator();
             $stringValidator->max = 128;
             $stringValidator->attributes = array($attribute);
@@ -236,7 +238,7 @@ class Comment extends CActiveRecord {
 
     /*
      * Return array with prepared comments for given modelName and id
-     * @return Comment array array with comments 
+     * @return Comment array array with comments
      */
 
     public function getCommentsTree() {
@@ -245,7 +247,9 @@ class Comment extends CActiveRecord {
         $criteria->compare('owner_id', $this->owner_id);
         $criteria->compare('t.status', '<>'.self::STATUS_DELETED);
         $criteria->order = 'parent_comment_id, create_time ';
-        if($this->config['orderComments'] === 'ASC' || $this->config['orderComments'] === 'DESC')
+
+
+        if(isset($this->config['orderComments']) && ($this->config['orderComments'] === 'ASC' || $this->config['orderComments'] === 'DESC'))
             $criteria->order .= $this->config['orderComments'];
         //if premoderation is seted and current user isn't superuser
         if($this->config['premoderate'] === true && $this->evaluateExpression($this->config['isSuperuser']) === false)
@@ -268,7 +272,7 @@ class Comment extends CActiveRecord {
      * recursively build the comment tree for given root node
      * @param array $data array with comments data
      * @int $rootID root node id
-     * @return Comment array 
+     * @return Comment array
      */
 
     private function buildTree(&$data, $rootID = 0) {
@@ -286,7 +290,7 @@ class Comment extends CActiveRecord {
 
     /*
      * returns the string, which represents comment's creator
-     * @return string 
+     * @return string
      */
 
     public function getUserName() {
@@ -303,7 +307,7 @@ class Comment extends CActiveRecord {
         }
         return $userName;
     }
-    
+
     /*
      * @return array
      */
@@ -318,7 +322,7 @@ class Comment extends CActiveRecord {
         }
         return $this->_config;
     }
-    
+
     /*
      * Returns comments owner model
      * @return CActiveRecord $model
@@ -331,16 +335,19 @@ class Comment extends CActiveRecord {
                 $key = $this->owner_id;
             else
                 $key = array_combine($primaryKey, explode('.', $this->owner_id));
+
             $ownerModel = $this->owner_name;
 
-            if(class_exists($ownerModel))
-                $this->_ownerModel = $ownerModel::model()->findByPk($key);
-            else 
+            if(class_exists($ownerModel)){
+                $ownerModel = new $ownerModel;
+                $this->_ownerModel = $ownerModel->findByPk($key);
+            }
+            else
                 $this->_ownerModel = null;
         }
         return $this->_ownerModel;
     }
-    
+
     /*
      * Set comment and all his childs as deleted
      * @return boolean
@@ -350,9 +357,9 @@ class Comment extends CActiveRecord {
         /*todo add deleting for childs*/
         $this->status = self::STATUS_DELETED;
         return $this->update();
-            
+
     }
-    
+
     /*
      * Sets comment as approved
      * @return boolean
@@ -361,9 +368,9 @@ class Comment extends CActiveRecord {
     {
         $this->status = self::STATUS_APPROWED;
         return $this->update();
-            
+
     }
-    
+
     /**
      * Get text representation of comment's status
      * @return string
@@ -373,7 +380,7 @@ class Comment extends CActiveRecord {
         $this->status = $this->status === null ? 0 : $this->status;
         return Yii::t('CommentsModule.msg', $this->_statuses[$this->status]);
     }
-    
+
     /**
      * Generate data with statuses for dropDownList
      * @return array
@@ -382,7 +389,7 @@ class Comment extends CActiveRecord {
     {
         return $this->_statuses;
     }
-    
+
     /**
      * Get the link to page with this comment
      * @return string
@@ -401,7 +408,7 @@ class Comment extends CActiveRecord {
         }
         return null;
     }
-    
+
     /*
      * Set comment status base on owner model configuration
      */

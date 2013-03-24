@@ -46,13 +46,14 @@ class ECommentsListWidget extends ECommentsBaseWidget
         
 	public function run()
 	{
-            $newComment = $this->createNewComment();
-            $comments = $newComment->getCommentsTree();
-            $this->render('ECommentsListWidget', array(
-                'comments' => $comments,
-                'newComment' => $newComment,
-            ));
-            $options = CJavaScript::encode(array(
+        $newComment = $this->createNewComment();
+        $comments = $newComment->getCommentsTree();
+        $this->render('ECommentsListWidget', array(
+            'comments' => $comments,
+            'newComment' => $newComment,
+        ));
+
+        $options = CJavaScript::encode(array(
                 'dialogTitle' => Yii::t('CommentsModule.msg', 'Add comment'),
                 'deleteConfirmString' => Yii::t('CommentsModule.msg', 'Delete this comment?'),
                 'approveConfirmString' => Yii::t('CommentsModule.msg', 'Approve this comment?'),
@@ -60,7 +61,7 @@ class ECommentsListWidget extends ECommentsBaseWidget
                 'cancelButton' => Yii::t('CommentsModule.msg', 'Cancel'),
             ));
             $js = "jQuery('#{$this->id}').commentsList($options);";
-            Yii::app()->getClientScript()->registerScript(__CLASS__.'#'.$this->id, $js);
+            Yii::app()->getClientScript()->registerScript(__CLASS__.'#'.$this->id, $js,3);
 	}
 }
 ?>

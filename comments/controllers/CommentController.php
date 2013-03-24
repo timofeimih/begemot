@@ -16,7 +16,7 @@ class CommentController extends Controller
 	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
 	 * using two-column layout. See 'protected/views/layouts/column2.php'.
 	 */
-	public $layout='//layouts/column1';
+    public $layout='begemot.views.layouts.column1';
 
 	/**
 	 * @return array action filters
@@ -99,9 +99,10 @@ class CommentController extends Controller
 	 */
 	public function actionAdmin()
 	{
-		$model=new Comment('search');
-		$model->unsetAttributes();  // clear any default values
-		if(isset($_GET['Comment']))
+        $model=new Comment('search');
+
+        $model->unsetAttributes();  // clear any default values
+        if(isset($_GET['Comment']))
 			$model->attributes=$_GET['Comment'];
 
 		$this->render('admin',array(
@@ -111,6 +112,7 @@ class CommentController extends Controller
         
         public function actionPostComment()
         {
+
             if(isset($_POST['Comment']) && Yii::app()->request->isAjaxRequest)
             {
                 $comment = new Comment();
