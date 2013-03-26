@@ -17,7 +17,7 @@
 	<br />
 
 	<b><?php echo CHtml::encode($data->getAttributeLabel('text')); ?>:</b>
-	<?php echo CHtml::encode($data->text); ?>
+	<?php echo '<pre>'.$data->text.'</pre>'; ?>
 	<br />
 
 
