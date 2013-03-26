@@ -11,7 +11,7 @@ class UploadifyFile extends CFormModel
                 'uploadifyFile',
                 'file','safe'=>true, 
                 'types'=>'jpg, jpeg,gif, png',
-                'maxSize'=>1024*1024*1024*2
+                'maxSize'=>1024*1024*1024*10
 
             ),
         );
