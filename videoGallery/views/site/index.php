@@ -1,4 +1,4 @@
-<?php foreach ($videoCats as $videoCat){?>  
+<?php foreach ($videoCats as $videoCat){?>
 <hr>
 <h1>Заголовок галлереи: <?php echo $videoCat->name;?></h1>
 Описание галлереи: <?php echo $videoCat->text;?><br>

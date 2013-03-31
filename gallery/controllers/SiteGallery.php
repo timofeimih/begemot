@@ -32,6 +32,7 @@ class SiteGallery extends Controller
         
         public function actionIndex()
 	{
+
 		$model=new Gallery('search');
 		$model->unsetAttributes();  // clear any default values
 		if(isset($_GET['Gallery']))
