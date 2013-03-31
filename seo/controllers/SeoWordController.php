@@ -147,6 +147,7 @@ class SeoWordController extends Controller
 			'model'=>$model,
 		));
 	}
+
 	public function actionCsvUpload()
 	{
             $model = new CsvForm();

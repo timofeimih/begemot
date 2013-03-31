@@ -35,6 +35,12 @@ class SeoWord extends CActiveRecord
 		);
 	}
 
+    public function scopes(){
+        return array(
+            'ordered'=>array('order'=>'weight desc')
+        );
+    }
+
 	/**
 	 * @return array relational rules.
 	 */

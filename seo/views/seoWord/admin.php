@@ -56,7 +56,7 @@ $gridLeft = 'left-grid';
  $this->widget('bootstrap.widgets.TbExtendedGridView', array(
     'id'=>$gridLeft,
     'type' => 'striped bordered',
-    'dataProvider' => $model->search($leftCatId),
+    'dataProvider' => $model->ordered()->search($leftCatId),
     'template' => "{items}",
     'bulkActions' => array(
         'actionButtons' => array(
