@@ -31,7 +31,7 @@ echo '
     </script>
 ';
 
-$categories = SeoWordGroup::model()->findAll(array('order' => 'lft','condition'=>'`id`<>0'));
+$categories = SeoWordGroup::model()->findAll(array('order' => 'lft','condition'=>'`title`<>"root"'));
 echo '<div style="float:left;width:50%;">';
 $this->widget('bootstrap.widgets.TbButton',array(
 	'label' => 'Корень',
@@ -106,7 +106,7 @@ $gridLeft = 'left-grid';
 echo '</div>';
     $gridRight = 'grid-right';
 
-$categories = SeoWordGroup::model()->findAll(array('order' => 'lft','condition'=>'`id`<>0'));
+$categories = SeoWordGroup::model()->findAll(array('order' => 'lft','condition'=>'`title`<>"root"'));
 
 $this->widget('bootstrap.widgets.TbButton',array(
 	'label' => 'Корень',
