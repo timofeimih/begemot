@@ -1,6 +1,6 @@
 <?php
 $id = 'test';
-?>
+?>123
 <div style="width:50px;display:inline;" id="<?php echo $id;?>"></div>
 <div class="btn-group">
     <?php

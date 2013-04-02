@@ -93,8 +93,8 @@ class PostsTagsController extends Controller
 		if(isset($_POST['PostsTags']))
 		{
 			$model->attributes=$_POST['PostsTags'];
-			if($model->save())
-				$this->redirect(array('view','id'=>$model->id));
+			$model->save();
+				//$this->redirect(array('view','id'=>$model->id));
 		}
 
 		$this->render('update',array(

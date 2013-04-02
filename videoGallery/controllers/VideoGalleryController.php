@@ -57,9 +57,9 @@ public function accessRules() {
 		if (isset($_POST['VideoGallery'])) {
 			$model->setAttributes($_POST['VideoGallery']);
 
-			if ($model->save()) {
-				$this->redirect(array('view', 'id' => $model->id));
-			}
+			$model->save();
+				//$this->redirect(array('view', 'id' => $model->id));
+
 		}
 
 		$this->render('update', array(
