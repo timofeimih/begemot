@@ -87,8 +87,8 @@ class CatItemsRowController extends Controller
 		if(isset($_POST['CatItemsRow']))
 		{
 			$model->attributes=$_POST['CatItemsRow'];
-			if($model->save())
-				$this->redirect(array('view','id'=>$model->id));
+			$model->save();
+				//$this->redirect(array('view','id'=>$model->id));
 		}
 
 		$this->render('update',array(

@@ -19,7 +19,23 @@ class PBox {
     protected $id;
     
     protected $count;
-    
+
+    static public function getTitleFromArray($image){
+        if (isset($image['title'])){
+            return $image['title'];
+        } else{
+            return '';
+        }
+    }
+
+    static public function getAltFromArray($image){
+        if (isset($image['alt'])){
+            return $image['alt'];
+        } else{
+            return '';
+        }
+    }
+
     public function __construct($galleryId,$id) {
         $pictureBoxDir = Yii::getPathOfAlias('webroot').'/files/pictureBox/';
         $datafile = $pictureBoxDir.$galleryId.'/'.$id.'/data.php';
@@ -64,15 +80,19 @@ class PBox {
     }    
     
     public function getFirstImageHtml($tag,$htmlOptions=array()){
+
         if (is_null($this->favPictures )){
             $array = $this->pictures;
         } else{
             $array = $this->favPictures;
         }
+        if (is_array($array)){
+            $id = key($array);
         
-        $id = key($array);
-        
-        return $this->getImageHtml($id, $tag,$htmlOptions);
+            return $this->getImageHtml($id, $tag,$htmlOptions);
+        } else{
+            return '<img src=""/>';
+        }
         
     }  
     

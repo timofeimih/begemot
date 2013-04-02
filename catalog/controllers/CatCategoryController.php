@@ -95,8 +95,8 @@ class CatCategoryController extends Controller
 		if(isset($_POST['CatCategory']))
 		{
 			$model->attributes=$_POST['CatCategory'];
-			if($model->save())
-				$this->redirect(array('view','id'=>$model->id));
+			$model->save();
+				//$this->redirect(array('view','id'=>$model->id));
 		}
 
 		$this->render('update',array(
