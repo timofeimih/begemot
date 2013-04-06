@@ -25,11 +25,11 @@ class CallbackController extends Controller
 		return array(
 			array('allow',  // allow all users to perform 'index' and 'view' actions
 				'actions'=>array('index','view'),
-				'users'=>array('*'),
+                'expression'=>'Yii::app()->user->canDo("")'
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
 				'actions'=>array('admin'),
-				'users'=>array('admin'),
+                'expression'=>'Yii::app()->user->canDo("")'
 			),
 			array('deny',  // deny all users
 				'users'=>array('*'),

@@ -1,9 +1,9 @@
 <?php
 
-class AdminController extends YummiAdminController
+class AdminController extends Controller
 {
 	public $defaultAction = 'admin';
-	public $layout='//layouts/column2';
+    public $layout = 'application.modules.begemot.views.layouts.column2';
 	
 	private $_model;
 
@@ -26,7 +26,7 @@ class AdminController extends YummiAdminController
 		return array(
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
 				'actions'=>array('admin','delete','create','update','view'),
-				'users'=>UserModule::getAdmins(),
+                'expression'=>'Yii::app()->user->canDo("")'
 			),
 			array('deny',  // deny all users
 				'users'=>array('*'),

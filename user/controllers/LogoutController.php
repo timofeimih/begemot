@@ -1,7 +1,8 @@
 <?php
 
-class LogoutController extends YummiAdminController
+class LogoutController extends Controller
 {
+    public $layout = 'application.modules.begemot.views.layouts.column2';
 	public $defaultAction = 'logout';
 	
 	/**

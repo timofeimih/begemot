@@ -73,10 +73,10 @@ class WebUser extends CWebUser
         return Yii::app()->getModule('user')->isAdmin();
     }
 
-    public function canDo($authItem){
+    public function canDo($authItem=''){
         if (!Yii::app()->user->isAdmin()){
 
-            if (Yii::app()->authManager->checkAccess($authItem)){
+            if (Yii::app()->authManager->checkAccess($authItem,Yii::app()->user->id)){
                 return true;
             } else {
                 return false;

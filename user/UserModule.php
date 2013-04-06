@@ -11,7 +11,7 @@
 class UserModule extends CWebModule
 {
 
-    public $baseLayout = '//layouts/column2';
+
 
 	/**
 	 * @var int
@@ -144,14 +144,13 @@ class UserModule extends CWebModule
 
 	public function beforeControllerAction($controller, $action)
 	{
-		if(parent::beforeControllerAction($controller, $action))
-		{
-			// this method is called before any module controller action is performed
-			// you may place customized code here
+
+
+                Yii::app()->getComponent('bootstrap');
+               // $controller->layout = $this->layout;
+                echo $controller->id.' '.$action->id;
 			return true;
-		}
-		else
-			return false;
+
 	}
 	
 	/**

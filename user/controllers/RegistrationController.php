@@ -1,7 +1,8 @@
 <?php
 
-class RegistrationController extends YummiAdminController
+class RegistrationController extends Controller
 {
+    public $layout = 'application.modules.begemot.views.layouts.column2';
 	public $defaultAction = 'registration';
 	
 	/**

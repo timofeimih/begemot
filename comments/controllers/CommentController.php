@@ -52,11 +52,11 @@ class CommentController extends Controller
 		return array(
 			array('allow',
 				'actions'=>array('postComment', 'captcha'),
-				'users'=>array('*'),
+                'expression'=>'Yii::app()->user->canDo("")'
 			),
 			array('allow',
 				'actions'=>array('admin', 'delete', 'approve'),
-				'users'=>array('admin'),
+                'expression'=>'Yii::app()->user->canDo("")'
 			),
 			array('deny',  // deny all users
 				'users'=>array('*'),

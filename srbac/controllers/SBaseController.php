@@ -21,7 +21,7 @@
  */
 Yii::import("srbac.components.Helper");
 
-class SBaseController extends CController {
+class SBaseController extends Controller {
 
   /**
    * Checks if srbac access is granted for the current user

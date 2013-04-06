@@ -2,7 +2,7 @@
 /**
  * The default srbac controller
  */
-class DefaultController extends CController {
+class DefaultController extends Controller {
   /**
    * The default action if no route is specified
    */

@@ -1,7 +1,8 @@
 <?php
 
-class RecoveryController extends YummiAdminController
+class RecoveryController extends Controller
 {
+    public $layout = 'application.modules.begemot.views.layouts.column2';
 	public $defaultAction = 'recovery';
 	
 	/**

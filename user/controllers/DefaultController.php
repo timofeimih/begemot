@@ -1,8 +1,8 @@
 <?php
 
-class DefaultController extends YummiAdminController
+class DefaultController extends Controller
 {
-	
+    public $layout = 'application.modules.begemot.views.layouts.column2';
 	/**
 	 * Lists all models.
 	 */

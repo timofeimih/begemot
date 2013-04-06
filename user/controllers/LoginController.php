@@ -1,7 +1,8 @@
 <?php
 
-class LoginController extends YummiAdminController
+class LoginController extends Controller
 {
+    public $layout = 'application.modules.begemot.views.layouts.column2';
 	public $defaultAction = 'login';
 
 	/**

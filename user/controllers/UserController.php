@@ -1,10 +1,9 @@
 <?php
 
-class UserController extends YummiAdminController
+class UserController extends Controller
 {
-	/**
-	 * @var CActiveRecord the currently loaded data model instance.
-	 */
+    public $layout = 'application.modules.begemot.views.layouts.column2';
+
 	private $_model;
 
 	/**
@@ -26,7 +25,7 @@ class UserController extends YummiAdminController
 		return array(
 			array('allow',  // allow all users to perform 'index' and 'view' actions
 				'actions'=>array('index','view'),
-				'users'=>array('*'),
+                'expression'=>'Yii::app()->user->canDo("")'
 			),
 			array('deny',  // deny all users
 				'users'=>array('*'),

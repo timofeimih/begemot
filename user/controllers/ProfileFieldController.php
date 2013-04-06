@@ -1,7 +1,8 @@
 <?php
 
-class ProfileFieldController extends YummiAdminController
+class ProfileFieldController extends Controller
 {
+    public $layout = 'application.modules.begemot.views.layouts.column2';
 
 	/**
 	 * @var CActiveRecord the currently loaded data model instance.
@@ -9,7 +10,7 @@ class ProfileFieldController extends YummiAdminController
 	private $_model;
 	private static $_widgets = array();
 	public $defaultAction = 'admin';
-	public $layout='//layouts/column2';
+
 
 	/**
 	 * @return array action filters
@@ -32,7 +33,7 @@ class ProfileFieldController extends YummiAdminController
 
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
 				'actions'=>array('create','update','view','admin','delete','index','view'),
-				'users'=>UserModule::getAdmins(),
+                'expression'=>'Yii::app()->user->canDo("")'
 			),
 			array('deny',  // deny all users
 				'users'=>array('*'),

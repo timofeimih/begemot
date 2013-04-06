@@ -1,8 +1,9 @@
 <?php
 
-class ActivationController extends YummiAdminController
+class ActivationController extends Controller
 {
 	public $defaultAction = 'activation';
+    public $layout = 'application.modules.begemot.views.layouts.column2';
 
 	
 	/**
