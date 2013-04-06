@@ -21,7 +21,9 @@ class SeoModule extends CWebModule {
 
         if ($controller->id != 'site') {
             Yii::app()->getComponent('bootstrap');
-            $controller->layout = $this->layout;
+            if ($controller->layout==null){
+                $controller->layout = $this->layout;
+            }
         }
         return true;
     }
