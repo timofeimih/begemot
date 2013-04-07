@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -27,9 +27,21 @@
             'class'=>'bootstrap.widgets.TbMenu',
             'items'=>array(
                         //array('label'=>'About', 'url'=>array('/site/page', 'view'=>'about')),
-                        array('label'=>'Каталог', 'url'=>array('/catalog/catItem'),'visible'=>Yii::app()->hasModule('catalog')),
-                        array('label'=>'Статьи', 'url'=>array('/post/default/admin'),'visible'=>Yii::app()->hasModule('post')),
-                        array('label'=>'HTML', 'url'=>array('/pages'),'visible'=>Yii::app()->hasModule('pages')),
+                        array('label'=>'Система', 'url'=>array(''),
+                            'items'=>array(
+                                array('label'=>'Пользователи', 'url'=>array('/user'),'visible'=>Yii::app()->hasModule('user')),
+                              ),
+                        ),
+                        array('label'=>'Контет', 'url'=>array(''),
+                            'items'=>array(
+                                array('label'=>'Каталог', 'url'=>array('/catalog/catItem'),'visible'=>Yii::app()->hasModule('catalog')),
+                                array('label'=>'Статьи', 'url'=>array('/post/default/admin'),'visible'=>Yii::app()->hasModule('post')),
+                                array('label'=>'HTML', 'url'=>array('/pages'),'visible'=>Yii::app()->hasModule('pages')),
+                            ),
+                        ),
+
+
+
                         array('label'=>'Файлы', 'url'=>array('/elfinder'),'visible'=>Yii::app()->hasModule('elfinder')),
                         array('label'=>'Сообщения',
                             'items'=>array(
