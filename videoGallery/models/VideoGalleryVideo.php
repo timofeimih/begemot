@@ -16,6 +16,7 @@ class VideoGalleryVideo extends BaseVideoGalleryVideo
         }
         
         public function beforeSave() {
+            parent::beforeSave();
             if ($this->isNewRecord) {   
                 $this->title_t = $this->mb_transliterate($this->title);
                 return true;

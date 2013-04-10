@@ -36,13 +36,15 @@ abstract class BaseVideoGalleryVideo extends GxActiveRecord {
 	}
 
 	public function rules() {
-		return array(
+		$rules = array(
 			array('title, gallery_id', 'required'),
 			array('gallery_id', 'numerical', 'integerOnly'=>true),
 			array('title, url,text', 'safe'),
 			array('title, url', 'default', 'setOnEmpty' => true, 'value' => null),
 			array('id, title, text, url, gallery_id', 'safe', 'on'=>'search'),
 		);
+
+        return array_merge($rules,parent::rules());
 	}
 
 	public function relations() {

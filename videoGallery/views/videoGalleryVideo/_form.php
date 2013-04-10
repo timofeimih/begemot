@@ -1,7 +1,7 @@
 <div class="form">
 
 
-<?php $form = $this->beginWidget('GxActiveForm', array(
+<?php $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
 	'id' => 'video-gallery-video-form',
 	'enableAjaxValidation' => true,
 ));
@@ -34,7 +34,17 @@
 		<?php echo $form->error($model,'gallery_id'); ?>
 		</div><!-- row -->
 
+        <div class="row">
+            <?php
+            $this->widget('begemot.extensions.contentKit.widgets.KitFormPart',
+                array(
+                    'form'=>$form,
+                    'model'=>$model
+                )
+            );
 
+            ?>
+        </div>
 <?php
 echo GxHtml::submitButton('Save');
 $this->endWidget();

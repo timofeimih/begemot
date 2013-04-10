@@ -14,7 +14,7 @@ class SiteGalleryController extends Controller
 
         ));
 
-    } 
+    }
 
     public function actionViewGallery($id)
     {

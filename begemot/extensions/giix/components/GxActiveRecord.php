@@ -15,7 +15,8 @@
  * @author Rodrigo Coelho <rodrigo@giix.org>
  * @package giix.components
  */
-abstract class GxActiveRecord extends CActiveRecord {
+Yii::import('begemot.extensions.contentKit.ContentKitModel');
+abstract class GxActiveRecord extends ContentKitModel {
 
 	/**
 	 * @var string The separator (delimiter) used to separate the primary keys values in a
