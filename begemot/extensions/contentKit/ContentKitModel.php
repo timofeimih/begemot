@@ -29,8 +29,8 @@ class ContentKitModel extends CActiveRecord {
                 'createAttribute' => 'create_time',
                 'updateAttribute' => 'update_time',
             ),
-            'CAuthorBehavior' => array('class' => 'Yummi.extensions.contentKit.behavior.CAuthorBehavior',),
-            'CBOrderModelBehavior' => array('class' => 'Yummi.extensions.contentKit.behavior.CBOrderModelBehavior',),
+            'CAuthorBehavior' => array('class' => 'begemot.extensions.contentKit.behavior.CAuthorBehavior',),
+            'CBOrderModelBehavior' => array('class' => 'begemot.extensions.contentKit.behavior.CBOrderModelBehavior',),
         );
     }
 
@@ -48,6 +48,42 @@ class ContentKitModel extends CActiveRecord {
     public function beforeSave(){
 
         parent::beforeSave();
+
+        if (!isset($this->pub_date)){
+            $sql = "ALTER TABLE `".$this->tableName()."`
+	                  ADD COLUMN `pub_date` INT(10) NOT NULL;";
+            Yii::app()->db->createCommand($sql)->execute();
+        }
+
+        if (!isset($this->create_time)){
+            $sql = "ALTER TABLE `".$this->tableName()."`
+	                  ADD COLUMN `create_time` INT(10) NOT NULL;";
+            Yii::app()->db->createCommand($sql)->execute();
+        }
+
+        if (!isset($this->update_time)){
+            $sql = "ALTER TABLE `".$this->tableName()."`
+	                  ADD COLUMN `update_time` INT(10) NOT NULL;";
+            Yii::app()->db->createCommand($sql)->execute();
+        }
+
+        if (!isset($this->published)){
+            $sql = "ALTER TABLE `".$this->tableName()."`
+	                    ADD COLUMN `published` TINYINT(1) NOT NULL;";
+            Yii::app()->db->createCommand($sql)->execute();
+        }
+
+        if (!isset($this->order)){
+            $sql = "ALTER TABLE `".$this->tableName()."`
+	                  ADD COLUMN `order` INT(10) NOT NULL;";
+            Yii::app()->db->createCommand($sql)->execute();
+        }
+
+        if (!isset($this->authorId)){
+            $sql = "ALTER TABLE `".$this->tableName()."`
+	                  ADD COLUMN `authorId` INT(10) NOT NULL;";
+            Yii::app()->db->createCommand($sql)->execute();
+        }
 
         if (isset($this->pub_date) && $this->pub_date==0 && $this->published==1){
 

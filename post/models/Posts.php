@@ -10,7 +10,10 @@
  * @property integer $author
  * @property integer $date
  */
-class Posts extends CActiveRecord {
+
+Yii::import('begemot.extensions.contentKit.ContentKitModel');
+
+class Posts extends ContentKitModel {
 
     /**
      * Returns the static model of the specified AR class.
@@ -34,7 +37,7 @@ class Posts extends CActiveRecord {
     public function rules() {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
-        return array(
+        $arr = array(
             array('title, text, author, date,tag_id,from,from_url,title_t,title_seo', 'safe'),
             array('author, date', 'numerical', 'integerOnly' => true),
             array('title', 'length', 'max' => 100),
@@ -42,6 +45,9 @@ class Posts extends CActiveRecord {
             // Please remove those attributes that should not be searched.
             array('id, title, text, author, date', 'safe', 'on' => 'search'),
         );
+
+        return array_merge($arr,parent::rules());
+
     }
 
     /**
@@ -91,6 +97,7 @@ class Posts extends CActiveRecord {
     }
 
     public function beforeSave() {
+        parent::beforeSave();
         if ($this->isNewRecord) {
             $this->date = time();
             $this->title_t = $this->mb_transliterate($this->title);
@@ -102,10 +109,13 @@ class Posts extends CActiveRecord {
     }
 
     public function behaviors() {
-        return array(
+        $arr = array(
         'SlugBehavior' => array(
             'class' => 'begemot.extensions.SlugBehavior',
         ));
+
+        return array_merge($arr,parent::behaviors());
+
     }
 
 

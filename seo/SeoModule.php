@@ -19,12 +19,10 @@ class SeoModule extends CWebModule {
     
     public function beforeControllerAction($controller, $action) {
 
-        if ($controller->id != 'site') {
+
             Yii::app()->getComponent('bootstrap');
-            if ($controller->layout==null){
-                $controller->layout = $this->layout;
-            }
-        }
+            $controller->layout = $this->layout;
+
         return true;
     }
 
