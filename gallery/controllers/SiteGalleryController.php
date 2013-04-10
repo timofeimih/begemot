@@ -10,11 +10,11 @@ class SiteGalleryController extends Controller
         Yii::import('gallery.GalleryModule');
         $this->layout = GalleryModule::$galleryLayout;
         $this->render('index', array(
-            'allGall' => Gallery::model()->findAll(array('order' => '`order`')),
+            'allGall' => Gallery::model()->published()->findAll(array('order' => '`order`')),
 
         ));
 
-    }
+    } 
 
     public function actionViewGallery($id)
     {

@@ -13,8 +13,18 @@
 	
         <?php echo $form->textFieldRow($model,'seo_title',array('rows'=>6, 'cols'=>50, 'class'=>'span8')); ?>
 
+    <div class="row">
+        <?php
+        $this->widget('begemot.extensions.contentKit.widgets.KitFormPart',
+            array(
+                'form'=>$form,
+                'model'=>$model
+            )
+        );
 
-	<div class="form-actions">
+        ?>
+    </div>
+    <div class="form-actions">
 		<?php $this->widget('bootstrap.widgets.TbButton', array(
 			'buttonType'=>'submit',
 			'type'=>'primary',

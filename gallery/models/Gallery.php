@@ -10,7 +10,8 @@
  * @property string $text
  * @property integer $order
  */
-class Gallery extends CActiveRecord
+Yii::import('begemot.extensions.contentKit.ContentKitModel');
+class Gallery extends ContentKitModel
 {
 	/**
 	 * Returns the static model of the specified AR class.
@@ -37,7 +38,7 @@ class Gallery extends CActiveRecord
 	{
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
-		return array(
+		$rules = array(
 			array('text,seo_title', 'safe'),
 			array('order', 'numerical', 'integerOnly'=>true),
 			array('name, name_t', 'length', 'max'=>255),
@@ -45,10 +46,13 @@ class Gallery extends CActiveRecord
 			// Please remove those attributes that should not be searched.
 			array('id, name, name_t, text, order', 'safe', 'on'=>'search'),
 		);
+
+        return array_merge($rules,parent::rules());
+
 	}
         
         public function behaviors(){
-            return array(
+            $behaviors = array(
                 'slug'=>array(
                     'class' => 'begemot.extensions.SlugBehavior',
                     
@@ -56,20 +60,12 @@ class Gallery extends CActiveRecord
                 'CBOrderModelBehavior' => array(
                         'class' => 'begemot.extensions.order.BBehavior.CBOrderModelBehavior',
 
-                )                
+                )
             );
+            //return $behaviors;123
+            return array_merge($behaviors,parent::behaviors());
         }
-        
-	/**
-	 * @return array relational rules.
-	 */
-	public function relations()
-	{
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
-		return array(
-		);
-	}
+
 
 	/**
 	 * @return array customized attribute labels (name=>label)
@@ -86,6 +82,7 @@ class Gallery extends CActiveRecord
 	}
 
         public function beforeSave(){
+            parent::beforeSave();
             $this->name_t = $this->mb_transliterate($this->name);
             $this->orderBeforeSave();
             return true;

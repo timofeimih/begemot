@@ -32,6 +32,7 @@
         
         <?php echo $form->error($model, 'text'); ?>
     </div>
+    <div class="row">
     <?php
         $this->widget('begemot.extensions.contentKit.widgets.KitFormPart',
             array(
@@ -41,6 +42,7 @@
         );
 
     ?>
+    </div>
     <div class="row">
         <label for="Posts_author">Раздел</label>
         <?php
