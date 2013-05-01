@@ -21,16 +21,37 @@ class SiteController extends Controller {
     }
 
     public function actionItemView($catId = 0, $item = 0) {
+
+        $uri = $_SERVER['REQUEST_URI'];
+
         $this->layout = CatalogModule::$catalogItemViewLayout;
         $category = CatCategory::model()->findByPk($catId);
         $item = CatItem::model()->findByPk($item);
-        //$dataProvider = new CActiveDataProvider('CatItemsToCat',array('criteria'=>array('select'=>'t.itemId','condition'=>'`t`.`catId` = '.$catId.'','with'=>'item','order'=>'t.order'))); 
 
+
+
+
+        $hrefParams = array(
+            'title'=>$category->name_t,
+            'catId'=>$category->id,
+            'itemName'=>$item->name_t,
+            'item'=>$item->id,
+        );
+
+        $itemHref =  Yii::app()->urlManager->createUrl('catalog/site/itemView',$hrefParams);
+
+        if ($itemHref!==$uri)
+        {
+
+            $this->redirect($itemHref, true, 301);
+        }
 
         $this->render('itemView', array('item' => $item, 'category' => $category));
     }
 
     public function actionCategoryView($catId = 0) {
+
+
       
         $this->layout = CatalogModule::$catalogCategoryViewLayout;
 
