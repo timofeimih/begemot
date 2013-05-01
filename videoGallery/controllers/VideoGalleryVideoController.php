@@ -12,11 +12,11 @@ public function accessRules() {
 	return array(
 			array('allow', 
 				'actions'=>array('index', 'view'),
-				'users'=>array('@'),
+                'expression'=>'Yii::app()->user->canDo("")'
 				),
 			array('allow', 
 				'actions'=>array('minicreate', 'create', 'update', 'admin', 'delete'),
-				'users'=>array('admin'),
+                'expression'=>'Yii::app()->user->canDo("")'
 				),
 			array('deny', 
 				'users'=>array('*'),

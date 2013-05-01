@@ -1,7 +1,7 @@
 <div class="form">
 
     <?php
-    $form = $this->beginWidget('CActiveForm', array(
+    $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
         'id' => 'posts-form',
         'enableAjaxValidation' => false,
             ));
@@ -32,7 +32,15 @@
         
         <?php echo $form->error($model, 'text'); ?>
     </div>
+    <?php
+        $this->widget('begemot.extensions.contentKit.widgets.KitFormPart',
+            array(
+                'form'=>$form,
+                'model'=>$model
+            )
+        );
 
+    ?>
     <div class="row">
         <label for="Posts_author">Раздел</label>
         <?php

@@ -54,7 +54,7 @@ class SiteController extends Controller
         $pages->pageSize = 10;
         $pages->applyLimit($criteria);
 
-        $models = Posts::model()->findAll($criteria);
+        $models = Posts::model()->published()->findAll($criteria);
 
 
 
