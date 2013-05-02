@@ -13,7 +13,7 @@ class ContentKitModel extends CActiveRecord {
         return
             array(
                 'published' => array(
-                    'condition' => 'published=1',
+                    'condition' => '`published`=1',
                 ),
                 'ordered' => array(
                     'order' => '`order`'

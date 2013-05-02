@@ -8,7 +8,7 @@ class ModelsWidget extends CWidget {
         Yii::import('catalog.models.CatItemsToCat');
         Yii::import('catalog.models.CatItem');
         Yii::import('catalog.models.CatCategory');
-        $dataProvider = new CActiveDataProvider('CatItemsToCat', array('criteria' => array('select' => 't.itemId, t.catId', 'with' => 'item', 'order' => 't.order'),'pagination'=>array( 'pageSize'=>1000)));
+        $dataProvider = new CActiveDataProvider('CatItemsToCat', array('criteria' => array('select' => 't.itemId, t.catId', 'with' => array('item'=>array('condition'=>'`published`=1')), 'order' => 't.order'),'pagination'=>array( 'pageSize'=>1000)));
 
         $this->render('index',array('categoryItems'=>$dataProvider->getData()));
         

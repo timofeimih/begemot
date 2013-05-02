@@ -6,7 +6,7 @@
 
 
 
-<?php $form=$this->beginWidget('CActiveForm', array(
+<?php $form=$this->beginWidget('bootstrap.widgets.TbActiveForm', array(
 	'id'=>'cat-item-form',
 	'enableAjaxValidation'=>false,
 )); ?>
@@ -68,7 +68,19 @@
                
          }
         ?>
-	        
+
+    <div class="row">
+        <?php
+        $this->widget('begemot.extensions.contentKit.widgets.KitFormPart',
+            array(
+                'form'=>$form,
+                'model'=>$model
+            )
+        );
+
+        ?>
+    </div>
+
 	<div class="row buttons">
 		<?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save'); ?>
 	</div>

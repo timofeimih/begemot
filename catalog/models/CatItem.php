@@ -10,7 +10,8 @@
  * @property integer $status
  * @property string $data
  */
-class CatItem extends CActiveRecord
+Yii::import('begemot.extensions.contentKit.ContentKitModel');
+class CatItem extends ContentKitModel
 {
 	/**
 	 * Returns the static model of the specified AR class.
@@ -31,12 +32,14 @@ class CatItem extends CActiveRecord
 	}
         
         public function behaviors(){
-            return array(
+            $behaviors = array(
                 'slug'=>array(
                     'class' => 'begemot.extensions.SlugBehavior',
                 ),                
 
             );
+
+            return array_merge($behaviors,parent::behaviors());
         }
         
 	/**
@@ -46,7 +49,7 @@ class CatItem extends CActiveRecord
 	{
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
-		return array(
+		 $rules = array(
 			array('name', 'required'),
 			array('status', 'numerical', 'integerOnly'=>true),
 			array('name, name_t', 'length', 'max'=>100),
@@ -56,6 +59,7 @@ class CatItem extends CActiveRecord
 			// Please remove those attributes that should not be searched.
 			array('id, name, name_t, status, data', 'safe', 'on'=>'search'),
 		);
+        return array_merge(parent::rules(),$rules);
 	}
 
 	/**
@@ -86,8 +90,10 @@ class CatItem extends CActiveRecord
         public function itemTableName(){
             return 'catItems_'.$this->id;
         }
-        
+
         public function beforeSave(){
+            parent::beforeSave();
+
             $this->name_t = $this->mb_transliterate($this->name);
             //$this->Video = $_REQUEST['CatItem']['Video'];
             $itemAdditionalRows = CatItemsRow::model()->findAll();

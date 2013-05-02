@@ -36,8 +36,8 @@ class SiteController extends Controller {
 
         $category = CatCategory::model()->findByPk($catId);
 
-        $dataProvider = new CActiveDataProvider('CatItemsToCat', array('criteria' => array('select' => 't.itemId', 'condition' => '`t`.`catId` = ' . $catId . '', 'with' => 'item', 'order' => 't.order'),'pagination'=>array( 'pageSize'=>1000)));
-
+        $dataProvider = new CActiveDataProvider('CatItemsToCat', array('criteria' => array('select' => 't.itemId', 'condition' => '`t`.`catId` = ' . $catId . '', 'with' =>array( 'item'=>array('condition'=>'published=1')), 'order' => 't.order'),'pagination'=>array( 'pageSize'=>1000)));
+       // $dataProvider=CatItemsToCat::model()->published()->with('item')->findAll();
         $this->render('categoryView', array('categoryItems' => $dataProvider->getData(), 'category' => $category));
     }
 

@@ -1,6 +1,6 @@
    <?php
     $this->pageTitle = $category->seo_title;
-    
+
    ?> 
 <a href="<?php echo Yii::app()->urlManager->createUrl('catalog/site/index');?>">Каталог</a> > 
     <?php echo $category->name; ?>  

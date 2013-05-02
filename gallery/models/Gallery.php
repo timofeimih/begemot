@@ -57,10 +57,7 @@ class Gallery extends ContentKitModel
                     'class' => 'begemot.extensions.SlugBehavior',
                     
                 ),  
-                'CBOrderModelBehavior' => array(
-                        'class' => 'begemot.extensions.order.BBehavior.CBOrderModelBehavior',
 
-                )
             );
             //return $behaviors;123
             return array_merge($behaviors,parent::behaviors());
