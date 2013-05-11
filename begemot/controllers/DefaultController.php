@@ -17,7 +17,11 @@ class DefaultController extends Controller
 
 	public function actionIndex()
 	{
-		$this->render('index');
+        if (isset(Yii::app()->user)&&Yii::app()->user->isGuest){
+		    $this->redirect('/user/login');
+        } else {
+            $this->render('index');
+        }
 	}
         
 	public function actionLogin()

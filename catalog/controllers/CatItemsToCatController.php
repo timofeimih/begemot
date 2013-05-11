@@ -18,7 +18,7 @@ class CatItemsToCatController extends Controller
 
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
 				'actions'=>array('delete','orderUp','orderDown','admin'),
-                'expression'=>'Yii::app()->user->canDo("")'
+				'users'=>array('admin','poster1','poster2'),
 			),
 			array('deny',  // deny all users
 				'users'=>array('*'),
@@ -63,7 +63,7 @@ class CatItemsToCatController extends Controller
         public function actionAdmin($id)
 	{
             $dataProvider = new CActiveDataProvider('CatItemsToCat',array('criteria'=>array('condition'=>'`t`.`catId`='.$id.'','with'=>'item','order'=>'t.order')));
-            
+
             $this->render('admin',array(
                 'dataProvider'=>$dataProvider,
                 'category'=> CatCategory::model()->findByPk($id),
