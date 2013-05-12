@@ -148,7 +148,7 @@ class UserModule extends CWebModule
 
                 Yii::app()->getComponent('bootstrap');
                // $controller->layout = $this->layout;
-                echo $controller->id.' '.$action->id;
+
 			return true;
 
 	}

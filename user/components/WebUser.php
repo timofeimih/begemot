@@ -32,11 +32,6 @@ class WebUser extends CWebUser
         parent::afterLogin($fromCookie);
         $this->updateSession();
 
-        if (!Yii::app()->user->isAdmin() && !Yii::app()->user->checkAccess("Auth")){
-            Yii::app()->user->logout();
-            Yii::app()->controller->redirect('/');
-        }
-
 
 	}
 

@@ -41,8 +41,8 @@ $this->breadcrumbs=array(
 	</div>
 	
 	<div class="row rememberMe">
-		<?php echo CHtml::activeCheckBox($model,'rememberMe'); ?>
-		<?php echo CHtml::activeLabelEx($model,'rememberMe'); ?>
+        <input name="UserLogin[rememberMe]" id="UserLogin_rememberMe" checked value='1' type="checkbox">
+        <label for="UserLogin_rememberMe">Запомнить меня</label>
 	</div>
 
 	<div class="row submit">
