@@ -71,7 +71,7 @@ class SiteController extends Controller
      */
     public function actionAdmin($tag_id=null) {
         
-        echo $tag_id;
+
         
          $this->layout ='begemot.views.layouts.column2';
         $model = new Posts('search');

@@ -117,7 +117,7 @@ class DefaultController extends Controller {
                 $newImageId = $this->addImage($dir, $model->uploadifyFile->name, $imageExt);
 
                 move_uploaded_file($model->uploadifyFile->tempName, $dir . "/" . $newImageId . '.' . $imageExt);
-                chmod($dir . "/" . $newImageId . '.' . $imageExt, 0777);
+                //chmod($dir . "/" . $newImageId . '.' . $imageExt, 0777);
 
 
                 $resultFiltersStack = array();
@@ -135,7 +135,7 @@ class DefaultController extends Controller {
 
                 foreach ($filters as $filterName => $filteredImageFile) {
                     $this->addFilteredImage($newImageId, $filterName, '/files/pictureBox/' . $id . '/' . $elementId . '/' . $filteredImageFile, $dir);
-                    chmod(Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/' . $filteredImageFile, 0777);
+                    //chmod(Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/' . $filteredImageFile, 0777);
                 }
             }
         }
@@ -279,15 +279,12 @@ class DefaultController extends Controller {
 
         $this->layout = 'pictureBox.views.layouts.ajax';
         if (Yii::app()->request->isAjaxRequest) {
-            $dataFile = Yii::app()->basePath . '/../files/pictureBox/' . $id . '/' . $elementId . '/data.php';
-            $data = require ($dataFile);
 
-            $this->deleteImageFiles($id, $elementId, $pictureId, $data);
+            $pBox = new PBox($id,$elementId);
 
-            if (isset($data['images'][$pictureId])) {
-                unset($data['images'][$pictureId]);
-                PictureBox::crPhpArr($data, $dataFile);
-            }
+            $pBox->deleteImageFiles($pictureId);
+
+            $pBox->saveToFile();
         }
     }
 
@@ -298,8 +295,7 @@ class DefaultController extends Controller {
             if (isset($data['images'][$pictureId][$filterName])) {
                 $fileName = $data['images'][$pictureId][$filterName];
                 $fullFilePath = Yii::app()->basePath . '/../' . $fileName;
-                //print_t($fullFilePath);
-                //die($fullFilePath);
+
                 if (file_exists($fullFilePath)) {
                     unlink($fullFilePath);
                     unset($data['images'][$pictureId][$filterName]);
@@ -319,6 +315,7 @@ class DefaultController extends Controller {
      * @param type $filterName Имя фильтра. Изначально устанавливается в конфиге
      */
     public function actionAjaxMakeFilteredImage($id, $elementId, $pictureId, $filterName) {
+
         if (Yii::app()->request->isAjaxRequest) {
             $data = require (Yii::app()->basePath . '/../files/pictureBox/' . $id . '/' . $elementId . '/data.php');
             $dir = Yii::app()->basePath . '/../files/pictureBox/' . $id . '/' . $elementId;
@@ -338,6 +335,7 @@ class DefaultController extends Controller {
                 }
             }
         }
+
     }
 
     /**
@@ -433,30 +431,7 @@ class DefaultController extends Controller {
         return $data;
     }
 
-    /**
-     *
-     * Физическое удаление основного файла и всех его фильтрованных копий. 
-     * 
-     * @param type $id Идентификатор хранилища
-     * @param type $elementId Идентификатор ячейки хранилища
-     * @param type $pictureId Идентификатор изображения
-     * @param type $data Массив всех изображений
-     */
-    function deleteImageFiles($id, $elementId, $pictureId, $data) {
 
-        $deleteFilesList = Yii::app()->basePath . '/../' . $data['images'][$pictureId]['original'];
-
-        $images = $data['images'][$pictureId];
-
-        foreach ($images as $image) {
-
-            $fileFullName = Yii::app()->basePath . '/../' . $image;
-
-            if (file_exists($fileFullName)) {
-                unlink($fileFullName);
-            }
-        }
-    }
 
     /**
      * Забираем из сессии данные о выставленных фильтрах. Фильтры выставляются 
