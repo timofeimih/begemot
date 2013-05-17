@@ -135,10 +135,10 @@ function imagesLinks($data, $imageNumber, $config, $id, $elementId) {
         $alt = isset($image['alt'])?$image['alt']:'';
         
         $altTitlehtml = '<form>
-        title:<input name="title" type="text"  value="'.$title.'"/>
-            <a href="javascript:;" onClick="setTitleAlt(PB_'.$config['divId'].',\''.$config['divId'].'\');">Сохранить заголовок.</a><br />
-        alt:<input name="alt" type="text" value="'.$alt.'" />
-        
+        title:<input style="width:600px;" name="title" type="text"  value="'.$title.'"/><br/>
+        alt:<input style="width:600px;" name="alt" type="text" value="'.$alt.'" />
+
+         <a href="javascript:;" onClick="setTitleAlt(PB_'.$config['divId'].',\''.$config['divId'].'\');">Сохранить заголовок.</a><br />
     </form>';
         return $output . $linksHtml . '</ol>' . $deleteAllHtml.$altTitlehtml;
     } else {
