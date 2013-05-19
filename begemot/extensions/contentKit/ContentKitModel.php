@@ -49,37 +49,40 @@ class ContentKitModel extends CActiveRecord {
 
         parent::beforeSave();
 
-        if (!isset($this->pub_date)){
+        $table = Yii::app()->getDb()->getSchema()->getTable($this->owner->tableName());
+        $columnNames = $table->getColumnNames();
+
+
+        if (!array_search('pub_date',$columnNames)){
             $sql = "ALTER TABLE `".$this->tableName()."`
 	                  ADD COLUMN `pub_date` INT(10) NOT NULL;";
             Yii::app()->db->createCommand($sql)->execute();
         }
 
-        if (!isset($this->create_time)){
+        if (!array_search('create_time',$columnNames)){
             $sql = "ALTER TABLE `".$this->tableName()."`
 	                  ADD COLUMN `create_time` INT(10) NOT NULL;";
             Yii::app()->db->createCommand($sql)->execute();
         }
 
-        if (!isset($this->update_time)){
+        if (!array_search('update_time',$columnNames)){
             $sql = "ALTER TABLE `".$this->tableName()."`
 	                  ADD COLUMN `update_time` INT(10) NOT NULL;";
             Yii::app()->db->createCommand($sql)->execute();
         }
-
-        if (!isset($this->published)){
+        if (!array_search('published',$columnNames)){
             $sql = "ALTER TABLE `".$this->tableName()."`
 	                    ADD COLUMN `published` TINYINT(1) NOT NULL;";
             Yii::app()->db->createCommand($sql)->execute();
         }
 
-        if (!isset($this->order)){
+        if (!array_search('order',$columnNames)){
             $sql = "ALTER TABLE `".$this->tableName()."`
 	                  ADD COLUMN `order` INT(10) NOT NULL;";
             Yii::app()->db->createCommand($sql)->execute();
         }
 
-        if (!isset($this->authorId)){
+        if (!array_search('authorId',$columnNames)){
             $sql = "ALTER TABLE `".$this->tableName()."`
 	                  ADD COLUMN `authorId` INT(10) NOT NULL;";
             Yii::app()->db->createCommand($sql)->execute();
