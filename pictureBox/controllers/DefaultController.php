@@ -29,7 +29,7 @@ class DefaultController extends Controller {
 
 
 
-        $dataFilename = Yii::app()->basePath . '/../' . 'files/pictureBox/' . $id . '/' . $elementId . '/data.php';
+        $dataFilename = Yii::getPathOfAlias('webroot') . '/' . 'files/pictureBox/' . $id . '/' . $elementId . '/data.php';
 
         $data = require $dataFilename;
         $images = $data['images'];
@@ -37,7 +37,7 @@ class DefaultController extends Controller {
         $config = $this->getConfigFromSession($id, $elementId);
         $filters = $config['imageFilters'];
 
-        $dir = Yii::app()->basePath . '/..';
+        $dir = Yii::getPathOfAlias('application');
 
         $file1 = $dir . $images[$pictureid1]['original'];
         $file2 = $dir . $images[$pictureid2]['original'];
@@ -90,16 +90,16 @@ class DefaultController extends Controller {
         $config = unserialize($_POST['config']);
         file_put_contents(Yii::getPathOfAlias('webroot') . '/log.log3', var_export($config, true));
 
-        $dir = Yii::app()->basePath . '/../files/pictureBox';
+        $dir = Yii::getPathOfAlias('webroot') . '/files/pictureBox';
 
         if (!file_exists($dir))
             mkdir($dir, 0777);
 
-        $dir = Yii::app()->basePath . '/../files/pictureBox/' . $id . '/';
+        $dir = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/';
 
         if (!file_exists($dir))
             mkdir($dir, 0777);
-        $dir = Yii::app()->basePath . '/../files/pictureBox/' . $id . '/' . $elementId . '/';
+        $dir = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/';
 
         if (!file_exists($dir))
             mkdir($dir, 0777);
@@ -108,7 +108,7 @@ class DefaultController extends Controller {
             $model = new UploadifyFile;
 
             $model->uploadifyFile = $uploadedFile = CUploadedFile::getInstanceByName('Filedata');
-            ;
+
             if ($model->validate()) {
 
                 Yii::import('application.modules.pictureBox.components.picturebox');
@@ -147,18 +147,18 @@ class DefaultController extends Controller {
         $this->layout = 'pictureBox.views.layouts.ajax';
 
 
-        $pictureBoxDir = Yii::app()->basePath . '/../files/pictureBox';
+        $pictureBoxDir = Yii::getPathOfAlias('webroot') . '/files/pictureBox';
         if (!file_exists($pictureBoxDir)) {
             mkdir($pictureBoxDir, 0777);
         }
 
-        $idDir = Yii::app()->basePath . '/../files/pictureBox/' . $id;
+        $idDir = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id;
 
         if (!file_exists($idDir)) {
             mkdir($idDir, 0777);
         }
 
-        $elementIdDir = Yii::app()->basePath . '/../files/pictureBox/' . $id . '/' . $elementId;
+        $elementIdDir = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId;
 
         if (!file_exists($elementIdDir)) {
 
@@ -166,7 +166,7 @@ class DefaultController extends Controller {
         }
 
 
-        $dataFile = Yii::app()->basePath . '/../files/pictureBox/' . $id . '/' . $elementId . '/data.php';
+        $dataFile = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/data.php';
 
         if (file_exists($dataFile)) {
 
@@ -279,27 +279,31 @@ class DefaultController extends Controller {
 
         $this->layout = 'pictureBox.views.layouts.ajax';
         if (Yii::app()->request->isAjaxRequest) {
+            $dataFile = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/data.php';
+            $data = require ($dataFile);
 
-            $pBox = new PBox($id,$elementId);
+            $this->deleteImageFiles($id, $elementId, $pictureId, $data);
 
-            $pBox->deleteImageFiles($pictureId);
-
-            $pBox->saveToFile();
+            if (isset($data['images'][$pictureId])) {
+                unset($data['images'][$pictureId]);
+                PictureBox::crPhpArr($data, $dataFile);
+            }
         }
     }
 
     public function actionAjaxDeleteFilteredImage($id, $elementId, $pictureId, $filterName) {
         if (Yii::app()->request->isAjaxRequest) {
-            $data = require (Yii::app()->basePath . '/../files/pictureBox/' . $id . '/' . $elementId . '/data.php');
+            $data = require (Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/data.php');
 
             if (isset($data['images'][$pictureId][$filterName])) {
                 $fileName = $data['images'][$pictureId][$filterName];
-                $fullFilePath = Yii::app()->basePath . '/../' . $fileName;
-
+                $fullFilePath = Yii::getPathOfAlias('webroot') . '/' . $fileName;
+                //print_t($fullFilePath);
+                //die($fullFilePath);
                 if (file_exists($fullFilePath)) {
                     unlink($fullFilePath);
                     unset($data['images'][$pictureId][$filterName]);
-                    PictureBox::crPhpArr($data, Yii::app()->basePath . '/../files/pictureBox/' . $id . '/' . $elementId . '/data.php');
+                    PictureBox::crPhpArr($data, Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/data.php');
                 }
             }
         }
@@ -315,10 +319,9 @@ class DefaultController extends Controller {
      * @param type $filterName Имя фильтра. Изначально устанавливается в конфиге
      */
     public function actionAjaxMakeFilteredImage($id, $elementId, $pictureId, $filterName) {
-
         if (Yii::app()->request->isAjaxRequest) {
-            $data = require (Yii::app()->basePath . '/../files/pictureBox/' . $id . '/' . $elementId . '/data.php');
-            $dir = Yii::app()->basePath . '/../files/pictureBox/' . $id . '/' . $elementId;
+            $data = require (Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/data.php');
+            $dir = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId;
             $config = $this->getConfigFromSession($id, $elementId);
 
             $imageExt = end(explode('.', $data['images'][$pictureId]['original']));
@@ -335,7 +338,6 @@ class DefaultController extends Controller {
                 }
             }
         }
-
     }
 
     /**
@@ -379,7 +381,7 @@ class DefaultController extends Controller {
      */
     static function getFavData($id, $elementId) {
 
-        $favFilename = Yii::app()->basePath . '/../files/pictureBox/' . $id . '/' . $elementId . '/favData.php';
+        $favFilename = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/favData.php';
 
         if (!file_exists($favFilename)) {
             $favData = array();
@@ -393,7 +395,7 @@ class DefaultController extends Controller {
 
     static function putFavData($id, $elementId, $favData) {
 
-        $favFilename = Yii::app()->basePath . '/../files/pictureBox/' . $id . '/' . $elementId . '/favData.php';
+        $favFilename = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/favData.php';
         PictureBox::crPhpArr($favData, $favFilename);
     }
 
@@ -405,17 +407,17 @@ class DefaultController extends Controller {
      */
     private function getPictureBoxData($id, $elementId) {
 
-        if (!file_exists(Yii::app()->basePath . '/../files/pictureBox'))
-            mkdir(Yii::app()->basePath . '/../files/pictureBox');
+        if (!file_exists(Yii::getPathOfAlias('webroot') . '/files/pictureBox'))
+            mkdir(Yii::getPathOfAlias('webroot') . '/files/pictureBox');
 
-        if (!file_exists(Yii::app()->basePath . '/../files/pictureBox/' . $id))
-            mkdir(Yii::app()->basePath . '/../files/pictureBox/' . $id);
+        if (!file_exists(Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id))
+            mkdir(Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id);
 
-        if (!file_exists(Yii::app()->basePath . '/../files/pictureBox'))
-            mkdir(Yii::app()->basePath . '/../files/pictureBox/' . $id . '/' . $elementId);
+        if (!file_exists(Yii::getPathOfAlias('webroot') . '/files/pictureBox'))
+            mkdir(Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId);
 
 
-        $dataFilename = Yii::app()->basePath . '/../files/pictureBox/' . $id . '/' . $elementId . '/data.php';
+        $dataFilename = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/data.php';
 
         if (!file_exists($dataFilename)) {
 
@@ -431,7 +433,30 @@ class DefaultController extends Controller {
         return $data;
     }
 
+    /**
+     *
+     * Физическое удаление основного файла и всех его фильтрованных копий. 
+     * 
+     * @param type $id Идентификатор хранилища
+     * @param type $elementId Идентификатор ячейки хранилища
+     * @param type $pictureId Идентификатор изображения
+     * @param type $data Массив всех изображений
+     */
+    function deleteImageFiles($id, $elementId, $pictureId, $data) {
 
+        $deleteFilesList = Yii::getPathOfAlias('webroot') . '/' . $data['images'][$pictureId]['original'];
+
+        $images = $data['images'][$pictureId];
+
+        foreach ($images as $image) {
+
+            $fileFullName = Yii::getPathOfAlias('webroot') . '/' . $image;
+
+            if (file_exists($fileFullName)) {
+                unlink($fileFullName);
+            }
+        }
+    }
 
     /**
      * Забираем из сессии данные о выставленных фильтрах. Фильтры выставляются 
