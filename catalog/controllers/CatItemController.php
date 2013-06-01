@@ -101,6 +101,12 @@ class CatItemController extends Controller
 
             $itemToCat->attributes = $_POST['CatItemsToCat'];
             $itemToCat->save();
+
+            if ($itemToCat->item->catId==0){
+                $itemToCat->item->catId= $itemToCat->catId;
+                $itemToCat->item->save();
+            }
+
         }
                 
 		$this->render('update',array(
@@ -133,8 +139,7 @@ class CatItemController extends Controller
 
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
-       
-                        
+
 		));
 
 	}
@@ -142,12 +147,34 @@ class CatItemController extends Controller
 
 
         
-        public function actionDeleteItemToCat($catId,$itemId){
-        
-           if(Yii::app()->request->isAjaxRequest){
-                $model = CatItemsToCat::model()->deleteAll(array('condition'=>'`catId`='.$catId.' and `itemId`='.$itemId));                
-            }
+    public function actionDeleteItemToCat($catId,$itemId){
+
+       if(Yii::app()->request->isAjaxRequest){
+
+           CatItemsToCat::model()->deleteAll(array('condition'=>'`catId`='.$catId.' and `itemId`='.$itemId));
+
+           $catItem = CatItem::model()->findByPk($itemId);
+           if ($catItem->catId==$catId){
+
+               $catItem->catId=0;
+
+               $models = CatItemsToCat::model()->findAll(array('condition'=>'`itemId`='.$itemId));
+
+               if (count($models)>0){
+
+                   $model = $models[0];
+
+                   $catItem->catId =  $model->catId;
+
+               }
+
+
+               $catItem->save();
+
+           }
+
         }
+    }
         
 	/**
 	 * Returns the data model based on the primary key given in the GET variable.
