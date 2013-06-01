@@ -32,7 +32,7 @@ $this->menu = require dirname(__FILE__).'/commonMenu.php';
 <?php
     if (!$model->isNewRecord) {  
 
-        $categories = CatItemsToCat::model()->findAll(array('condition'=>'itemId='.$model->id));
+        $categories = CatItemsToCat::model()->with('item')->findAll(array('condition'=>'itemId='.$model->id));
 
         if (is_array($categories) && count($categories)>0){
             foreach ($categories as $cat){
@@ -47,19 +47,21 @@ $this->menu = require dirname(__FILE__).'/commonMenu.php';
                     'ajaxOptions'=>array('success'=>'function (){location.reload()}'),
                 ));
 
-                echo ' '.CatCategory::model()->getCatName( $cat->catId).'<br/>';
+
+                if ($cat->catId!=$cat->item->catId){
+                    echo ' <a href="?setMainCat='.$cat->catId.'">'.CatCategory::model()->getCatName( $cat->catId).'</a><br/>';
+                } else{
+
+                echo ' '.CatCategory::model()->getCatName( $cat->catId).'  [<strong>основной раздел</strong>]<br/>';
+                }
+
             }
-
-
             echo '<br/>';
-
-
-
-
        }
+
         $itemToCat = new CatItemsToCat();
         $testForm = new CForm('catalog.models.forms.catToItemForm',$itemToCat);
-       // $testFrom->action = '/'.$this->route.'/id/'.$model->id;
+
 
         $testForm['itemId']->value = $model->id;
         echo '<div class="container-fluid">'.$testForm->render().'</div>';

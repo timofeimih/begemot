@@ -81,8 +81,10 @@ class CatItemController extends Controller
 	{
 		$model=$this->loadModel($id);
 
-		// Uncomment the following line if AJAX validation is needed
-		// $this->performAjaxValidation($model);
+        if (isset($_GET['setMainCat'])){
+            $model->catId=$_GET['setMainCat'];
+            $model->save();
+        }
 
 		if(isset($_POST['CatItem']))
 		{
@@ -91,15 +93,15 @@ class CatItemController extends Controller
 			//	$this->redirect(array('view','id'=>$model->id));
 		}
                 
-                $itemToCat = new CatItemsToCat;
-                $testForm = new CForm('catalog.models.forms.catToItemForm',$itemToCat);
+        $itemToCat = new CatItemsToCat;
+        $testForm = new CForm('catalog.models.forms.catToItemForm',$itemToCat);
 
-            
-                if ($testForm->submitted('catToItemSubmit') && $testForm->validate()){
-                    
-                    $itemToCat->attributes = $_POST['CatItemsToCat'];
-                    $itemToCat->save();
-                }
+
+        if ($testForm->submitted('catToItemSubmit') && $testForm->validate()){
+
+            $itemToCat->attributes = $_POST['CatItemsToCat'];
+            $itemToCat->save();
+        }
                 
 		$this->render('update',array(
 			'model'=>$model,
