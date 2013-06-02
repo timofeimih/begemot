@@ -25,10 +25,8 @@ class SiteController extends Controller {
         $uri = $_SERVER['REQUEST_URI'];
 
         $this->layout = CatalogModule::$catalogItemViewLayout;
-        $category = CatCategory::model()->findByPk($catId);
         $item = CatItem::model()->findByPk($item);
-
-
+        $category = CatCategory::model()->findByPk($item->catId);
 
 
         $hrefParams = array(

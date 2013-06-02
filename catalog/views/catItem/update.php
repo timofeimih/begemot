@@ -32,32 +32,39 @@ $this->menu = require dirname(__FILE__).'/commonMenu.php';
 <?php
     if (!$model->isNewRecord) {  
 
-        $categories = CatItemsToCat::model()->findAll(array('condition'=>'itemId='.$model->id));
+        $categories = CatItemsToCat::model()->with('item')->findAll(array('condition'=>'itemId='.$model->id));
 
-        foreach ($categories as $cat){
+        if (is_array($categories) && count($categories)>0){
+            foreach ($categories as $cat){
 
-            $this->widget('bootstrap.widgets.TbButton', array(
-                'buttonType'=>'ajaxButton',
-                'icon'=>'icon-remove',
-                'label'=>'',
-                'type'=>'danger', // null, 'primary', 'info', 'success', 'warning', 'danger' or 'inverse'
-                'size'=>'mini', // null, 'large', 'small' or 'mini'
-                'url'=>'/catalog/catItem/deleteItemToCat/catId/'.$cat->catId.'/itemId/'.$model->id,
-                'ajaxOptions'=>array('success'=>'function (){location.reload()}'),
-            )); 
+                $this->widget('bootstrap.widgets.TbButton', array(
+                    'buttonType'=>'ajaxButton',
+                    'icon'=>'icon-remove',
+                    'label'=>'',
+                    'type'=>'danger', // null, 'primary', 'info', 'success', 'warning', 'danger' or 'inverse'
+                    'size'=>'mini', // null, 'large', 'small' or 'mini'
+                    'url'=>'/catalog/catItem/deleteItemToCat/catId/'.$cat->catId.'/itemId/'.$model->id,
+                    'ajaxOptions'=>array('success'=>'function (){location.reload()}'),
+                ));
 
-            echo ' '.CatCategory::model()->getCatName( $cat->catId).'<br/>';
-        }
 
-        echo '<br/>';
+                if ($cat->catId!=$cat->item->catId){
+                    echo ' <a href="?setMainCat='.$cat->catId.'">'.CatCategory::model()->getCatName( $cat->catId).'</a><br/>';
+                } else{
 
-       $itemToCat = new CatItemsToCat;
+                echo ' '.CatCategory::model()->getCatName( $cat->catId).'  [<strong>основной раздел</strong>]<br/>';
+                }
 
-       $testForm = new CForm('catalog.models.forms.catToItemForm',$itemToCat);
-       $testFrom->action = '/'.$this->route.'/id/'.$model->id;
+            }
+            echo '<br/>';
+       }
 
-       $testForm['itemId']->value = $model->id;
-       echo '<div class="container-fluid">'.$testForm->render().'</div>';
+        $itemToCat = new CatItemsToCat();
+        $testForm = new CForm('catalog.models.forms.catToItemForm',$itemToCat);
+
+
+        $testForm['itemId']->value = $model->id;
+        echo '<div class="container-fluid">'.$testForm->render().'</div>';
     }?>
 <?php }  ?>
 
