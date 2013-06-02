@@ -16,8 +16,10 @@ class GalleryModule extends CWebModule {
     }
 
     public function beforeControllerAction($controller, $action) {
+        
         if ($controller->id != 'site') {
-            Yii::app()->getComponent('bootstrap');
+
+           // Yii::app()->getComponent('bootstrap');
         }
         return true;
     }

@@ -135,9 +135,9 @@ class Comment extends CActiveRecord {
             /*'comment_id' => 'Comment',
             'parent_comment_id' => 'Parent Comment',
             'creator_id' => 'Creator',*/
-            'user_name' => Yii::t('CommentsModule.msg', 'User Name'),
-            'user_email' => Yii::t('CommentsModule.msg', 'User Email'),
-            'comment_text' => Yii::t('CommentsModule.msg', 'Comment Text'),
+            'user_name' => Yii::t('CommentsModule.msg', 'Имя'),
+            'user_email' => Yii::t('CommentsModule.msg', 'Email'),
+            'comment_text' => Yii::t('CommentsModule.msg', 'Сообщение'),
             'create_time' => Yii::t('CommentsModule.msg', 'Create Time'),
             'update_time' => Yii::t('CommentsModule.msg', 'Update Time'),
             'status' => Yii::t('CommentsModule.msg', 'Status'),
@@ -248,7 +248,6 @@ class Comment extends CActiveRecord {
         $criteria->compare('t.status', '<>'.self::STATUS_DELETED);
         $criteria->order = 'parent_comment_id, create_time ';
 
-
         if(isset($this->config['orderComments']) && ($this->config['orderComments'] === 'ASC' || $this->config['orderComments'] === 'DESC'))
             $criteria->order .= $this->config['orderComments'];
         //if premoderation is seted and current user isn't superuser
@@ -259,6 +258,7 @@ class Comment extends CActiveRecord {
         if(isset($relations['user']))
             $criteria->with = 'user';
         $comments = self::model()->findAll($criteria);
+
         return $this->buildTree($comments);
     }
 
