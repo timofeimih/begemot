@@ -82,6 +82,7 @@ class Callback extends CActiveRecord
 		$criteria->compare('group',$this->group,true);
 		$criteria->compare('title',$this->title,true);
 		$criteria->compare('text',$this->text,true);
+        $criteria->order = 'id desc';
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,

@@ -48,7 +48,7 @@ class CallbackModule extends CWebModule
         $msg->title = $title;
         $msg->text = $text;
         $msg->group = $group;
-        $msg->date = time();
+        $msg->date = date('Y-m-d H:i:s',time());
         $msg->save();
 
 
