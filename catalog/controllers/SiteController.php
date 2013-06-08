@@ -13,6 +13,7 @@ class SiteController extends Controller {
 //    }
 
     public function actionIndex() {
+        
         $this->layout = CatalogModule::$catalogLayout;
 
         $categories = CatCategory::model()->findAll(array('condition' => 'level = 0', 'order' => '`order`'));
@@ -21,12 +22,13 @@ class SiteController extends Controller {
     }
 
     public function actionItemView($catId = 0, $item = 0) {
-
         $uri = $_SERVER['REQUEST_URI'];
 
         $this->layout = CatalogModule::$catalogItemViewLayout;
+        $category = CatCategory::model()->findByPk($catId);
         $item = CatItem::model()->findByPk($item);
-        $category = CatCategory::model()->findByPk($item->catId);
+
+
 
 
         $hrefParams = array(
@@ -45,12 +47,13 @@ class SiteController extends Controller {
         }
 
         $this->render('itemView', array('item' => $item, 'category' => $category));
+
     }
 
     public function actionCategoryView($catId = 0) {
 
 
-      
+
         $this->layout = CatalogModule::$catalogCategoryViewLayout;
 
         $category = CatCategory::model()->findByPk($catId);
