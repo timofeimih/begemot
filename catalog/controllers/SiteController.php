@@ -84,4 +84,40 @@ class SiteController extends Controller {
         $this->render('categoryView', array('categoryItems' => $dataProvider->getData()));
     }
 
+    public function actionBuy ($itemId){
+        Yii::import('catalog.models.forms.BuyForm');
+        $buyFormModel = new BuyForm();
+
+        $this->layout = CatalogModule::$catalogCategoryViewLayout;
+
+        $item = CatItem::model()->findByPk($itemId);
+
+        if(isset($_POST['BuyForm'])){
+
+            $buyFormModel->attributes = $_POST['BuyForm'];
+            if ($buyFormModel->validate()){
+            //отправка сообщения
+                Yii::import('application.modules.callback.CallbackModule');
+
+                $msg =
+                    $buyFormModel->name.'<br>'.
+                    $buyFormModel->phone.'<br>'.
+                    $buyFormModel->name.'<br>'.
+                    $buyFormModel->count.'<br>'.
+                    $buyFormModel->eMail.'<br>'.
+                    $buyFormModel->msg.'
+                    ';
+
+                CallbackModule::addMessage('innoeco.ru - заказ',$msg,'order',true);
+                $this->render('buyOk',array('id'=>$itemId,'item'=>$item,'buyFormModel'=>$buyFormModel));
+            }
+
+        }
+
+
+
+
+        $this->render('buy',array('id'=>$itemId,'item'=>$item,'buyFormModel'=>$buyFormModel));
+    }
+
 }
