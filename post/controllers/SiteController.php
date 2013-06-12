@@ -29,11 +29,12 @@ class SiteController extends Controller
 
         $idArray = explode('_',$stop);
 
-      echo  $condition = 'tag_id <> '.implode(" and tag_id<>",$idArray);
+        $condition = 'tag_id <> '.implode(" and tag_id<>",$idArray);
 
         $criteria = new CDbCriteria(array(
             'select' => '*',
             'distinct' => true,
+            'order'=>'create_time,id',
             'condition'=>$condition
         ));
 
@@ -69,6 +70,7 @@ class SiteController extends Controller
             $criteria = new CDbCriteria(array(
                     'select' => '*',
                     'distinct' => true,
+                    'order'=>'create_time,id',
                     'condition'=>'tag_id = '.$id
                 ));
 
@@ -76,6 +78,7 @@ class SiteController extends Controller
             $criteria = new CDbCriteria(array(
                     'select' => '*',
                     'distinct' => true,
+                    'order'=>'create_time,id',
                     'condition'=>'tag_id <>0'
                 ));
         }
