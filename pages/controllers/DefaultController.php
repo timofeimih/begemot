@@ -27,9 +27,10 @@ class DefaultController extends Controller
         
 	public function actionIndex()
 	{
-            
+            $dataPath = $this->getDataDir();
+
             $fileHelper = new CFileHelper();
-            $files = $fileHelper->findFiles('./protected/views/site/pages',array('exclude'=>array('data')));
+            $files = $fileHelper->findFiles('./files/pages',array('exclude'=>array('data')));
             $filesArray=array();
             foreach($files as $id=>$filePath){
                 $fileItem=array();
@@ -61,11 +62,13 @@ class DefaultController extends Controller
                 $model->attributes=$_POST['NewFile'];
                 if($model->validate())
                 {
-                    
+
+                    $dataPath = $this->getDataDir();
+
                     $webroot = Yii::getPathOfAlias('webroot');
-                    $file = fopen($webroot.'/protected/views/site/pages/'.$model->filename.'.php', 'w');
+                    $file = fopen($dataPath.'/'.$model->filename.'.php', 'w');
                     fclose($file);
-                    chmod($webroot.'/protected/views/site/pages/'.$model->filename.'.php', 0777);
+
                     
                     $this->redirect('/pages');
                     return;
@@ -104,5 +107,17 @@ class DefaultController extends Controller
                     }
             }
             $this->render('update',array('model'=>$model));
-	}        
+	}
+
+    private function getDataDir(){
+
+        $dataPath = Yii::getPathOfAlias('webroot.files.pages');
+
+
+        if (!file_exists($dataPath)){
+            mkdir($dataPath,0777);
+        }
+
+        return $dataPath;
+    }
 }

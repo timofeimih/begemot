@@ -13,6 +13,7 @@ class SiteController extends Controller {
 //    }
 
     public function actionIndex() {
+        
         $this->layout = CatalogModule::$catalogLayout;
 
         $categories = CatCategory::model()->findAll(array('condition' => 'level = 0', 'order' => '`order`'));
@@ -21,7 +22,6 @@ class SiteController extends Controller {
     }
 
     public function actionItemView($catId = 0, $item = 0) {
-
         $uri = $_SERVER['REQUEST_URI'];
 
         $this->layout = CatalogModule::$catalogItemViewLayout;
@@ -47,12 +47,13 @@ class SiteController extends Controller {
         }
 
         $this->render('itemView', array('item' => $item, 'category' => $category));
+
     }
 
     public function actionCategoryView($catId = 0) {
 
 
-      
+
         $this->layout = CatalogModule::$catalogCategoryViewLayout;
 
         $category = CatCategory::model()->findByPk($catId);
@@ -81,6 +82,42 @@ class SiteController extends Controller {
         $dataProvider = new CActiveDataProvider('CatItemsToCat', array('criteria' => array('select' => 't.itemId', 'condition' => '`t`.`catId` in ' . $iDsStr . '', 'with' => 'item', 'order' => 't.order', 'distinct' => true, 'group')));
 
         $this->render('categoryView', array('categoryItems' => $dataProvider->getData()));
+    }
+
+    public function actionBuy ($itemId){
+        Yii::import('catalog.models.forms.BuyForm');
+        $buyFormModel = new BuyForm();
+
+        $this->layout = CatalogModule::$catalogCategoryViewLayout;
+
+        $item = CatItem::model()->findByPk($itemId);
+
+        if(isset($_POST['BuyForm'])){
+
+            $buyFormModel->attributes = $_POST['BuyForm'];
+            if ($buyFormModel->validate()){
+            //отправка сообщения
+                Yii::import('application.modules.callback.CallbackModule');
+
+                $msg =
+                    $buyFormModel->name.'<br>'.
+                    $buyFormModel->phone.'<br>'.
+                    $buyFormModel->name.'<br>'.
+                    $buyFormModel->count.'<br>'.
+                    $buyFormModel->eMail.'<br>'.
+                    $buyFormModel->msg.'
+                    ';
+
+                CallbackModule::addMessage('innoeco.ru - заказ',$msg,'order',true);
+                $this->render('buyOk',array('id'=>$itemId,'item'=>$item,'buyFormModel'=>$buyFormModel));
+            }
+
+        }
+
+
+
+
+        $this->render('buy',array('id'=>$itemId,'item'=>$item,'buyFormModel'=>$buyFormModel));
     }
 
 }

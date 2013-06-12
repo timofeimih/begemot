@@ -8,6 +8,7 @@ $menu= array(
     array('label' => 'Слова', 'url' => array('/seo/seoWord/admin')),
     array('label' => 'CSV', 'url' => array('/seo/seoWord/CsvUpload')),
     array('label' => 'Спарсить', 'url' => array('/seo/default/index')),
+    array('label' => 'meta', 'url' => array('/seo/title')),
 );
 
 return $menu;

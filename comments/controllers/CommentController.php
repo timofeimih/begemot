@@ -50,17 +50,18 @@ class CommentController extends Controller
 	public function accessRules()
 	{
 		return array(
-			array('allow',
-				'actions'=>array('postComment', 'captcha'),
-                'expression'=>'Yii::app()->user->canDo("")'
-			),
+//			array('allow',
+//				'actions'=>array('postComment', 'captcha'),
+//                'users'=>array('*')
+//			),
 			array('allow',
 				'actions'=>array('admin', 'delete', 'approve'),
                 'expression'=>'Yii::app()->user->canDo("")'
 			),
-			array('deny',  // deny all users
-				'users'=>array('*'),
-			),
+            array('deny',
+                'actions'=>array('admin', 'delete', 'approve'),
+                'users'=>array('*')
+            ),
 		);
 	}
 
@@ -109,7 +110,20 @@ class CommentController extends Controller
 			'model'=>$model,
 		));
 	}
-        
+
+    public function actionAjaxSubmit()
+    {
+        if(isset($_POST['Comment']) && Yii::app()->request->isAjaxRequest)
+        {
+            echo 'test1';
+            $comment = new Comment();
+            $comment->attributes = $_POST['Comment'];
+
+            if ($comment->validate()){
+                $comment->save();
+            }
+        }
+    }
         public function actionPostComment()
         {
 
@@ -117,7 +131,17 @@ class CommentController extends Controller
             {
                 $comment = new Comment();
                 $comment->attributes = $_POST['Comment'];
-                $result = array();
+
+                if (!$comment->validate()){
+                    echo CActiveForm::validate( array( $comment));
+                    Yii::app()->end();
+                } else {
+
+
+                }
+
+                return;
+
                 if($comment->save())
                 {
                     $result['code'] = 'success';
@@ -145,7 +169,9 @@ class CommentController extends Controller
                     $this->endClip();
                 }
                 $result['form'] = $this->clips['form'];
-                echo CJSON::encode($result);
+
+
+                //echo CJSON::encode($result);
             }
         }
 

@@ -10,6 +10,7 @@ class SeoModule extends CWebModule {
         // import the module-level models and components
         $this->setImport(array(
             'seo.models.*',
+            'seo.models.title.*',
             'seo.components.*',
         ));
     }

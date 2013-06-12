@@ -1,4 +1,32 @@
 <?php if(count($comments) > 0):?>
+
+    <ul>
+        <?php foreach($comments as $comment):?>
+        <li>
+            <div class="avtr">
+                <span class="avtr-brb"></span>
+                <img src="images/avtr-def.jpg">
+            </div>
+            <div class="comment">
+                <p class="name"><?php echo $comment->user_name;?>  <span><?php echo date("d.m.Y h:i",$comment->create_time);?></span></p>
+                <p class="text"><?php echo CHtml::encode($comment->comment_text);?></p>
+            </div>
+        </li>
+        <?php endforeach;?>
+
+<!--        <p class="more-comm">-->
+<!--            <a href="javascript:void(0)" class="more-link cf">Показать ещё</a>-->
+<!--            <a href="javascript:void(0)" class="more-link-clsd">Скрыть все</a>-->
+<!--        </p>-->
+    </ul>
+
+
+<?php else:?>
+    <p><?php echo Yii::t('CommentsModule.msg', 'No comments');?></p>
+<?php endif; ?>
+
+<?php return?>
+<?php if(count($comments) > 0):?>
     <ul class="comments-list">
         <?php foreach($comments as $comment):?>
             <li id="comment-<?php echo $comment->comment_id; ?>">
