@@ -19,8 +19,41 @@ class SiteController extends Controller
             'model' => $this->loadModel($id),
         ));
     }
+    /*
+     *  Выводит статьи из всех, кроме перечисленных. По умолчанию 0 и 6
+     *  передаем строку через с id разделов которые не надо выводить"_"
+     */
+     public function actionStopTags($stop='0_6') {
+
+        $this->layout = PostModule::$postLayout;
+
+        $idArray = explode('_',$stop);
+
+      echo  $condition = 'tag_id <> '.implode(" and tag_id<>",$idArray);
+
+        $criteria = new CDbCriteria(array(
+            'select' => '*',
+            'distinct' => true,
+            'condition'=>$condition
+        ));
 
 
+        $count = Posts::model()->count($criteria);
+
+        $pages = new CPagination($count);
+        // элементов на страницу
+        $pages->pageSize = 10;
+        $pages->applyLimit($criteria);
+
+        $models = Posts::model()->published()->findAll($criteria);
+
+        $dataProvider = new CActiveDataProvider('Posts');
+        $this->render('index', array(
+            'models' => $models,
+            'pages' => $pages,
+            'tag_id'=>null,
+        ));
+    }
     
     public function actionTagIndex($id=null) {
         $this->layout = PostModule::$postLayout;
