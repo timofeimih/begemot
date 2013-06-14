@@ -100,22 +100,19 @@ class SiteController extends Controller {
                 Yii::import('application.modules.callback.CallbackModule');
 
                 $msg =
-                    $buyFormModel->name.'<br>'.
-                    $buyFormModel->phone.'<br>'.
-                    $buyFormModel->name.'<br>'.
-                    $buyFormModel->count.'<br>'.
-                    $buyFormModel->eMail.'<br>'.
-                    $buyFormModel->msg.'
+                    'Модель:'.$buyFormModel->model.'<br>'.
+                    'Имя:'.$buyFormModel->name.'<br>'.
+                    'Тел.:'.$buyFormModel->phone.'<br>'.
+                    'Кол-во:'.$buyFormModel->count.'<br>'.
+                    'Почта:'.$buyFormModel->email.'<br>'.
+                    'Сообщение:'.$buyFormModel->msg.'
                     ';
-
-                CallbackModule::addMessage('innoeco.ru - заказ',$msg,'order',true);
+                
+                CallbackModule::addMessage($_SERVER['SERVER_NAME'].' - заказ',$msg,'order',true);
                 $this->render('buyOk',array('id'=>$itemId,'item'=>$item,'buyFormModel'=>$buyFormModel));
             }
 
         }
-
-
-
 
         $this->render('buy',array('id'=>$itemId,'item'=>$item,'buyFormModel'=>$buyFormModel));
     }
