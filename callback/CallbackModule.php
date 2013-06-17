@@ -32,7 +32,7 @@ class CallbackModule extends CWebModule
             if (count($mails)>0){
 
 
-                $headers = 'From: info@innoeco.com' . "\r\n" .
+                $headers = 'From: site@'.$_SERVER['SERVER_NAME'] . "\r\n" .
                     'Reply-To: scott2to@gmail.com' . "\r\n" .
                     'Content-type:text/html; charset = utf-8' . "\r\n".
                     'X-Mailer: PHP/' . phpversion();
