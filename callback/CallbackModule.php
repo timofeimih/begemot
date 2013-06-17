@@ -31,15 +31,14 @@ class CallbackModule extends CWebModule
 
             if (count($mails)>0){
 
+                $headers='From: sales@'.$_SERVER['SERVER_NAME'].' <sales@'.$_SERVER['SERVER_NAME']. ">\r\n" .
+                    "MIME-Version: 1.0\r\n".
+                    "Content-type: text/html; charset=UTF-8";
 
-                $headers = 'From: site@'.$_SERVER['SERVER_NAME'] . "\r\n" .
-                    'Reply-To: scott2to@gmail.com' . "\r\n" .
-                    'Content-type:text/html; charset = utf-8' . "\r\n".
-                    'X-Mailer: PHP/' . phpversion();
-
+                $subject=$title;
                 foreach ($mails as $mail){
 
-                    mail($mail, $title, $text,$headers);
+                    mail($mail, $subject, $text,$headers);
                 }
             }
         }

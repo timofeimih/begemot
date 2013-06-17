@@ -41,7 +41,9 @@
                             <a href="javascript:;" data-type="reset" class="button" onClick="document.getElementById('contact-form').reset();"><span>сбросить</span></a>
                             <a href="javascript:;" data-type="submit" class="button green" onClick="document.getElementById('contact-form').submit();">отправить</a>
                         </div>
+                        <input name="BuyForm[model]" type="hidden" value="123">
                     </fieldset>
+
                 <?php $this->endWidget(); ?>
             </article>
             <article class="grid_9 prefix_1">

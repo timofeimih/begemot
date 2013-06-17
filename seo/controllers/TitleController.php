@@ -40,7 +40,7 @@ class TitleController extends Controller
 
 
 
-
+        $pagesArray = array();
 
         foreach($test->pages as $id=>$page){
             $pageItem=array();
