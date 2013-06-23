@@ -1,7 +1,7 @@
 <?php
 
-    Yii::import('pictureBox.components.PBox');
-    $pBox = new PBox('catalogItem',$id);
+Yii::import('pictureBox.components.PBox');
+$pBox = new PBox('catalogItem',$id);
 
 
 ?>
@@ -23,10 +23,10 @@
                </span>
                 <h1><?php  echo $item->name;?></h1>
                 <div class="kol_vo">
-<!--                    <span>Количество:</span>-->
-<!--                    <a href="javascript:;" class="button green">–</a>-->
-<!--                    <span class="kol">1 <b>шт.</b></span>-->
-<!--                    <a href="javascript:;" class="button green">+</a>-->
+                    <!--                    <span>Количество:</span>-->
+                    <!--                    <a href="javascript:;" class="button green">–</a>-->
+                    <!--                    <span class="kol">1 <b>шт.</b></span>-->
+                    <!--                    <a href="javascript:;" class="button green">+</a>-->
                     <p class="prise">OT <?php  echo number_format($item->price, 0, ',', ' ');?></p>
                 </div>
             </article>

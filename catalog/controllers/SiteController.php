@@ -13,6 +13,7 @@ class SiteController extends Controller {
 //    }
 
     public function actionIndex() {
+        
         $this->layout = CatalogModule::$catalogLayout;
 
         $categories = CatCategory::model()->findAll(array('condition' => 'level = 0', 'order' => '`order`'));
@@ -22,12 +23,13 @@ class SiteController extends Controller {
     }
 
     public function actionItemView($catId = 0, $item = 0) {
-
         $uri = $_SERVER['REQUEST_URI'];
 
         $this->layout = CatalogModule::$catalogItemViewLayout;
+        $category = CatCategory::model()->findByPk($catId);
         $item = CatItem::model()->findByPk($item);
-        $category = CatCategory::model()->findByPk($item->catId);
+
+
 
 
         $hrefParams = array(
@@ -46,12 +48,13 @@ class SiteController extends Controller {
         }
 
         $this->render('itemView', array('item' => $item, 'category' => $category));
+
     }
 
     public function actionCategoryView($catId = 0) {
 
 
-      
+
         $this->layout = CatalogModule::$catalogCategoryViewLayout;
 
         $category = CatCategory::model()->findByPk($catId);
@@ -98,22 +101,19 @@ class SiteController extends Controller {
                 Yii::import('application.modules.callback.CallbackModule');
 
                 $msg =
-                    $buyFormModel->name.'<br>'.
-                    $buyFormModel->phone.'<br>'.
-                    $buyFormModel->name.'<br>'.
-                    $buyFormModel->count.'<br>'.
-                    $buyFormModel->eMail.'<br>'.
-                    $buyFormModel->msg.'
+                    'Модель:'.$buyFormModel->model.'<br>'.
+                    'Имя:'.$buyFormModel->name.'<br>'.
+                    'Тел.:'.$buyFormModel->phone.'<br>'.
+                    'Кол-во:'.$buyFormModel->count.'<br>'.
+                    'Почта:'.$buyFormModel->email.'<br>'.
+                    'Сообщение:'.$buyFormModel->msg.'
                     ';
-
-                CallbackModule::addMessage('innoeco.ru - заказ',$msg,'order',true);
+                
+                CallbackModule::addMessage($_SERVER['SERVER_NAME'].' - заказ',$msg,'order',true);
                 $this->render('buyOk',array('id'=>$itemId,'item'=>$item,'buyFormModel'=>$buyFormModel));
             }
 
         }
-
-
-
 
         $this->render('buy',array('id'=>$itemId,'item'=>$item,'buyFormModel'=>$buyFormModel));
     }
