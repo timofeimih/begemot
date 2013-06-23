@@ -33,7 +33,7 @@ class DefaultController extends Controller
     {
 
 
-        $dataFilename = Yii::getPathOfAlias('webroot') . '/' . 'files/pictureBox/' . $id . '/' . $elementId . '/data.php';
+       $dataFilename = Yii::getPathOfAlias('webroot') . '/' . 'files/pictureBox/' . $id . '/' . $elementId . '/data.php';
 
         $data = require $dataFilename;
         $images = $data['images'];
@@ -41,7 +41,7 @@ class DefaultController extends Controller
         $config = $this->getConfigFromSession($id, $elementId);
         $filters = $config['imageFilters'];
 
-        $dir = Yii::getPathOfAlias('application');
+        $dir = Yii::getPathOfAlias('webroot');
 
         $file1 = $dir . $images[$pictureid1]['original'];
         $file2 = $dir . $images[$pictureid2]['original'];
@@ -499,10 +499,12 @@ class DefaultController extends Controller
 
     private function flipFiles($file1, $file2)
     {
-
         if (file_exists($file1)) {
             rename($file1, $file1 . '_tmp');
         } else {
+        echo $file1.'!
+        '.$file2.'!!';
+        return;
             throw new Exception(__FILE__ . ' функция flipFiles. Отсутствует первый файл для переименования.');
         }
 
