@@ -58,7 +58,7 @@ class updateForm extends CFormModel
         public function saveFile(){
 
             file_put_contents($this->file, $this->text);
-            
+
             $dataPath = dirname($this->file).'/data/';
             $dataFilePath = $dataPath.md5($this->file).'.data';
             

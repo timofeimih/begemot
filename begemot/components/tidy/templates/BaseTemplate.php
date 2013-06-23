@@ -25,12 +25,12 @@ class BaseTemplate
 
         for ($i = 0; $i < $this->imageCount; $i++) {
 
-            $randKey = array_rand($images);
+           // $randKey =
 
-            $this->images[] = $images[$randKey];
+            $this->images[] = array_shift($images);;
 
 
-            unset($images[$randKey]);
+            //unset($images[$randKey]);
 
         }
 
@@ -38,7 +38,7 @@ class BaseTemplate
 
     protected function getImage()
     {
-       return array_pop ($this->images);
+       return array_shift ($this->images);
     }
 
     public function renderTemplate()

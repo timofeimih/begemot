@@ -41,7 +41,7 @@ class HTMLAction extends  CViewAction{
                 $controller->renderText($text);
             }
             else
-                $controller->render('webroot.files.pages.test');
+                $controller->render('webroot.files.pages.'.$this->getRequestedView());
             $this->onAfterRender(new CEvent($this));
         }
 
