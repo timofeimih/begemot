@@ -18,7 +18,7 @@ class OneTemplate extends BaseTemplate
         $this->config = $config;
     }
 
-    public function render()
+    public function renderTemplate()
     {
 
         $image = $this->getImage();
@@ -26,7 +26,7 @@ class OneTemplate extends BaseTemplate
         if (isset($image['title'])?$title=$image['title']:$title='');
         if (isset($image['alt'])?$alt=$image['alt']:$alt='');
 
-        $html = '<div><img src="'.$image[$this->config['imageTag']].'" alt="'.$alt.'" title="'.$title.'" /></div>';
+        $html = '<div class="tidyTemplate"><img src="'.$image[$this->config['imageTag']].'" alt="'.$alt.'" title="'.$title.'" /></div>';
         return $html;
     }
 

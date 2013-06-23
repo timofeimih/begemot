@@ -25,12 +25,9 @@ class BaseTemplate
 
         for ($i = 0; $i < $this->imageCount; $i++) {
 
-           // $randKey =
 
             $this->images[] = array_shift($images);;
 
-
-            //unset($images[$randKey]);
 
         }
 

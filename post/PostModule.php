@@ -6,7 +6,14 @@ class PostModule extends CWebModule {
     static public $postViewLayout = 'application.views.layouts.postViewLayout';
 
     public $tidyConfig = array(
+        'Three'=>array(
+
         'imageTag'=>'admin'
+        ),
+        'One'=>array(
+
+        'imageTag'=>'inner_big'
+        )
     );
 
     //static public $catalogCategoryViewLayout = 'application.views.layouts.catalogCategoryViewLayout';

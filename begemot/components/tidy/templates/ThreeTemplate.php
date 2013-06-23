@@ -20,7 +20,7 @@ class ThreeTemplate extends BaseTemplate
 
     public function renderTemplate()
     {
-        $html='<div>';
+        $html='<div class="tidyTemplate">';
 
         for ($i=0;$i<$this->imageCount;$i++){
 

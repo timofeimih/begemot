@@ -21,8 +21,11 @@ class TidyBuilder
 
     public function __construct($text, $config, $images)
     {
+        $this->text = $text;
 
-        $this->text = preg_replace('|<!-- template !-->.*?<!-- endtemplate !-->|sei', '', $text);
+        $this->text = str_replace('&nbsp;', '', $this->text);
+        $this->text = preg_replace('|<p>\s+</p>|i', '!', $this->text);
+        $this->text = preg_replace('|<!-- template !-->.*?<!-- endtemplate !-->|sei', '', $this->text);
         $this->config = $config;
         $this->images = $images;
     }
@@ -43,13 +46,22 @@ class TidyBuilder
 
     private function renderTemplates()
     {
-        $config = $this->config;
+        $threeConfig = $this->config;
 
-        require_once(dirname(__FILE__) . '/templates/ThreeTemplate.php');
+        $templatesArray = array();
+
+        foreach ($this->config as $template=>$config){
+            require_once(dirname(__FILE__) . '/templates/'.$template.'Template.php');
+            $templatesArray[$template] = $config;
+        }
 
         while (count($this->images) > 0) {
 
-            $template = new ThreeTemplate($config);
+            $templateName = array_rand($templatesArray);
+
+            $templateClass = $templateName.'Template';
+
+            $template = new $templateClass($templatesArray[$templateName]);
 
             if ($template->getImageCount() <= count($this->images)) {
                 $template->cutImagesFromArray($this->images);
@@ -68,8 +80,14 @@ class TidyBuilder
 
         $newTextArray = array();
 
+        $i=0;
         foreach ($this->textArray as $key => $textPart) {
-            $pHtml = '<p>' . $textPart;
+            if ($i!=0){
+                $pHtml = '<p>' . $textPart;
+            } else {
+                $pHtml =  $textPart;
+            }
+            $i++;
 
             $newTextArray[$key] = array();
             $newTextArray[$key]['text'] = $pHtml;
@@ -103,6 +121,7 @@ class TidyBuilder
     private function arrayToText()
     {
         $resultText = '';
+
         foreach ($this->textArray as $textPart) {
             $resultText .= $textPart['text'];
         }
