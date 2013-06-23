@@ -1,32 +1,36 @@
 <?php
 
-class DefaultController extends Controller {
-    
+class DefaultController extends Controller
+{
 
-    public function actionIndex() {
+
+    public function actionIndex()
+    {
 
         $this->render('index');
     }
 
-    public function actionTest() {
+    public function actionTest()
+    {
         $id = 'catalogItem';
         $elemId = 100;
         $pictureId = 2;
         $config = require Yii::getPathOfAlias('application') . '/config/catalog/categoryItemPictureSettings.php';
-       
-        $this->renderImageAgain($id, $elemId,$pictureId, $config);
+
+        $this->renderImageAgain($id, $elemId, $pictureId, $config);
     }
 
     //Функция пересборки изображений 
-    public function renderImageAgain($id, $elemId, $pictureId, $config) {
+    public function renderImageAgain($id, $elemId, $pictureId, $config)
+    {
 
-        $filterManager = new FiltersManager(Yii::getPathOfAlias('webroot').'/files/pictureBox/catalogItem/100/2.jpg', $config);
+        $filterManager = new FiltersManager(Yii::getPathOfAlias('webroot') . '/files/pictureBox/catalogItem/100/2.jpg', $config);
         $filters = $filterManager->getFilteredImages();
 
     }
 
-    public function actionAjaxFlipImages($id, $elementId, $pictureid1, $pictureid2) {
-
+    public function actionAjaxFlipImages($id, $elementId, $pictureid1, $pictureid2)
+    {
 
 
         $dataFilename = Yii::getPathOfAlias('webroot') . '/' . 'files/pictureBox/' . $id . '/' . $elementId . '/data.php';
@@ -43,7 +47,6 @@ class DefaultController extends Controller {
         $file2 = $dir . $images[$pictureid2]['original'];
 
         $this->flipFiles($file1, $file2);
-
 
 
         foreach ($filters as $filterName => $filterUselessData) {
@@ -75,12 +78,13 @@ class DefaultController extends Controller {
 
             $this->flipFiles($file1, $file2);
         }
-
         $data['images'] = $images;
         PictureBox::crPhpArr($data, $dataFilename);
+
     }
 
-    public function actionUpload() {
+    public function actionUpload()
+    {
 
         $this->layout = 'pictureBox.views.layouts.ajax';
 
@@ -141,7 +145,8 @@ class DefaultController extends Controller {
         }
     }
 
-    public function actionAjaxLayout($id, $elementId, $imageNumber = 1) {
+    public function actionAjaxLayout($id, $elementId, $imageNumber = 1)
+    {
 
 
         $this->layout = 'pictureBox.views.layouts.ajax';
@@ -170,7 +175,7 @@ class DefaultController extends Controller {
 
         if (file_exists($dataFile)) {
 
-            $data = require ($dataFile);
+            $data = require($dataFile);
         } else {
             PictureBox::crPhpArr(array('images' => array()), $dataFile);
             $data = array('images' => array());
@@ -183,7 +188,8 @@ class DefaultController extends Controller {
 
     //возвращает новое имя добавленного изображения с 
     //с которым его надо сохранить
-    private function addImage($dir, $fileName, $fileExt) {
+    private function addImage($dir, $fileName, $fileExt)
+    {
 
         $id = $_POST['id'];
         $elementId = $_POST['elementId'];
@@ -211,7 +217,8 @@ class DefaultController extends Controller {
         return ($imageId);
     }
 
-    private function addFilteredImage($imageId, $filterName, $filteredImageFile, $dir) {
+    private function addFilteredImage($imageId, $filterName, $filteredImageFile, $dir)
+    {
 
         if (!file_exists($dir . '/data.php')) {
             PictureBox::crPhpArr(array(), $dir . '/data.php');
@@ -227,7 +234,8 @@ class DefaultController extends Controller {
         PictureBox::crPhpArr($data, $dir . '/data.php');
     }
 
-    private function getNewImageId($dir) {
+    private function getNewImageId($dir)
+    {
 
         if (!file_exists($dir . '/lastImageId.php')) {
             PictureBox::crPhpArr(1, $dir . 'lastImageId.php');
@@ -239,7 +247,8 @@ class DefaultController extends Controller {
         }
     }
 
-    public function actionAjaxSetTitle() {
+    public function actionAjaxSetTitle()
+    {
         $this->layout = 'pictureBox.views.layouts.ajax';
         if (Yii::app()->request->isAjaxRequest) {
 
@@ -249,7 +258,7 @@ class DefaultController extends Controller {
             $filesList = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/data.php';
 
             if (file_exists($filesList)) {
-                $data = require ($filesList);
+                $data = require($filesList);
                 $images = $data['images'];
 
                 $imagesCounter = 0;
@@ -275,12 +284,13 @@ class DefaultController extends Controller {
         }
     }
 
-    public function actionAjaxDeleteImage($id, $elementId, $pictureId) {
+    public function actionAjaxDeleteImage($id, $elementId, $pictureId)
+    {
 
         $this->layout = 'pictureBox.views.layouts.ajax';
         if (Yii::app()->request->isAjaxRequest) {
             $dataFile = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/data.php';
-            $data = require ($dataFile);
+            $data = require($dataFile);
 
             $this->deleteImageFiles($id, $elementId, $pictureId, $data);
 
@@ -291,9 +301,10 @@ class DefaultController extends Controller {
         }
     }
 
-    public function actionAjaxDeleteFilteredImage($id, $elementId, $pictureId, $filterName) {
+    public function actionAjaxDeleteFilteredImage($id, $elementId, $pictureId, $filterName)
+    {
         if (Yii::app()->request->isAjaxRequest) {
-            $data = require (Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/data.php');
+            $data = require(Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/data.php');
 
             if (isset($data['images'][$pictureId][$filterName])) {
                 $fileName = $data['images'][$pictureId][$filterName];
@@ -311,16 +322,17 @@ class DefaultController extends Controller {
 
     /**
      *
-     *  Аякс-команда, которая создает одно изображение на основе одного фильтра. 
-     * 
+     *  Аякс-команда, которая создает одно изображение на основе одного фильтра.
+     *
      * @param type $id Идентификатор хранилища
      * @param type $elementId Идентификатор ячейки хранилища
      * @param type $pictureId Идентификатор изображения
      * @param type $filterName Имя фильтра. Изначально устанавливается в конфиге
      */
-    public function actionAjaxMakeFilteredImage($id, $elementId, $pictureId, $filterName) {
+    public function actionAjaxMakeFilteredImage($id, $elementId, $pictureId, $filterName)
+    {
         if (Yii::app()->request->isAjaxRequest) {
-            $data = require (Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/data.php');
+            $data = require(Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/data.php');
             $dir = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId;
             $config = $this->getConfigFromSession($id, $elementId);
 
@@ -343,12 +355,13 @@ class DefaultController extends Controller {
     /**
      *
      * Аякс команда добавления конкретного изображения в избранное
-     * 
+     *
      * @param type $id Идентификатор хранилища
      * @param type $elementId Идентификатор ячейки хранилища
      * @param type $pictureId Идентификатор изображения
      */
-    public function actionAjaxAddFav($id, $elementId, $pictureId) {
+    public function actionAjaxAddFav($id, $elementId, $pictureId)
+    {
         $favData = $this->getFavData($id, $elementId);
 
         $data = $this->getPictureBoxData($id, $elementId);
@@ -359,12 +372,13 @@ class DefaultController extends Controller {
     /**
      *
      * Аякс команда удаления конкретного изображения в избранное
-     * 
+     *
      * @param type $id Идентификатор хранилища
      * @param type $elementId Идентификатор ячейки хранилища
      * @param type $pictureId Идентификатор конкретного изображения
      */
-    public function actionAjaxDelFav($id, $elementId, $pictureId) {
+    public function actionAjaxDelFav($id, $elementId, $pictureId)
+    {
 
         $favData = $this->getFavData($id, $elementId);
         if (isset($favData[$pictureId]))
@@ -375,11 +389,12 @@ class DefaultController extends Controller {
 
     /**
      * Достаем данные из файла избранных изображений
-     * 
+     *
      * @param type $id Идентификатор хранилища
      * @param type $elementId Идентификатор ячейки хранилища
      */
-    static function getFavData($id, $elementId) {
+    static function getFavData($id, $elementId)
+    {
 
         $favFilename = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/favData.php';
 
@@ -393,7 +408,8 @@ class DefaultController extends Controller {
         return $favData;
     }
 
-    static function putFavData($id, $elementId, $favData) {
+    static function putFavData($id, $elementId, $favData)
+    {
 
         $favFilename = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/favData.php';
         PictureBox::crPhpArr($favData, $favFilename);
@@ -401,11 +417,12 @@ class DefaultController extends Controller {
 
     /**
      * Достаем данные из ячейки хранилища
-     * 
+     *
      * @param type $id Идентификатор хранилища
      * @param type $elementId Идентификатор ячейки хранилища
      */
-    private function getPictureBoxData($id, $elementId) {
+    private function getPictureBoxData($id, $elementId)
+    {
 
         if (!file_exists(Yii::getPathOfAlias('webroot') . '/files/pictureBox'))
             mkdir(Yii::getPathOfAlias('webroot') . '/files/pictureBox');
@@ -435,14 +452,15 @@ class DefaultController extends Controller {
 
     /**
      *
-     * Физическое удаление основного файла и всех его фильтрованных копий. 
-     * 
+     * Физическое удаление основного файла и всех его фильтрованных копий.
+     *
      * @param type $id Идентификатор хранилища
      * @param type $elementId Идентификатор ячейки хранилища
      * @param type $pictureId Идентификатор изображения
      * @param type $data Массив всех изображений
      */
-    function deleteImageFiles($id, $elementId, $pictureId, $data) {
+    function deleteImageFiles($id, $elementId, $pictureId, $data)
+    {
 
         $deleteFilesList = Yii::getPathOfAlias('webroot') . '/' . $data['images'][$pictureId]['original'];
 
@@ -459,14 +477,15 @@ class DefaultController extends Controller {
     }
 
     /**
-     * Забираем из сессии данные о выставленных фильтрах. Фильтры выставляются 
+     * Забираем из сессии данные о выставленных фильтрах. Фильтры выставляются
      * при вызове виджета, а все аякс-команды находятся в контроллере. Т.к. фильтров
      * может быть произвольное количество, то передавать такие сложные данные get
-     * или post запросом сложновато. Поэтому данные передаются через сессии. 
-     * 
+     * или post запросом сложновато. Поэтому данные передаются через сессии.
+     *
      * @return type Конфиг фильтров, который передается виджету
      */
-    public function getConfigFromSession($id, $elementId) {
+    public function getConfigFromSession($id, $elementId)
+    {
 
 
         session_start();
@@ -478,16 +497,26 @@ class DefaultController extends Controller {
         }
     }
 
-    private function flipFiles($file1, $file2) {
+    private function flipFiles($file1, $file2)
+    {
 
-        if (file_exists($file1))
+        if (file_exists($file1)) {
             rename($file1, $file1 . '_tmp');
+        } else {
+            throw new Exception(__FILE__ . ' функция flipFiles. Отсутствует первый файл для переименования.');
+        }
 
-        if (file_exists($file2))
+        if (file_exists($file2)) {
             rename($file2, $file1);
+        } else {
+            throw new Exception(__FILE__ . ' функция flipFiles. Отсутствует второй файл для переименования.');
+        }
 
-        if (file_exists($file1 . '_tmp'))
+        if (file_exists($file1 . '_tmp')) {
             rename($file1 . '_tmp', $file2);
+        } else {
+            throw new Exception(__FILE__ . ' функция flipFiles. Отсутствует второй файл для переименования.');
+        }
     }
 
 }
