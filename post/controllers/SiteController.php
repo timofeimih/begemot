@@ -5,10 +5,6 @@ class SiteController extends Controller
     
     public $layout='begemot.views.layouts.column2';
 
-
-
-
-
     /**
      * Displays a particular model.
      * @param integer $id the ID of the model to be displayed
@@ -106,6 +102,103 @@ class SiteController extends Controller
             echo CActiveForm::validate($model);
             Yii::app()->end();
         }
+    }
+
+    public function actionTidy(){
+
+
+
+        $post = '
+        <p>Abzac 1</p>
+        <p>Abzac 2</p>
+        <p>Abzac 3</p>
+        <p>Abzac 4</p>
+        <p>Abzac 5</p>
+        <p>Abzac 6</p>
+        <p>Abzac 7</p>
+        <p>Abzac 8</p>
+        <p>Abzac 9</p>
+        <p>Abzac 10</p>
+        <p>Abzac 11</p>
+        <p>Abzac 12</p>
+        <p>Abzac 13</p>
+        <p>Abzac 14</p>
+        ';
+
+        $images = array(
+            0 =>
+            array (
+                'original' => '/files/pictureBox/catalogItem/101/0.jpg',
+                'admin' => '/files/pictureBox/catalogItem/101/0_admin.jpg',
+                'main' => '/files/pictureBox/catalogItem/101/0_main.jpg',
+                'innerSmall' => '/files/pictureBox/catalogItem/101/0_innerSmall.jpg',
+                'slider' => '/files/pictureBox/catalogItem/101/0_slider.jpg',
+                'two' => '/files/pictureBox/catalogItem/101/0_two.jpg',
+                'title' => 'Удобство пассажирских перевозок',
+                'alt' => 'Электромобиль VOLTECO ALPHA L11S - находка туристического бизнеса',
+            ),
+            1 =>
+            array (
+                'original' => '/files/pictureBox/catalogItem/101/1.jpg',
+                'admin' => '/files/pictureBox/catalogItem/101/1_admin.jpg',
+                'main' => '/files/pictureBox/catalogItem/101/1_main.jpg',
+                'innerSmall' => '/files/pictureBox/catalogItem/101/1_innerSmall.jpg',
+                'slider' => '/files/pictureBox/catalogItem/101/1_slider.jpg',
+                'two' => '/files/pictureBox/catalogItem/101/1_two.jpg',
+                'title' => 'Открытый дизайн и эргономика кресел',
+                'alt' => 'Электромобиль VOLTECO ALPHA L11S - современный стиль',
+            ),
+            2 => array (
+                'original' => '/files/pictureBox/catalogItem/101/1.jpg',
+                'admin' => '/files/pictureBox/catalogItem/101/1_admin.jpg',
+                'main' => '/files/pictureBox/catalogItem/101/1_main.jpg',
+                'innerSmall' => '/files/pictureBox/catalogItem/101/1_innerSmall.jpg',
+                'slider' => '/files/pictureBox/catalogItem/101/1_slider.jpg',
+                'two' => '/files/pictureBox/catalogItem/101/1_two.jpg',
+                'title' => 'Открытый дизайн и эргономика кресел',
+                'alt' => 'Электромобиль VOLTECO ALPHA L11S - современный стиль',
+            ),
+            3 =>
+            array (
+                'original' => '/files/pictureBox/catalogItem/101/0.jpg',
+                'admin' => '/files/pictureBox/catalogItem/101/0_admin.jpg',
+                'main' => '/files/pictureBox/catalogItem/101/0_main.jpg',
+                'innerSmall' => '/files/pictureBox/catalogItem/101/0_innerSmall.jpg',
+                'slider' => '/files/pictureBox/catalogItem/101/0_slider.jpg',
+                'two' => '/files/pictureBox/catalogItem/101/0_two.jpg',
+                'title' => 'Удобство пассажирских перевозок',
+                'alt' => 'Электромобиль VOLTECO ALPHA L11S - находка туристического бизнеса',
+            ),
+            4 =>
+            array (
+                'original' => '/files/pictureBox/catalogItem/101/1.jpg',
+                'admin' => '/files/pictureBox/catalogItem/101/1_admin.jpg',
+                'main' => '/files/pictureBox/catalogItem/101/1_main.jpg',
+                'innerSmall' => '/files/pictureBox/catalogItem/101/1_innerSmall.jpg',
+                'slider' => '/files/pictureBox/catalogItem/101/1_slider.jpg',
+                'two' => '/files/pictureBox/catalogItem/101/1_two.jpg',
+                'title' => 'Открытый дизайн и эргономика кресел',
+                'alt' => 'Электромобиль VOLTECO ALPHA L11S - современный стиль',
+            ),
+            5 => array (
+                'original' => '/files/pictureBox/catalogItem/101/1.jpg',
+                'admin' => '/files/pictureBox/catalogItem/101/1_admin.jpg',
+                'main' => '/files/pictureBox/catalogItem/101/1_main.jpg',
+                'innerSmall' => '/files/pictureBox/catalogItem/101/1_innerSmall.jpg',
+                'slider' => '/files/pictureBox/catalogItem/101/1_slider.jpg',
+                'two' => '/files/pictureBox/catalogItem/101/1_two.jpg',
+                'title' => 'Открытый дизайн и эргономика кресел',
+                'alt' => 'Электромобиль VOLTECO ALPHA L11S - современный стиль',
+            ),
+        );
+
+        Yii::import('application.modules.begemot.components.tidy.TidyBuilder');
+
+        $tidy = new TidyBuilder ( $post, $this->module->tidyConfig, $images);
+
+        $tidy->renderText();
+
+
     }
 
 }

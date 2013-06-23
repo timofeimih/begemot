@@ -22,7 +22,17 @@
         <?php echo $form->error($model, 'title_seo'); ?>
     </div>
     <div class="row">
-        <?php echo $form->labelEx($model, 'text'); ?>
+        <?php
+            echo $form->labelEx($model, 'text');
+            echo '<div style="text-align:right;">';
+            $this->widget('bootstrap.widgets.TbButton',array(
+                'label' => 'Расставить изображения',
+                'type' => 'primary',
+                'size' => 'mini',
+                'url'=>array('default/tidyPost','id'=>$model->id)
+            ));
+            echo '</div>';
+        ?>
 
         
             <?php 

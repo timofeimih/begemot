@@ -16,6 +16,7 @@ class SiteController extends Controller {
         $this->layout = CatalogModule::$catalogLayout;
 
         $categories = CatCategory::model()->findAll(array('condition' => 'level = 0', 'order' => '`order`'));
+        
 
         $this->render('index', array('categories' => $categories));
     }
