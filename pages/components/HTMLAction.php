@@ -12,9 +12,10 @@ class HTMLAction extends  CViewAction{
     public function run()
     {
 
-        $dataDirPath = Yii::getPathOfAlias('webroot').'/protected/views/site/pages/';
+        $dataDirPath = Yii::getPathOfAlias('webroot.files.pages').'/';
         $dataPath = $dataDirPath.'data/';
-        $dataFilePath = $dataPath.md5('./protected/views/site/pages/'.$this->getRequestedView().'.php').'.data';
+
+         $dataFilePath = $dataPath.md5('./files/pages/'.$this->getRequestedView().'.php').'.data';
 
         if (file_exists($dataFilePath)){
             $data = require($dataFilePath);
@@ -22,7 +23,7 @@ class HTMLAction extends  CViewAction{
             Yii::app()->controller->pageTitle =$data['seoTitle'];
         }
 
-        $this->resolveView($this->getRequestedView());
+        //$this->resolveView($this->getRequestedView());
 
         $controller=$this->getController();
         if($this->layout!==null)
@@ -40,7 +41,7 @@ class HTMLAction extends  CViewAction{
                 $controller->renderText($text);
             }
             else
-                $controller->render($this->view);
+                $controller->render('webroot.files.pages.test');
             $this->onAfterRender(new CEvent($this));
         }
 
