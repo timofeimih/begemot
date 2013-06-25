@@ -2,6 +2,8 @@
 
 class RolesImportModule extends CWebModule
 {
+
+
 	public function init()
 	{
 		// this method is called when the module is being created
@@ -29,8 +31,8 @@ class RolesImportModule extends CWebModule
 	{
 		if(parent::beforeControllerAction($controller, $action))
 		{
-			// this method is called before any module controller action is performed
-			// you may place customized code here
+            Yii::app()->getComponent('bootstrap');
+            $controller->layout = 'begemot.views.layouts.column2';
 			return true;
 		}
 		else

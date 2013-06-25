@@ -26,7 +26,7 @@ class DefaultController extends Controller
 
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
                 'actions' => array('create', 'update', 'admin', 'delete', 'index', 'view', 'tagIndex', 'tidyPost'),
-                'expression' => 'Yii::app()->user->canDo("")'
+                'expression' => 'Yii::app()->user->canDo("postEditor")'
             ),
             array('deny', // deny all users
                 'users' => array('*'),
