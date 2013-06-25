@@ -38,7 +38,7 @@
                 array('model' => $model, 'attribute' => 'text', 'language' => 'ru', 'editorTemplate' => 'full',));
                 ?>
             		<?php 
-                        $this->widget('begemot.components.htmlClearPanel.htmlClearPanel');
+                        $this->widget('begemot.components.htmlClearPanel.htmlClearPanel',array('id'=>'CatItem_text'));
                 ?>
 		<?php echo $form->error($model,'text'); ?>
 	</div>   

@@ -2,7 +2,7 @@
 
 class htmlClearPanel extends CWidget{
     
-    public $id = '';
+    public $id = 'CatItem_text';
     
     public function run(){
         $this->render('index',array('id'=>$this->id));
