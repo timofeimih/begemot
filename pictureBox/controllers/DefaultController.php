@@ -48,6 +48,17 @@ class DefaultController extends Controller
 
         $this->flipFiles($file1, $file2);
 
+        //Перекидываем title и alt
+        $title1 = (isset($images[$pictureid1]['title'])?$images[$pictureid1]['title']:'');
+        $alt1 = (isset($images[$pictureid1]['alt'])?$images[$pictureid1]['alt']:'');
+
+        $images[$pictureid1]['title'] = isset($images[$pictureid2]['title'])?$images[$pictureid2]['title']:'';
+        $images[$pictureid1]['alt'] = isset($images[$pictureid2]['alt'])?$images[$pictureid2]['alt']:'';
+
+        $images[$pictureid2]['title'] =$title1;
+        $images[$pictureid2]['alt'] = $alt1;
+
+
 
         foreach ($filters as $filterName => $filterUselessData) {
 
@@ -186,7 +197,7 @@ class DefaultController extends Controller
         $this->render('ajaxLayout', array('elementId' => $elementId, 'id' => $id, 'imageNumber' => $imageNumber, 'data' => $data, 'config' => $config));
     }
 
-    //возвращает новое имя добавленного изображения с 
+    //возвращает новое имя добавленного изображения с
     //с которым его надо сохранить
     private function addImage($dir, $fileName, $fileExt)
     {

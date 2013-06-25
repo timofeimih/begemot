@@ -9,7 +9,7 @@
 
 class TidyBuilder
 {
-
+    public $leadImage = 0;
     public $textArray;
     protected $mixArray = array();
 
@@ -19,7 +19,7 @@ class TidyBuilder
     );
     private $images;
 
-    public function __construct($text, $config, $images)
+    public function __construct($text, $config, $images, $leadImage=0)
     {
         $this->text = $text;
 
@@ -28,6 +28,11 @@ class TidyBuilder
         $this->text = preg_replace('|<!-- template !-->.*?<!-- endtemplate !-->|sei', '', $this->text);
         $this->config = $config;
         $this->images = $images;
+
+        if ($leadImage!==0){
+            $this->leadImage = $leadImage;
+        }
+
     }
 
     public function renderText()
@@ -53,6 +58,10 @@ class TidyBuilder
         foreach ($this->config as $template=>$config){
             require_once(dirname(__FILE__) . '/templates/'.$template.'Template.php');
             $templatesArray[$template] = $config;
+        }
+
+        if ($this->leadImage!=0){
+            array_shift($this->images);
         }
 
         while (count($this->images) > 0) {
