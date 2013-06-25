@@ -243,7 +243,9 @@ class DefaultController extends Controller
 
         Yii::import('application.modules.begemot.components.tidy.TidyBuilder');
 
-        $tidy = new TidyBuilder ( $model->text, $this->module->tidyConfig, $images);
+        $this->module->tidyleadImage!=0?$leadImage=1:$leadImage=0;
+
+        $tidy = new TidyBuilder ( $model->text, $this->module->tidyConfig, $images,$leadImage);
 
         $model->text = $tidy->renderText();
 
