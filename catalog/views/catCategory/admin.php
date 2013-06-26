@@ -31,6 +31,7 @@ $('.search-form form').submit(function(){
 	return false;
 });
 ");
+
 ?>
 
 <h1>Разделы каталога: <?php echo $model->getCatname($pid); ?></h1>
@@ -69,7 +70,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
         ),
   
         array(
- 
+
             "name"=>"name",
             'type' => 'raw',
             "header"=>"Категории",

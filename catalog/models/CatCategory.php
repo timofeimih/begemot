@@ -302,7 +302,7 @@ class CatCategory extends CActiveRecord
             if (file_exists($favFilePath)){
                  $images = require($favFilePath);
                };
-            if (isset($images['images'])){
+            if (isset($images['images']) && is_array($images['images']) && count($images['images'])>0){
                 return $images['images'];
             } else{
                 return null;
@@ -319,11 +319,11 @@ class CatCategory extends CActiveRecord
             $catalogImage = '';
             
             $images = $this->getCatFavPictures();
-            if (count($images)!=0){
+            if (is_array($images) && count($images)!=0){
               $imagesArray = array_values($images);
-              $catalogImage = $imagesArray[0];
+              $catalogImage = array_shift($imagesArray);
             }
-            
+
             if (count($images)==0){
                 
                     $images = $this->getCatPictures();
@@ -335,9 +335,11 @@ class CatCategory extends CActiveRecord
                     }
                 
             }
+
             if (is_null($tag)){
                 return array_shift($catalogImage);
             }
+
             else{
                 if (isset($catalogImage[$tag]))
                     return $catalogImage[$tag];
