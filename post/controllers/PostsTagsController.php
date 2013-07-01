@@ -143,6 +143,19 @@ class PostsTagsController extends Controller
 		if(isset($_GET['PostsTags']))
 			$model->attributes=$_GET['PostsTags'];
 
+        $allPostTag = PostsTags::model()->findByPk(0);
+
+        if ($allPostTag==null){
+            $postTag = new PostsTags();
+            $postTag->tag_name = 'Все статьи';
+            $postTag->title_seo = 'Все статьи';
+
+            $postTag->save();
+            $postTag->id = 0;
+            $postTag->save();
+
+        }
+
 		$this->render('admin',array(
 			'model'=>$model,
 		));
