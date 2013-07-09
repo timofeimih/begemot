@@ -88,13 +88,21 @@ class SiteController extends Controller
 
         $models = Posts::model()->published()->findAll($criteria);
 
+        if ($id!=null){
+            $tagModel = PostsTags::model()->findByPk($id);
+        } else{
+            $tagModel = PostsTags::model()->findByPk(0);
+        }
 
+        $tags = PostsTags::model()->findAll(array('order'=>'`id`'));
 
         $dataProvider = new CActiveDataProvider('Posts');
         $this->render('index', array(
             'models' => $models,
             'pages' => $pages,
+            'tagModel'=>$tagModel,
             'tag_id'=>$id,
+            'tags'=>$tags
         ));
     }
     

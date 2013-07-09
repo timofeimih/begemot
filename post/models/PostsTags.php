@@ -35,7 +35,7 @@ class PostsTags extends CActiveRecord {
 // NOTE: you should only define rules for those attributes that
 // will receive user inputs.
         return array(
-            array('tag_name,tag_name_t,title_seo', 'safe'),
+            array('tag_name,tag_name_t,title_seo, tag_text', 'safe'),
             array('tag_name', 'length', 'max' => 20),
             // The following rule is used by search().
 // Please remove those attributes that should not be searched.

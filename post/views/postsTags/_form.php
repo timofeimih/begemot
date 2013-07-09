@@ -19,6 +19,15 @@
 		<?php echo $form->textField($model,'title_seo',array('size'=>20,'maxlength'=>100)); ?>
 		<?php echo $form->error($model,'title_seo'); ?>
 	</div>
+    <div class="row">
+        <?php echo $form->labelEx($model,'tag_text'); ?>
+        <?php
+        $this->widget('begemot.extensions.ckeditor.CKEditor',
+            array('model' => $model, 'attribute' => 'tag_text', 'language' => 'ru', 'editorTemplate' => 'full',));
+        ?>
+
+        <?php echo $form->error($model,'tag_text'); ?>
+    </div>
 	<div class="row buttons">
 		<?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save'); ?>
 	</div>
