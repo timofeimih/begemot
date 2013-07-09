@@ -30,7 +30,7 @@ $model = new CatItemsToCat();
                     'class' => 'EImageColumn',
                     'htmlOptions'=>array('width'=>120),
                     // see below.
-                    'imagePathExpression' => '$data->item->getItemMainPicture()',
+                    'imagePathExpression' => '$data->item->getItemMainPicture("admin")',
                     // Text used when cell is empty.
                     // Optional.
                     'emptyText' => '—',
