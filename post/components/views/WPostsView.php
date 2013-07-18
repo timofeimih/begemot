@@ -3,9 +3,7 @@
 		<ul>
 <?php
 
-Yii::import('post.models.Posts');
 
-$posts = Posts::model()->findAll(array('condition'=>'tag_id<>"0"','limit'=>'4','offset'=>0,'order'=>'date desc'));
 $output = '';
 
 foreach ($posts as $post) {
