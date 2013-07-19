@@ -13,7 +13,7 @@ class SiteController extends Controller {
 //    }
 
     public function actionIndex() {
-        
+
         $this->layout = CatalogModule::$catalogLayout;
 
         $categories = CatCategory::model()->findAll(array('condition' => 'level = 0', 'order' => '`order`'));
@@ -65,7 +65,7 @@ class SiteController extends Controller {
     }
 
     public function actionRCategoryView($catId = 0) {
-        
+
         $this->layout = CatalogModule::$catalogCategoryViewLayout;
 
         $category = CatCategory::model()->findByPk($catId);

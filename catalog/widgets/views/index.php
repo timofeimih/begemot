@@ -13,6 +13,7 @@
             );
             $itemHref =  Yii::app()->urlManager->createUrl('catalog/site/itemView',$hrefParams);
         ?>
+
         <div class="col-1" style="height:320px;">
                 <figure><a class="lightbox-image" title="" href="<?php echo $itemHref;?>"><img src="<?php echo $categoryItem->item->getItemMainPicture("small");?>" alt=""></a></figure>
             <div class="text3"><?php echo $categoryItem->item->name;?></div>

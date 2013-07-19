@@ -69,6 +69,7 @@ class CatItem extends ContentKitModel
          {
              return array(
                  'name'=>array(self::BELONGS_TO, 'catItemsToCat', 'itemId'),
+                 'category' => array(self::BELONGS_TO,'CatCategory','catId')
 
              );
          }

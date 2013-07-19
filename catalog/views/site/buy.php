@@ -19,7 +19,7 @@
 
                         </label>
                         <label class="email">
-                            <input name="BuyForm[email]" type="text" value="E-mail:">
+                            <input name="BuyForm[eMail]" type="text" value="E-mail:">
 
                         </label>
                         <label class="phone">
@@ -41,7 +41,7 @@
                             <a href="javascript:;" data-type="reset" class="button" onClick="document.getElementById('contact-form').reset();"><span>сбросить</span></a>
                             <a href="javascript:;" data-type="submit" class="button green" onClick="document.getElementById('contact-form').submit();">отправить</a>
                         </div>
-                        <input name="BuyForm[model]" type="hidden" value="<?php echo $item->name;?>">
+                        <input name="BuyForm[model]" type="hidden" value="123">
                     </fieldset>
 
                 <?php $this->endWidget(); ?>

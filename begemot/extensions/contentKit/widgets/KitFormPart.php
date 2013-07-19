@@ -19,6 +19,7 @@ class KitFormPart extends CWidget {
         $model = $this->model;
 
         echo $form->checkBoxRow($model,'published',array());
+        echo $form->checkBoxRow($model,'top',array());
 
     }
 

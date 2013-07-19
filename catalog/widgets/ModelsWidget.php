@@ -3,14 +3,25 @@
 class ModelsWidget extends CWidget {
     
     public $limit = 3;
+    public $onlyTop = true;
     
     public function run(){
         Yii::import('catalog.models.CatItemsToCat');
         Yii::import('catalog.models.CatItem');
         Yii::import('catalog.models.CatCategory');
-        $dataProvider = new CActiveDataProvider('CatItemsToCat', array('criteria' => array('select' => 't.itemId, t.catId', 'with' => array('item'=>array('condition'=>'`published`=1')), 'order' => 't.order'),'pagination'=>array( 'pageSize'=>1000)));
 
-        $this->render('index',array('categoryItems'=>$dataProvider->getData()));
+        $criteria = array();
+
+        if ($this->onlyTop){
+            $criteria =  array('select' => '`id`,`price`,`name`,`name_t`','condition'=>'`published`=1 AND `top`=1', 'with'=>array('category'));
+            //$criteria->distinct = true;
+        } else {
+            $criteria =  array('select' => '`id`,`price`,`name`,`name_t`','condition'=>'`published`=1', 'with'=>array('category'));
+        }
+
+        $dataProvider = new CActiveDataProvider('CatItem', array('criteria' => $criteria,'pagination'=>array('pageSize'=>$this->limit)));
+
+        $this->render('index',array('items'=>$dataProvider->getData()));
         
     }
     

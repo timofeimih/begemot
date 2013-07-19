@@ -17,6 +17,9 @@ class ContentKitModel extends CActiveRecord {
                 ),
                 'ordered' => array(
                     'order' => '`order`'
+                ),
+                'isTop' => array(
+                    'condition' => '`top`=1'
                 )
             );
     }
@@ -36,13 +39,16 @@ class ContentKitModel extends CActiveRecord {
 
     public function rules(){
         return array(
-            array('published','safe'),
+            array('published, top','safe'),
         );
     }
 
     public function attributeLabels()
     {
-        return array( 'published' => 'Is published');
+        return array(
+            'published' => 'Опубликованно',
+            'top'=> 'Прикрепить'
+        );
     }
 
     public function beforeSave(){
@@ -85,6 +91,12 @@ class ContentKitModel extends CActiveRecord {
         if (!array_search('authorId',$columnNames)){
             $sql = "ALTER TABLE `".$this->tableName()."`
 	                  ADD COLUMN `authorId` INT(10) NOT NULL;";
+            Yii::app()->db->createCommand($sql)->execute();
+        }
+
+        if (!array_search('top',$columnNames)){
+            $sql = "ALTER TABLE `".$this->tableName()."`
+	                  ADD COLUMN `top` INT(10) NOT NULL;";
             Yii::app()->db->createCommand($sql)->execute();
         }
 
