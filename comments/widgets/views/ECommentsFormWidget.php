@@ -8,6 +8,7 @@
 <!--        <input type="submit" value="Отправить">-->
 <!--    </form>-->
 <!--</div>-->
+
 <div class="moving-block" id="move">
   <?php
 
