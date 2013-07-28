@@ -23,6 +23,7 @@ class ECommentsFormWidget extends ECommentsBaseWidget
         
 	public function run()
 	{
+
             if($this->registeredOnly === false || Yii::app()->user->isGuest === false)
             {
                 $this->render('ECommentsFormWidget', array(
