@@ -13,7 +13,7 @@ class SiteController extends Controller {
 //    }
 
     public function actionIndex() {
-
+        
         $this->layout = CatalogModule::$catalogLayout;
 
         $categories = CatCategory::model()->findAll(array('condition' => 'level = 0', 'order' => '`order`'));
@@ -80,9 +80,9 @@ class SiteController extends Controller {
         $iDsStr = '(' . implode(',', $iDsArray) . ')';
 
         $items = CatItemsToCat::model()->findAll(array('condition' => '`catId` in ' . $iDsStr));
-        $dataProvider = new CActiveDataProvider('CatItemsToCat', array('criteria' => array('select' => 't.itemId', 'condition' => '`t`.`catId` in ' . $iDsStr . '', 'with' => 'item', 'order' => 't.order', 'distinct' => true, 'group')));
+        $dataProvider = new CActiveDataProvider('CatItemsToCat', array('criteria' => array('select' => 't.itemId', 'condition' => '`t`.`catId` in ' . $iDsStr . '', 'with' => 'item', 'order' => 't.order', 'distinct' => true, 'group'=>'`t`.`itemId`')));
 
-        $this->render('categoryView', array('categoryItems' => $dataProvider->getData()));
+        $this->render('rCategoryView', array('categoryItems' => $dataProvider->getData(),'category'=>$category));
     }
 
     public function actionBuy ($itemId){
@@ -116,6 +116,10 @@ class SiteController extends Controller {
         }
 
         $this->render('buy',array('id'=>$itemId,'item'=>$item,'buyFormModel'=>$buyFormModel));
+    }
+
+    public function actionTest(){
+
     }
 
 }
