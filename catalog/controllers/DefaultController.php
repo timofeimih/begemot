@@ -32,7 +32,11 @@ class DefaultController extends Controller {
                     $itemDataFile = $webroot . '/files/pictureBox/catalogItem/' . $dataItem->id . '/data.php';
                     $data = require ($itemDataFile);
                     foreach ($data['images'] as $image) {
-                        $taskArray[] = $image['original'];
+                        if (isset($image['original'])){
+                            $taskArray[] = $image['original'];
+                        } else{
+                            throw new Exception ($dataItem->id.' - отсутствует индекс original');
+                        }
                     }
                 }
 
@@ -46,7 +50,6 @@ class DefaultController extends Controller {
                 Yii::import('pictureBox.components.filters.*');
 
                 $activeTask = $queue->getNewActiveTask();
-
                 $dir = dirname($activeTask);
                 $fullDir = Yii::getPathOfAlias('webroot').$dir;
 
@@ -58,30 +61,47 @@ class DefaultController extends Controller {
 
                 $dataFilePath = $fullDir.'/data.php';
 
+
                 if (file_exists($dataFilePath)){
                     $data = require($dataFilePath);
 
-                    $images = $data['images'][$imageId];
+                    if (isset($data['images'][$imageId])) {
 
-                    foreach ($images as $image){
-                        if (!preg_match('#\d+\.(\w+)#',basename($image))){
-                            if (file_exists($fullDir.'/'.basename($image))){
-                                unlink($fullDir.'/'.basename($image));
+                        $images = $data['images'][$imageId];
+
+                        foreach ($images as $image){
+                            if (!preg_match('#\d+\.(\w+)#',basename($image))){
+                                if (file_exists($fullDir.'/'.basename($image))){
+                                    unlink($fullDir.'/'.basename($image));
+                                }
                             }
                         }
                     }
-
                 }
 
 
                 $config = require Yii::getPathOfAlias('application') . '/config/catalog/categoryItemPictureSettings.php';
 
+                $config['nativeFilters']['admin'] = true;
+                $config['filtersTitles']['admin'] = 'Системный';
+                $config['imageFilters']['admin'] = array(
+                    0 => array(
+                        'filter' => 'CropResize',
+                        'param' => array(
+                            'width' => 298,
+                            'height' => 198,
+                        ),
+                    ),
+                );
+               // die($activeTask);
                 //$this->renderImageAgain($id, $elemId, $pictureId, $config);
 
                 $filterManager = new FiltersManager($webroot . $activeTask, $config);
                 $filters = $filterManager->getFilteredImages();
 
                 $resultImageArray = array();
+
+                $resultImageArray['original']= $activeTask;
 
                 foreach ($filters as $filterId=>$filteredFileName){
                     $resultImageArray[$filterId] = $dir.'/'.$filteredFileName;
