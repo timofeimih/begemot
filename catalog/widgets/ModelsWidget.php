@@ -13,10 +13,10 @@ class ModelsWidget extends CWidget {
         $criteria = array();
 
         if ($this->onlyTop){
-            $criteria =  array('select' => '`id`,`price`,`name`,`name_t`, `hit`','condition'=>'`published`=1 AND `top`=1', 'with'=>array('category'));
+            $criteria =  array('condition'=>'`published`=1 AND `top`=1', 'with'=>array('category'));
             //$criteria->distinct = true;
         } else {
-            $criteria =  array('select' => '`id`,`price`,`name`,`name_t`, `hit`','condition'=>'`published`=1', 'with'=>array('category'));
+            $criteria =  array('condition'=>'`published`=1', 'with'=>array('category'));
         }
 
         $dataProvider = new CActiveDataProvider('CatItem', array('criteria' => $criteria,'pagination'=>array('pageSize'=>$this->limit)));
