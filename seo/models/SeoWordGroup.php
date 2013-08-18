@@ -31,6 +31,7 @@ class SeoWordGroup extends CActiveRecord
 			array('title, rgt, level, lft', 'required'),
 			array('rgt, level, lft', 'numerical', 'integerOnly'=>true),
 			array('title', 'length', 'max'=>50),
+            array('url','safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
 			array('id, title, rgt, level, lft', 'safe', 'on'=>'search'),
