@@ -129,10 +129,7 @@ class SeoWordGroupController extends Controller
 	 */
 	public function actionIndex()
 	{
-		$dataProvider=new CActiveDataProvider('SeoWordGroup');
-		$this->render('index',array(
-			'dataProvider'=>$dataProvider,
-		));
+		$this->render('index');
 	}
 
 	/**

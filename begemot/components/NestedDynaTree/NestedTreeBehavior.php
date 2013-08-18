@@ -49,6 +49,7 @@ class NestedTreeBehavior extends CActiveRecordBehavior {
                     'id' => $node->primaryKey,
                     'title' => $node->nodeTitle,
                     'tooltip' => $node->nodeTitle,
+                    'url'=>$node->url
                 );
                 if ($url && !$node->isRoot())
                     $NodeArray['data'][$i]['href'] = $url . $node->primaryKey;
