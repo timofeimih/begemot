@@ -69,6 +69,10 @@ class SiteController extends Controller {
         $this->layout = CatalogModule::$catalogCategoryViewLayout;
 
         $category = CatCategory::model()->findByPk($catId);
+        $parentCategory = null;
+        if ($category->pid != "-1"){
+            $parentCategory = CatCategory::model()->findByPk($category->pid);
+        }
 
         $catsIDs = $category->getAllCatChilds($catId);
 
@@ -79,10 +83,11 @@ class SiteController extends Controller {
 
         $iDsStr = '(' . implode(',', $iDsArray) . ')';
 
-        $items = CatItemsToCat::model()->findAll(array('condition' => '`catId` in ' . $iDsStr));
-        $dataProvider = new CActiveDataProvider('CatItemsToCat', array('criteria' => array('select' => 't.itemId', 'condition' => '`t`.`catId` in ' . $iDsStr . '', 'with' => 'item', 'order' => 't.order', 'distinct' => true, 'group'=>'`t`.`itemId`')));
+        $dataProvider = new CActiveDataProvider('CatItemsToCat', array('criteria' => array('select' => 't.itemId', 'condition' => '`t`.`catId` in ' . $iDsStr . '', 'with' => 'item', 'order' => '`item`.`top` desc,`item`.`price`', 'distinct' => true, 'group'=>'`t`.`itemId`')));
 
-        $this->render('rCategoryView', array('categoryItems' => $dataProvider->getData(),'category'=>$category));
+        $dataProvider->pagination = array('pageSize' => 1000);
+
+        $this->render('rCategoryView', array('categoryItems' => $dataProvider->getData(),'category'=>$category,'parentCat'=>$parentCategory));
     }
 
     public function actionBuy ($itemId){

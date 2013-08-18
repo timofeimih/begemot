@@ -138,7 +138,8 @@ class CatCategory extends CActiveRecord
                 $categoryArray['name'] = $category->name;
                 $categoryArray['order'] = $category->order;
                 $categoryArray['level'] = $category->level;
-                
+                $categoryArray['name_t'] = $category->name_t;
+
                 $catsArray[$category->id]=$categoryArray;
             }
             
@@ -302,7 +303,7 @@ class CatCategory extends CActiveRecord
             if (file_exists($favFilePath)){
                  $images = require($favFilePath);
                };
-            if (isset($images['images']) && is_array($images['images']) && count($images['images'])>0){
+            if (isset($images['images'])){
                 return $images['images'];
             } else{
                 return null;
@@ -319,27 +320,25 @@ class CatCategory extends CActiveRecord
             $catalogImage = '';
             
             $images = $this->getCatFavPictures();
-            if (is_array($images) && count($images)!=0){
+            if (count($images)!=0){
               $imagesArray = array_values($images);
-              $catalogImage = array_shift($imagesArray);
+              $catalogImage = $imagesArray[0];
             }
-
+            
             if (count($images)==0){
                 
                     $images = $this->getCatPictures();
-                    if ($images!==null){
+                    if ($images!=null && is_array($images)){
                         $imagesArray = array_values($images);
-                        $catalogImage = $imagesArray[0];
+                        $catalogImage = array_shift($imagesArray);
                     } else {
                         return '#';
                     }
                 
             }
-
             if (is_null($tag)){
                 return array_shift($catalogImage);
             }
-
             else{
                 if (isset($catalogImage[$tag]))
                     return $catalogImage[$tag];
