@@ -1,4 +1,5 @@
 <?php
+
 $tagsOutput = '';
 $tags = PostsTags::model()->findAll();
 

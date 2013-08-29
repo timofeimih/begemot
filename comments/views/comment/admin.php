@@ -25,12 +25,12 @@ $this->breadcrumbs=array(
                     'value'=>'$data->userName',
                     'htmlOptions'=>array('width'=>80),
                 ),
-                array(
-                    'header'=>Yii::t('CommentsModule.msg', 'Link'),
-                    'value'=>'CHtml::link(CHtml::link(Yii::t("CommentsModule.msg", "Link"), $data->pageUrl, array("target"=>"_blank")))',
-                    'type'=>'raw',
-                    'htmlOptions'=>array('width'=>50),
-		),
+//                array(
+//                    'header'=>Yii::t('CommentsModule.msg', 'Link'),
+//                    'value'=>'CHtml::link(CHtml::link(Yii::t("CommentsModule.msg", "Link"), $data->pageUrl, array("target"=>"_blank")))',
+//                    'type'=>'raw',
+//                    'htmlOptions'=>array('width'=>50),
+//                ),
 		'comment_text',
                 array(
                     'name'=>'create_time',

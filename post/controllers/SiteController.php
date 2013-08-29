@@ -53,16 +53,17 @@ class SiteController extends Controller
     }
     
     public function actionTagIndex($id=null) {
+
         $this->layout = PostModule::$postLayout;
         if ($id!=null){
-            
+
             $tag = PostsTags::model()->findByPk($id);
             $this->pageTitle = $tag->title_seo;
-            
+
             if (isset($_GET['page'])){
                $this->pageTitle .= ' - страница '.$_GET['page'];
             }
-            
+
             $criteria = new CDbCriteria(array(
                     'select' => '*',
                     'distinct' => true,
@@ -105,12 +106,12 @@ class SiteController extends Controller
             'tags'=>$tags
         ));
     }
-    
+
     /**
      * Manages all models.
      */
     public function actionAdmin($tag_id=null) {
-        
+
 
         
          $this->layout ='begemot.views.layouts.column2';

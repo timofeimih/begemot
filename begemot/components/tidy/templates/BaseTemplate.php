@@ -14,7 +14,7 @@ class BaseTemplate
     protected $images = array();
 
     public $templateType = 'random'; //random, head, bottom
-
+    public $templateFile = null;
     public function getImageCount()
     {
         return $this->imageCount;
@@ -46,4 +46,12 @@ class BaseTemplate
     public function render (){
         return '<!-- template !-->'.$this->renderTemplate().'<!-- endtemplate !-->';
     }
+
+    public function renderFileTemplate($view, $data){
+        extract($data);
+        ob_start();
+        include Yii::getPathOfAlias($view).'.php';
+        return ob_get_clean();
+    }
+
 }
