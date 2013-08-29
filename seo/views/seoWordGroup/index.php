@@ -6,7 +6,7 @@ $this->breadcrumbs = array(
 $this->menu = require dirname(__FILE__) . '/../commonMenu.php';
 ?>
 
-<h1>Seo Word Groups</h1>
+<h1>Группы поисковых фраз</h1>
 
 <?php
 $this->widget('application.modules.begemot.components.NestedDynaTree.NestedDynaTree', array(

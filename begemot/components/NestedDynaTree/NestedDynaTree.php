@@ -196,7 +196,24 @@ class NestedDynaTree extends CWidget {
             }',
             );
         };
-       
+        $this->options["onCustomRender"] = 'js: function(node) {
+
+                        // Render title as columns
+                        if(node.data.url == null || node.data.url==0){
+                          // Default rendering
+                          return false;
+                        }
+
+                          html = "<a class=\'dynatree-title\' href=\'#\'>";
+                        html += node.data.title;
+
+                        return html + "</a><a  onClick=\'window.open( \""+node.data.url+"\", \"_blank\" )\'><span title=\""+node.data.url+"\" class=\'icon-large icon-eye-open\'> </span></a>";
+
+                      }
+            ';
+
+
+
         /* Draw tree box   */
         echo CHtml::openTag('div', array('style' => 'margin-bottom:10px;'));
         if ($this->manipulationEnabled) {
