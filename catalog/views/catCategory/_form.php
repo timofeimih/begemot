@@ -41,7 +41,7 @@
 	</div>
 	<div class="row">
 		<?php echo $form->labelEx($model,'seo_title'); ?>
-		<?php echo $form->textField($model,'seo_title',array('size'=>60,'maxlength'=>70)); ?>
+		<?php echo $form->textField($model,'seo_title',array('size'=>60)); ?>
 		<?php echo $form->error($model,'seo_title'); ?>
 	</div>
 
