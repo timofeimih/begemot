@@ -481,7 +481,7 @@ class DefaultController extends Controller
 
             $fileFullName = Yii::getPathOfAlias('webroot') . '/' . $image;
 
-            if (file_exists($fileFullName)) {
+            if (file_exists($fileFullName) && !is_dir($fileFullName)) {
                 unlink($fileFullName);
             }
         }
