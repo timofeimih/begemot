@@ -304,7 +304,7 @@ class DefaultController extends Controller
             $data = require($dataFile);
 
             $this->actionAjaxDelFav($id,$elementId,$pictureId);
-            
+
             $this->deleteImageFiles($id, $elementId, $pictureId, $data);
 
             if (isset($data['images'][$pictureId])) {
