@@ -303,6 +303,8 @@ class DefaultController extends Controller
             $dataFile = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/data.php';
             $data = require($dataFile);
 
+            $this->actionAjaxDelFav($id,$elementId,$pictureId);
+            
             $this->deleteImageFiles($id, $elementId, $pictureId, $data);
 
             if (isset($data['images'][$pictureId])) {
@@ -316,6 +318,8 @@ class DefaultController extends Controller
     {
         if (Yii::app()->request->isAjaxRequest) {
             $data = require(Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/data.php');
+
+
 
             if (isset($data['images'][$pictureId][$filterName])) {
                 $fileName = $data['images'][$pictureId][$filterName];
@@ -378,6 +382,7 @@ class DefaultController extends Controller
         $data = $this->getPictureBoxData($id, $elementId);
         $favData[$pictureId] = $data['images'][$pictureId];
         $this->putFavData($id, $elementId, $favData);
+
     }
 
     /**

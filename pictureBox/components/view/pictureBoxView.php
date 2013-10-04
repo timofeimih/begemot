@@ -43,7 +43,7 @@ $script = '
             }
 
             function refreshPictureBox(divId,state){
-               
+
                 $.ajax({
                     url:"/pictureBox/default/ajaxLayout",
                     data:state,
