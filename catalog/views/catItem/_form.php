@@ -30,7 +30,17 @@
         
 	<div class="row">
 		<?php echo $form->labelEx($model,'text'); ?>
-            
+        <?php
+
+        echo '<div style="text-align:right;">';
+        $this->widget('bootstrap.widgets.TbButton',array(
+            'label' => 'Расставить изображения',
+            'type' => 'primary',
+            'size' => 'mini',
+            'url'=>array('catItem/tidyItemText','id'=>$model->id)
+        ));
+        echo '</div>';
+        ?>
 		<?php 
                         $this->widget('begemot.extensions.ckeditor.CKEditor',
        //$this->widget('CKEditor',

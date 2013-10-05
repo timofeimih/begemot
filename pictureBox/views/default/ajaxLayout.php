@@ -46,10 +46,13 @@ function paginationHtml($id, $elementId, $images, $activePage = 1, $config) {
 
     $page = 0;
 
-    $favFile = Yii::app()->basePath . '/../files/pictureBox/' . $id . '/' . $elementId . '/favData.php';
+    $favFile = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/favData.php';
+
+    $favData = null;
 
     if (file_exists($favFile))
         $favData = require ($favFile);
+
 
     $output.= '<ul class="pagi">';
     foreach ($images as $imageId => $image) {
@@ -183,7 +186,7 @@ function pictureFavHtml($id, $elementId, $pictureNumber, $images, $config) {
     }
 
 
-    $favFile = Yii::app()->basePath . '/../files/pictureBox/' . $id . '/' . $elementId . '/favData.php';
+    $favFile = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/favData.php';
 
     if (file_exists($favFile))
         $favData = require ($favFile);

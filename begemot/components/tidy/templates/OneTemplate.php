@@ -16,6 +16,9 @@ class OneTemplate extends BaseTemplate
 
     public function __construct($config){
         $this->config = $config;
+        if (isset($config['templateFile'])){
+            $this->templateFile = $config['templateFile'];
+        }
     }
 
     public function renderTemplate()
@@ -25,8 +28,11 @@ class OneTemplate extends BaseTemplate
 
         if (isset($image['title'])?$title=$image['title']:$title='');
         if (isset($image['alt'])?$alt=$image['alt']:$alt='');
-
-        $html = '<div class="tidyTemplate"><img src="'.$image[$this->config['imageTag']].'" alt="'.$alt.'" title="'.$title.'" /></div>';
+        if ($this->templateFile === null){
+            $html = '<div class="tidyTemplate"><img src="'.$image[$this->config['imageTag']].'" alt="'.$alt.'" title="'.$title.'" /></div>';
+        } else{
+            $html = $this->renderFileTemplate($this->templateFile,array('image'=>$image,'alt'=>$alt,'title'=>$title));
+        }
         return $html;
     }
 

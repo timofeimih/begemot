@@ -7,10 +7,10 @@
  * To change this template use File | Settings | File Templates.
  */
 require_once('BaseTemplate.php');
-class ThreeTemplate extends BaseTemplate
+class TwoTemplate extends BaseTemplate
 {
 
-    protected $imageCount = 3;
+    protected $imageCount = 2;
 
     protected $config;
 
@@ -43,7 +43,7 @@ class ThreeTemplate extends BaseTemplate
 
             $images = array();
             for ($i=0;$i<$this->imageCount;$i++){
-                $images[] = $this->getImage();
+                $images[]  = $this->getImage();
             }
 
             $html = $this->renderFileTemplate($this->templateFile,array('images'=>$images));

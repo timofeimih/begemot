@@ -29,7 +29,7 @@ class CatItemController extends Controller
 		return array(
 
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('delete','create','update','index','view','deleteItemToCat'),
+				'actions'=>array('delete','create','update','index','view','deleteItemToCat','tidyItemText'),
                 'expression'=>'Yii::app()->user->canDo("")'
 			),
 			array('deny',  // deny all users
@@ -203,4 +203,31 @@ class CatItemController extends Controller
 			Yii::app()->end();
 		}
 	}
+
+    public function actionTidyItemText($id)
+    {
+
+        $model = $this->loadModel($id);
+
+        Yii::import('application.modules.pictureBox.components.PBox');
+
+        $pbox = new PBox('catalogItem',$id);
+
+        $images = $pbox->pictures;
+        //print_r($pbox->pictures);
+        //return;
+        $text = $model->text;
+
+        Yii::import('application.modules.begemot.components.tidy.TidyBuilder');
+
+        $this->module->tidyleadImage!=0?$leadImage=1:$leadImage=0;
+
+        $tidy = new TidyBuilder ( $model->text, $this->module->tidyConfig, $images,$leadImage);
+
+        $model->text = $tidy->renderText();
+
+        $model->save();
+
+        $this->redirect(array('/catalog/catItem/update', 'id' => $model->id,));
+    }
 }
