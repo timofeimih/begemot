@@ -106,9 +106,21 @@ function imagesLinks($data, $imageNumber, $config, $id, $elementId) {
 
         $linksHtml = '<ol class="nav">';
 
-        $deleteAllHtml = '<br /><a  class="del" onClick="$.ajax({url:\'/pictureBox/default/ajaxDeleteImage/id/' . $id . '/elementId/' . $elementId . '/pictureId/' . $activeImage . '\',success: function(){;loadPage(PB_' . $config['divId'] . '.pictureBoxPage-1,PB_' . $config['divId'] . ',\'' . $config['divId'] . '\')}})" href="javascript:;">Удалить изображение</a>';
+        $deleteAllHtml = '<br /><a class="del" onClick="$.ajax({url:\'/pictureBox/default/ajaxDeleteImage/id/' . $id . '/elementId/' . $elementId . '/pictureId/' . $activeImage . '\',success: function(){;loadPage(PB_' . $config['divId'] . '.pictureBoxPage-1,PB_' . $config['divId'] . ',\'' . $config['divId'] . '\')}})" href="javascript:;">Удалить изображение</a>';
         
         foreach ($config['imageFilters'] as $keyFilter => $filter) {
+
+            //Ищем фильтр с width height
+            $width = null;
+            $height = null;
+            foreach ($filter as $subfilter){
+                if (isset($subfilter['param']['width'])){
+                    $width = $subfilter['param']['width'];
+                    $height = $subfilter['param']['height'];
+                    break;
+                }
+            }
+
 
             if ($keyFilter!='admin'){
                 if (!isset($images[$activeImage][$keyFilter])) {
@@ -119,9 +131,18 @@ function imagesLinks($data, $imageNumber, $config, $id, $elementId) {
 
                             </li>';
                 } else {
+                    $imageOrig = $filename . '.' . $PartsPath['extension'] . '?tmp=' . rand(0, 100);
+                    $imageSrc = $filename  .'_'.$keyFilter. '.' . $PartsPath['extension'] . '?tmp=' . rand(0, 100);
+
+                    if ($width!==null){
+                        $resizeBtnHtml ='<a onClick="resizeData.activeImage=\''.$activeImage.'\';resizeData.catId=\''.$elementId.'\';resizeData.filterName=\''.$keyFilter.'\';setResizeImage(\''.$imageOrig.'\','.$width.','.$height.',resizeData)" data-toggle="modal" data-target="#myModal" style="width:20px;display:inline;" href="javascript:;"><span class="icon-resize-full"></span></a>' ;
+                    } else {
+                        $resizeBtnHtml='';
+                    }
+
                     $delMakeHtml = '
-                    <li>
-                    <a href="' . $filename . '_' . $keyFilter . '.' . $PartsPath['extension'] . '?tmp=' . rand(0, 100) . '" style="display:inline;">' . $config['filtersTitles'][$keyFilter] . '</a>
+                    <li>'.$resizeBtnHtml.'
+                    <a href="' . $imageSrc . '" style="display:inline;">' . $config['filtersTitles'][$keyFilter] . '</a>
                     <span style="margin-right: 6px;">(<a href="javaScript:;" onclick="$.ajax({url: \'/pictureBox/default/ajaxDeleteFilteredImage/id/' . $id . '/elementId/' . $elementId . '/pictureId/' . $activeImage . '/filterName/' . $keyFilter . '\',success: function(){refreshPictureBox(\'' . $config['divId'] . '\',PB_' . $config['divId'] . ')}})" class="del">Удалить</a>)</span>    
                      </li>';
                 }

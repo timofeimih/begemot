@@ -221,7 +221,6 @@ class DefaultController extends Controller
         $data['images'][$imageId] = array(
             'original' => $originalFile,
         );
-        // $data[] = $_FILES[$fileElementName]['name'][$i];
 
         PictureBox::crPhpArr($data, $dir . '/data.php');
 
@@ -340,7 +339,7 @@ class DefaultController extends Controller
      * @param type $pictureId Идентификатор изображения
      * @param type $filterName Имя фильтра. Изначально устанавливается в конфиге
      */
-    public function actionAjaxMakeFilteredImage($id, $elementId, $pictureId, $filterName)
+    public function actionAjaxMakeFilteredImage($id, $elementId, $pictureId, $filterName,$x=null,$y=null,$width=null,$height=null)
     {
         if (Yii::app()->request->isAjaxRequest) {
             $data = require(Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/data.php');
@@ -349,16 +348,38 @@ class DefaultController extends Controller
 
             $imageExt = end(explode('.', $data['images'][$pictureId]['original']));
 
+
+
             if (isset($config['imageFilters'][$filterName])) {
 
+                $originalImagePath = $dir . "/" . $pictureId . '.' . $imageExt;
+                $tmpOriginalImagePath = $originalImagePath.'.tmp';
+
+                if ($x!==null && $width!==null){
+                    $originalPicture = new Imagick($originalImagePath);
+                    copy($originalImagePath,$tmpOriginalImagePath);
+
+                    $originalPicture->cropImage($width,$height,$x,$y);
+                    $originalPicture->writeImage($originalImagePath);
+                    //$originalPicture->writeImage($originalImagePath.'111');
+
+                }
+
                 $filter['imageFilters'][$filterName] = $config['imageFilters'][$filterName];
-                $filterManager = new FiltersManager($dir . "/" . $pictureId . '.' . $imageExt, $filter);
+                $filterManager = new FiltersManager($originalImagePath, $filter);
 
                 $filters = $filterManager->getFilteredImages();
 
                 foreach ($filters as $filterName => $filteredImageFile) {
                     $this->addFilteredImage($pictureId, $filterName, '/files/pictureBox/' . $id . '/' . $elementId . '/' . $filteredImageFile, $dir);
                 }
+
+                if ($x!==null && $width!==null){
+                    copy($tmpOriginalImagePath,$originalImagePath);
+                    unlink($tmpOriginalImagePath);
+                }
+
+
             }
         }
     }
@@ -504,7 +525,7 @@ class DefaultController extends Controller
         if (isset($_SESSION['pictureBox'][$id . '_' . $elementId])) {
             return $_SESSION['pictureBox'][$id . '_' . $elementId];
         } else {
-            return 'нету';
+            return 'Config in session not exist!';
         }
     }
 
@@ -513,8 +534,7 @@ class DefaultController extends Controller
         if (file_exists($file1)) {
             rename($file1, $file1 . '_tmp');
         } else {
-        echo $file1.'!
-        '.$file2.'!!';
+
         return;
             throw new Exception(__FILE__ . ' функция flipFiles. Отсутствует первый файл для переименования.');
         }
