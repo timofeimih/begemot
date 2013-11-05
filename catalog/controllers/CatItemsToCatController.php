@@ -18,7 +18,7 @@ class CatItemsToCatController extends Controller
 
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
 				'actions'=>array('delete','orderUp','orderDown','admin'),
-                'expression'=>'Yii::app()->user->canDo("")'
+                'expression' => 'Yii::app()->user->canDo("catalogEditor")'
 			),
 			array('deny',  // deny all users
 				'users'=>array('*'),

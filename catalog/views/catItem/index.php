@@ -30,7 +30,7 @@ $this->menu = $menu;
                     'class' => 'EImageColumn',
                     'htmlOptions'=>array('width'=>120),
                     // see below.
-                    'imagePathExpression' => '$data->getItemMainPicture()',
+                    'imagePathExpression' => '$data->getItemMainPicture(\'admin\')',
                     // Text used when cell is empty.
                     // Optional.
                     'emptyText' => '—',

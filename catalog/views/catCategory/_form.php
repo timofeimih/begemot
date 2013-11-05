@@ -31,6 +31,17 @@
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'text'); ?>
+        <?php
+
+        echo '<div style="text-align:right;">';
+        $this->widget('bootstrap.widgets.TbButton',array(
+            'label' => 'Расставить изображения',
+            'type' => 'primary',
+            'size' => 'mini',
+            'url'=>array('catCategory/tidyPost','id'=>$model->id)
+        ));
+        echo '</div>';
+        ?>
 		<?php 
                         $this->widget('begemot.extensions.ckeditor.CKEditor',
        //$this->widget('CKEditor',
@@ -38,6 +49,9 @@
                 array('model' => $model, 'attribute' => 'text', 'language' => 'ru', 'editorTemplate' => 'full',));
                 ?>
 		<?php echo $form->error($model,'text'); ?>
+        <?php
+        $this->widget('begemot.components.htmlClearPanel.htmlClearPanel',array('id'=>'CatCategory_text'));
+        ?>
 	</div>
 	<div class="row">
 		<?php echo $form->labelEx($model,'seo_title'); ?>

@@ -8,13 +8,13 @@ class CatalogModule extends CWebModule
 
     public $tidyleadImage = false;
     public $tidyConfig = array(
-        'Three' => array(
+        'Three'=>array(
 
-            'imageTag' => 'admin'
+            'imageTag'=>'admin'
         ),
-        'One' => array(
+        'One'=>array(
 
-            'imageTag' => 'inner_big'
+            'imageTag'=>'inner_big'
         )
     );
 
