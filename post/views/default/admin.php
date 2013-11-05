@@ -24,6 +24,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
       
         array(
             'class'=>'bootstrap.widgets.TbButtonColumn',
+            'viewButtonUrl'=>'Yii::app()->urlManager->createUrl(\'post/site/view\',array(\'title\'=>$data->title_t,\'id\'=>$data->id,))',
         ),
     ),
 ));
