@@ -46,6 +46,7 @@ $this->menu = $menu;
 
 		array(
 			'class'=>'bootstrap.widgets.TbButtonColumn',
+            'viewButtonUrl'=>'Yii::app()->urlManager->createUrl(\'catalog/site/itemView\',array(\'title\'=>\'tmp_name\',\'catId\'=>$data->catId,\'itemName\'=>$data->name_t,\'item\'=>$data->id,))',
 		),
 	),
 ));
