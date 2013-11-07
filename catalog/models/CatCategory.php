@@ -231,7 +231,10 @@ class CatCategory extends CActiveRecord
             return $categories[$id];
         }
         
-        public function getPid($id){
+        public function getPid($id=null){
+            if (is_null($id)){
+                $id = $this->id;
+            }
             $categories = $this->getCatArray();
             return $categories[$id]['pid'];
         }   

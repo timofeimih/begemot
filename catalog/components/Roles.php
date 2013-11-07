@@ -2,9 +2,9 @@
 
 return array(
     'items' => array(
-        'PostEditor' => array(
+        'CatalogEditor' => array(
             'type' => 2,
-            'description'=>'Редактор статей',
+            'description'=>'Редактор каталога',
 
         ),
     ),
