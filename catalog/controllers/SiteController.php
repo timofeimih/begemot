@@ -25,9 +25,9 @@ class SiteController extends Controller {
     public function actionItemView($catId = 0, $item = 0) {
         $uri = $_SERVER['REQUEST_URI'];
 
-        $this->layout = CatalogModule::$catalogItemViewLayout;
-        $category = CatCategory::model()->findByPk($catId);
         $item = CatItem::model()->findByPk($item);
+        $this->layout = CatalogModule::$catalogItemViewLayout;
+        $category = CatCategory::model()->findByPk($item->catId);
 
 
 
