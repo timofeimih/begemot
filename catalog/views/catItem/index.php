@@ -30,7 +30,7 @@ $this->menu = $menu;
                     'class' => 'EImageColumn',
                     'htmlOptions'=>array('width'=>120),
                     // see below.
-                    'imagePathExpression' => '$data->getItemMainPicture(\'admin\')',
+                    'imagePathExpression' => '$data->getItemMainPicture()',
                     // Text used when cell is empty.
                     // Optional.
                     'emptyText' => '—',
@@ -47,6 +47,8 @@ $this->menu = $menu;
 		array(
 			'class'=>'bootstrap.widgets.TbButtonColumn',
             'viewButtonUrl'=>'Yii::app()->urlManager->createUrl(\'catalog/site/itemView\',array(\'title\'=>\'tmp_name\',\'catId\'=>$data->catId,\'itemName\'=>$data->name_t,\'item\'=>$data->id,))',
+            'viewButtonOptions'=>array('target'=>'_blank')
+
 		),
 	),
 ));
