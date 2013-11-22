@@ -1,9 +1,12 @@
 <?php
 
-class VarsModule extends CWebModule {
+class VarsModule extends CWebModule
+{
 
     public static $arrayForSite = null;
-    public function init() {
+
+    public function init()
+    {
         // this method is called when the module is being created
         // you may place code here to customize the module or the application
         // import the module-level models and components
@@ -13,51 +16,47 @@ class VarsModule extends CWebModule {
         ));
     }
 
-    public function beforeControllerAction($controller, $action) {
+    public function beforeControllerAction($controller, $action)
+    {
 
-
-        $dataFile = VarsModule::getDataFilePath();
-        if (!file_exists($dataFile)){
-            $fp = fopen($dataFile, "w");
-            fwrite($fp, '<?php return array();?>');
-            fclose ($fp);
-
-        }
+        self::checkDataFile();
         Yii::app()->getComponent('bootstrap');
 
         return true;
     }
 
-    public static function getDataFilePath(){
-        return Yii::getPathOfAlias('webroot').'/files/vars.data';
+    public static function getDataFilePath()
+    {
+        return Yii::getPathOfAlias('webroot') . '/files/vars.data';
     }
 
-    public static function getData(){
+    public static function getData()
+    {
         return require self::getDataFilePath();
     }
 
-    public static function setData($data){
+    public static function setData($data)
+    {
 
         $dataFile = VarsModule::getDataFilePath();
 
-        if (!file_exists($dataFile)){
-            $fp = fopen($dataFile, "w");
-            fwrite($fp, '<?php return array();?>');
-            fclose ($fp);
-        }
+        self::checkDataFile();
 
-        file_put_contents($dataFile,'<?php return '.var_export($data,true).'?>');
+        file_put_contents($dataFile, '<?php return ' . var_export($data, true) . '?>');
     }
 
-    public static function getVar($varName){
+    public static function getVar($varName)
+    {
 
-        if (self::$arrayForSite === null){
+        self::checkDataFile();
+
+        if (self::$arrayForSite === null) {
             $data = self::getData();
 
             $siteArray = array();
 
-            foreach ($data as $var){
-                $siteArray[$var['varname']]=$var['vardata'];
+            foreach ($data as $var) {
+                $siteArray[$var['varname']] = $var['vardata'];
             }
 
             self::$arrayForSite = $siteArray;
@@ -65,13 +64,23 @@ class VarsModule extends CWebModule {
         }
         $resultVarData = null;
 
-        if (isset(self::$arrayForSite[$varName])){
+        if (isset(self::$arrayForSite[$varName])) {
             $resultVarData = self::$arrayForSite[$varName];
-        }else{
-            $resultVarData = 'Переменная - '.$varName;
+        } else {
+            $resultVarData = 'Переменная - ' . $varName;
         }
 
         return $resultVarData;
     }
 
+    public static function checkDataFile()
+    {
+        $dataFile = VarsModule::getDataFilePath();
+
+        if (!file_exists($dataFile)) {
+            $fp = fopen($dataFile, "w");
+            fwrite($fp, '<?php return array();?>');
+            fclose($fp);
+        }
+    }
 }
