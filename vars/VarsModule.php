@@ -2,7 +2,7 @@
 
 class VarsModule extends CWebModule {
 
-
+    public static $arrayForSite = null;
     public function init() {
         // this method is called when the module is being created
         // you may place code here to customize the module or the application
@@ -46,8 +46,32 @@ class VarsModule extends CWebModule {
             fclose ($fp);
         }
 
-        file_put_contents($dataFile,'<?php'.var_export($data).'?>');
-
-
+        file_put_contents($dataFile,'<?php return '.var_export($data,true).'?>');
     }
+
+    public static function getVar($varName){
+
+        if (self::$arrayForSite === null){
+            $data = self::getData();
+
+            $siteArray = array();
+
+            foreach ($data as $var){
+                $siteArray[$var['varname']]=$var['vardata'];
+            }
+
+            self::$arrayForSite = $siteArray;
+
+        }
+        $resultVarData = null;
+
+        if (isset(self::$arrayForSite[$varName])){
+            $resultVarData = self::$arrayForSite[$varName];
+        }else{
+            $resultVarData = 'Переменная - '.$varName;
+        }
+
+        return $resultVarData;
+    }
+
 }

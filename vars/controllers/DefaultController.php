@@ -30,7 +30,17 @@ class DefaultController extends Controller
 
         $varsArray = VarsModule::getData();
 
-        $gridDataProvider = new CArrayDataProvider($varsArray);
+        $varsArrayForGrid = array();
+
+        foreach($varsArray as $id=>$var){
+            $varItem = array();
+            $varItem['id']=$id;
+            $varItem['varname']=$var['varname'];
+            $varItem['vardata']=$var['vardata'];
+            $varsArrayForGrid[] = $varItem;
+        }
+
+        $gridDataProvider = new CArrayDataProvider($varsArrayForGrid);
         $gridDataProvider->pagination = array('pageSize' => 20);
 
         $this->render('index', array('data' => $gridDataProvider));
@@ -47,17 +57,21 @@ class DefaultController extends Controller
 
 
         if (isset($_POST['NewVar'])) {
+
             $model->attributes = $_POST['NewVar'];
             if ($model->validate()) {
 
-                $dataPath = $this->getDataDir();
 
-                $webroot = Yii::getPathOfAlias('webroot');
-                $file = fopen($dataPath . '/' . $model->filename . '.php', 'w');
-                fclose($file);
+                $data = VarsModule::getData();
 
+                $dataItem = array();
+                $dataItem['varname'] = $model->varname;
+                $dataItem['vardata'] = $model->vardata;
 
-                $this->redirect('/pages');
+                $data[] = $dataItem;
+                VarsModule::setData($data);
+
+                $this->redirect('/vars');
                 return;
             }
         }
@@ -65,18 +79,20 @@ class DefaultController extends Controller
         $this->render('newVar', array('model' => $model));
     }
 
-    public function actionDelete($file)
+    public function actionDelete($id)
     {
-        $file = str_replace("*", "/", $file);
+        $data = VarsModule::getData();
+        unset($data[$id]);
+        VarsModule::setData($data);
 
-        unlink($file . '.php');
     }
 
-    public function actionUpdate($file)
+    public function actionUpdate($id)
     {
 
-        $model = new updateForm($file . '.php');
+        $model = new NewVar();
 
+        $model->loadModel($id);
 
         if (isset($_POST['ajax']) && $_POST['ajax'] === 'update-form-update-form') {
             echo CActiveForm::validate($model);
@@ -84,14 +100,15 @@ class DefaultController extends Controller
         }
 
 
-        if (isset($_POST['updateForm'])) {
+        if (isset($_POST['NewVar'])) {
 
-            $model->attributes = $_POST['updateForm'];
+            $model->attributes = $_POST['NewVar'];
             if ($model->validate()) {
-                $model->saveFile();
 
+                $model->saveModel();
             }
         }
+
         $this->render('update', array('model' => $model));
     }
 

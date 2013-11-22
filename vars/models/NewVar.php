@@ -9,7 +9,8 @@ class NewVar extends CFormModel
 {
 	public $varname;
 
-
+    public $vardata;
+    public $id;
 
 
 	/**
@@ -21,6 +22,7 @@ class NewVar extends CFormModel
 	{
 		return array(
 			array('varname', 'required'),
+            array('vardata', 'safe'),
 			array(
                             'varname',
                             'match',
@@ -37,8 +39,21 @@ class NewVar extends CFormModel
 	{
 		return array(
 			'varname'=>'Имя переменной',
+            'vardata'=>'Данные'
 		);
 	}
 
+    public function loadModel($id){
+        $data = VarsModule::getData();
+        $this->id = $id;
+        $this->vardata = $data[$id]['vardata'];
+        $this->varname = $data[$id]['varname'];
+    }
 
+    public function saveModel(){
+        $data = VarsModule::getData();
+        $data[$this->id]['vardata']=$this->vardata;
+        $data[$this->id]['varname']=$this->varname;
+        VarsModule::setData($data);
+    }
 }

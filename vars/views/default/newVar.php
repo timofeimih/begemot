@@ -22,7 +22,12 @@ $this->menu = require dirname(__FILE__).'/../commonMenu.php';
 		<?php echo $form->textField($model,'varname'); ?>
 		<?php echo $form->error($model,'varname'); ?>
 	</div>
-        
+
+    <div class="row">
+        <?php echo $form->labelEx($model,'vardata'); ?>
+        <?php echo $form->textField($model,'vardata'); ?>
+        <?php echo $form->error($model,'vardata'); ?>
+    </div>
 
 	<div class="row buttons">
 		<?php echo CHtml::submitButton('Submit'); ?>

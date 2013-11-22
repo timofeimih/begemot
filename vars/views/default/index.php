@@ -7,28 +7,27 @@ $this->breadcrumbs=array(
 $this->menu = require dirname(__FILE__).'/../commonMenu.php';
 ?>
 
-<h1>Статические страницы</h1>
+<h1>Статические переменные</h1>
 <?php $this->widget('bootstrap.widgets.TbGridView', array(
     'id'=>'test-grid',
     'type'=>'striped bordered condensed',
     'dataProvider'=>$data,
     'template'=>"{items}\n{pager}",
     'columns'=>array(
-        array('name'=>'id', 'header'=>'#'),
+        array('name'=>'varname', 'header'=>'#'),
         array(
-            'name'=>'filePath', 
-            'header'=>'Файл',
-            'value'=>"Yii::app()->urlManager->createUrl('site/page',array('view'=>str_replace('.php','',basename(\$data['filePath']))))",
+            'name'=>'vardata',
+            'header'=>'Данные',
+
             ),
         array(
             'class'=>'bootstrap.widgets.TbButtonColumn',
-            'template'=>'{view}{update}{delete}',
-             'viewButtonUrl'=>"Yii::app()->urlManager->createUrl('site/page',array('view'=>str_replace('.php','',basename(\$data['filePath']))))",
-             'deleteButtonUrl'=>'"/pages/default/delete/file/".str_replace("/","*",str_replace(".php","",$data["filePath"]))',
-             'updateButtonUrl'=>'"/pages/default/update/file/".str_replace("/","*",str_replace(".php","",$data["filePath"]))',
+            'template'=>'{update}{delete}',
+             'deleteButtonUrl'=>'"/vars/default/delete/id/".$data["id"]',
+             'updateButtonUrl'=>'"/vars/default/update/id/".$data["id"]',
         ),
     ),
-)); 
+));
 
 
 
