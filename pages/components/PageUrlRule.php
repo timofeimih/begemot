@@ -16,12 +16,13 @@ class PageUrlRule extends CBaseUrlRule
  
     public function parseUrl($manager,$request,$pathInfo,$rawPathInfo)
     {
-        if (preg_match('%^(\w+)$%', $pathInfo, $matches))
+        if (preg_match('%^([A-Za-z0-9\-\_]+)$%', $pathInfo, $matches))
         {
             // Проверяем $matches[1] и $matches[3] на предмет
             // соответствия производителю и модели в БД.
             // Если соответствуют, выставляем $_GET['manufacturer'] и/или $_GET['model']
             // и возвращаем строку с маршрутом 'car/index'.
+
             
             $filename = Yii::getPathOfAlias('webroot.files.pages').'/'.$matches[1].'.php';
             if (file_exists($filename)){

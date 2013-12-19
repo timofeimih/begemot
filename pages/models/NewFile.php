@@ -24,7 +24,7 @@ class NewFile extends CFormModel
 			array(
                             'filename',
                             'match',
-                            'pattern'=>'/^([A-Za-z0-9_])+$/',
+                            'pattern'=>'/^([A-Za-z0-9_-])+$/',
                             'message'=>'Только латинские символы и цифры.',
                             ),
 		);
