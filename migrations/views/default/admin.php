@@ -1,5 +1,6 @@
 
 <h1>Миграция базы данных</h1>
+<?=$time?>
 <div class="center-block"><?=$return?></div>
 <table>
 	<thead>
@@ -19,12 +20,12 @@
 			<td><?=$model->isConfirmed()?></td>
 			<td>
 				<?php if (is_bool($model->isConfirmed(true)) && !$model->isConfirmed(true)): ?>
-					<a href='?file=<?=get_class($model)?>&go=up' class="btn btn-primary">Применить</a>
+					<a href='?file=<?=get_class($model)?>&go=up' class="btn btn-primary btn-mini">Применить</a>
 				<?php elseif(is_bool($model->isConfirmed(true)) && $model->isConfirmed(false)): ?>
-					<a href='?file=<?=get_class($model)?>&go=down' class="btn btn-warning">Откатить</a>
+					<a href='?file=<?=get_class($model)?>&go=down' class="btn btn-warning btn-mini">Откатить</a>
 				<?php else: ?>
-					<a href='?file=<?=get_class($model)?>&go=up' class="btn btn-primary">Применить</a>
-					<a href='?file=<?=get_class($model)?>&go=down' class="btn btn-warning">Откатить</a>
+					<a href='?file=<?=get_class($model)?>&go=up' class="btn btn-primary btn-mini">Применить</a>
+					<a href='?file=<?=get_class($model)?>&go=down' class="btn btn-warning btn-mini">Откатить</a>
 				<?php endif ?>
 			</td>
 		</tr>
@@ -33,4 +34,4 @@
 	</tbody>
 </table>
 
-<a href='?file=all&go=up' class='btn btn-primary btn-large'>Применить все</a>
+<a href='?file=all&go=up' class='btn btn-primary btn-medium'>Применить все</a>
