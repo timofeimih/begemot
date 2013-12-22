@@ -11,12 +11,12 @@ class Migrations{
 	}
 	public function up()
 	{
-		return "Нету имплеметации";
+		return false;
 	}
 
 	public function down()
 	{
-		# code go here
+		return false;
 	}
 
 	public function execute($sql)
