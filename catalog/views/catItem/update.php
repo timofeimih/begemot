@@ -1,6 +1,10 @@
 <?php
 /* @var $this CatItemController */
 /* @var $model CatItem */
+$assets=Yii::app()->clientScript;
+$assets->registerCSSFile('/css/multi-select.css');
+$assets->registerScriptFile('/js/jquery.multi-select.js', CClientScript::POS_HEAD);
+$assets->registerScriptFile('/js/jquery.quicksearch.js', CClientScript::POS_HEAD);
 
 $this->breadcrumbs=array(
 	'Cat Items'=>array('index'),
@@ -71,9 +75,109 @@ $this->menu = require dirname(__FILE__).'/commonMenu.php';
 
 <?php if ($tab=='options'){ ?>
 <h2>Опции</h2>
+
+
 <form method='post'>
-    <div id="price_option">
-    <?php
+    <select id='custom-headers' multiple='multiple' name='options[]' class='searchable'>
+      <?php
+        if (!$model->isNewRecord):
+            $alreadyGot = CatItemsToItems::model()->findAll(array('select'=>'toItemId', 'condition' => 'itemId='.$model->id));
+
+            $arrayOfItems = array();
+            foreach ($alreadyGot as $item) {
+                array_push($arrayOfItems, $item->toItemId);
+            }
+            $arrayOfItems = array_filter($arrayOfItems);
+            $items = CatItem::model()->findAll(array('order'=>'id ASC'));
+
+            if (is_array($items) && count($items)>0):
+
+                foreach ($items as $item): ?>
+
+                    <?php $checked = in_array($item->id, $arrayOfItems) ? "selected" : "" ?>
+                    
+                    <option <?=$checked?> value="<?=$item->id?>"><?php echo $item->name?>(<?php echo number_format($item->price, 0, ',', ' ');?> руб.)</option>
+
+
+                <? endforeach;
+            endif;
+        endif; 
+      ?>
+    </select>
+    <script>
+        $('.searchable').multiSelect({
+      selectableHeader: "<input type='text' class='search-input' autocomplete='off' placeholder='Поиск по опциям...'>",
+      selectionHeader: "<input type='text' class='search-input' autocomplete='off' placeholder='Уже в опциях...'>",
+      afterInit: function(ms){
+        var that = this,
+            $selectableSearch = that.$selectableUl.prev(),
+            $selectionSearch = that.$selectionUl.prev(),
+            selectableSearchString = '#'+that.$container.attr('id')+' .ms-elem-selectable:not(.ms-selected)',
+            selectionSearchString = '#'+that.$container.attr('id')+' .ms-elem-selection.ms-selected';
+
+        that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
+        .on('keydown', function(e){
+          if (e.which === 40){
+            that.$selectableUl.focus();
+            return false;
+          }
+        });
+
+        that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
+        .on('keydown', function(e){
+          if (e.which == 40){
+            that.$selectionUl.focus();
+            return false;
+          }
+        });
+      },
+      afterSelect: function(){
+        this.qs1.cache();
+        this.qs2.cache();
+      },
+      afterDeselect: function(){
+        this.qs1.cache();
+        this.qs2.cache();
+      }
+    });
+    </script>
+    <br/>
+
+    <input type="submit" name='saveItemsToItems' class='btn btn-primary' value='сохранить'/>
+</form>
+<?php }  ?>
+
+
+
+<?php if ($tab=='photo'){ ?>
+
+<?php 
+        
+    $picturesConfig = array();
+    $configFile = Yii::getPathOfAlias('webroot').'/protected/config/catalog/categoryItemPictureSettings.php';
+    if (file_exists($configFile)){
+
+        $picturesConfig = require($configFile);
+
+        $this->widget(
+            'application.modules.pictureBox.components.PictureBox', array(
+            'id' => 'catalogItem',
+            'elementId' => $model->id,
+            'config' => $picturesConfig,
+                )
+        );
+    } else{
+        Yii::app()->user->setFlash('error','Отсутствует конфигурационный файл:'.$configFile);
+    }
+?>    
+<?php } ?>
+
+
+
+<?php return; ?>
+
+
+<?php
         if (!$model->isNewRecord) {  
             $alreadyGot = CatItemsToItems::model()->findAll(array('select'=>'toItemId', 'condition' => 'itemId='.$model->id));
 
@@ -108,32 +212,3 @@ $this->menu = require dirname(__FILE__).'/commonMenu.php';
 
             
         }?>
-    </div>
-    <input type="submit" name='saveItemsToItems' value='сохранить'/>
-</form>
-<?php }  ?>
-
-
-
-<?php if ($tab=='photo'){ ?>
-
-<?php 
-        
-    $picturesConfig = array();
-    $configFile = Yii::getPathOfAlias('webroot').'/protected/config/catalog/categoryItemPictureSettings.php';
-    if (file_exists($configFile)){
-
-        $picturesConfig = require($configFile);
-
-        $this->widget(
-            'application.modules.pictureBox.components.PictureBox', array(
-            'id' => 'catalogItem',
-            'elementId' => $model->id,
-            'config' => $picturesConfig,
-                )
-        );
-    } else{
-        Yii::app()->user->setFlash('error','Отсутствует конфигурационный файл:'.$configFile);
-    }
-?>    
-<?php } ?>

@@ -86,12 +86,12 @@ class CatItemController extends Controller
             $model->save();
         }
 
-        if(isset($_POST['saveItemsToItems']) && isset($_POST['itemsId'])){
+        if(isset($_POST['saveItemsToItems']) && isset($_POST['options'])){
         	CatItemsToItems::model()->deleteAll(array("condition"=> 'itemId='.$id));
 
 
-        	if (count($_POST['itemsId'])) {
-        		foreach ($_POST['itemsId'] as $itemId) {
+        	if (count($_POST['options'])) {
+        		foreach ($_POST['options'] as $itemId) {
         			$item = new CatItemsToItems();
 
 	        		$item->itemId = $id;
@@ -116,7 +116,6 @@ class CatItemController extends Controller
 
 
         if ($testForm->submitted('catToItemSubmit') && $testForm->validate()){
-
             $itemToCat->attributes = $_POST['CatItemsToCat'];
             $itemToCat->save();
 
@@ -126,7 +125,7 @@ class CatItemController extends Controller
             }
 
         }
-                
+
 		$this->render('update',array(
 			'model'=>$model,
                         'tab'=>$tab,
