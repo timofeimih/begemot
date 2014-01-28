@@ -12,11 +12,20 @@ class BuyForm extends CFormModel{
     {
 
         return array(
-                        //array('name','required'),
-                        array(' name, email, phone, count, msg, model', 'safe'),
+                       // array('name','required'),
+                        array('phone','phoneOrMail'),
+                        array('phone, count, msg, model', 'safe'),
                     );
 
 
+    }
+
+    public function phoneOrMail($attribute,$params){
+        if ( trim($this->phone)=='' && trim($this->email)==''){
+            $this->addError('phone','Нужно указать телефон или электронную почту!');
+            return false;
+        }
+        return true;
     }
 
     public function attributeLabels()
