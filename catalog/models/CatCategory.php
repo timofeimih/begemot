@@ -272,10 +272,22 @@ class CatCategory extends CActiveRecord
                     
                    unset($menu[$id]);
                 } else{
+
+                    if(isset($menu[$id]['items'])){
+                        $menu[$id]['items'][$id] = array(
+                            'label' => $item['name'],
+                            'url' => array('catItemsToCat/admin','id'=>$id)
+                        );
+                    }
+                    
                     $menu[$id]['label']= $item['name'];
                     if (!isset($menu[$id]['items'])){
                         $menu[$id]['url']=array('catItemsToCat/admin','id'=>$id);
                     }
+
+
+
+                    
                 }
              }
 
