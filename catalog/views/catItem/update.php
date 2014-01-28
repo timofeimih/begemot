@@ -2,9 +2,15 @@
 /* @var $this CatItemController */
 /* @var $model CatItem */
 $assets=Yii::app()->clientScript;
-$assets->registerCSSFile('/css/multi-select.css');
-$assets->registerScriptFile('/js/jquery.multi-select.js', CClientScript::POS_HEAD);
-$assets->registerScriptFile('/js/jquery.quicksearch.js', CClientScript::POS_HEAD);
+Yii::app()->clientScript->registerCssFile(
+    Yii::app()->assetManager->publish(Yii::app()->getModule('catalog')->basePath . '/assets/css/multi-select.css')
+);
+Yii::app()->clientScript->registerScriptFile(
+    Yii::app()->assetManager->publish(Yii::app()->getModule('catalog')->basePath . '/assets/js/jquery.multi-select.js'), CClientScript::POS_HEAD
+);
+Yii::app()->clientScript->registerScriptFile(
+    Yii::app()->assetManager->publish(Yii::app()->getModule('catalog')->basePath . '/assets/js/jquery.quicksearch.js'), CClientScript::POS_HEAD
+);
 
 $this->breadcrumbs=array(
 	'Cat Items'=>array('index'),

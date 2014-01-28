@@ -103,6 +103,9 @@ class CatItemController extends Controller
         	}
 
         }
+        else if(isset($_POST['saveItemsToItems']) && !isset($_POST['options'])){
+        	CatItemsToItems::model()->deleteAll(array("condition"=> 'itemId='.$id));
+        }
 
 		if(isset($_POST['CatItem']))
 		{
