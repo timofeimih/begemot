@@ -11,6 +11,9 @@ Yii::app()->clientScript->registerScriptFile(
 Yii::app()->clientScript->registerScriptFile(
     Yii::app()->assetManager->publish(Yii::app()->getModule('catalog')->basePath . '/assets/js/jquery.quicksearch.js'), CClientScript::POS_HEAD
 );
+Yii::app()->clientScript->registerScriptFile(
+    Yii::app()->assetManager->publish(Yii::app()->getModule('catalog')->basePath . '/assets/js/editItem.js'), CClientScript::POS_HEAD
+);
 
 $this->breadcrumbs=array(
 	'Cat Items'=>array('index'),
@@ -102,7 +105,7 @@ $this->menu = require dirname(__FILE__).'/commonMenu.php';
 
                     <?php $checked = in_array($item->id, $arrayOfItems) ? "selected" : "" ?>
                     
-                    <option <?=$checked?> value="<?=$item->id?>"><?php echo $item->name?>(<?php echo number_format($item->price, 0, ',', ' ');?> руб.)</option>
+                    <option <?=$checked?> value="<?=$item->id?>"><?php echo $item->name?>(<?php echo number_format($item->price, 0, ',', ' ');?> руб.)<span class='editItem'></span></option>
 
 
                 <? endforeach;
