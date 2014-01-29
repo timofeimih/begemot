@@ -8,11 +8,11 @@ class cls_1387798915 extends Migrations
 		if($this->isConfirmed(true) == true) return false;
 
         $sql = "CREATE TABLE IF NOT EXISTS `catItemsToItems` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `itemId` int(11) NOT NULL,
-  `toItemId` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1 ;";
+		  `id` int(11) NOT NULL AUTO_INCREMENT,
+		  `itemId` int(11) NOT NULL,
+		  `toItemId` int(11) NOT NULL,
+		  PRIMARY KEY (`id`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1 ;";
         $this->execute($sql);
 
         return true;
@@ -35,7 +35,7 @@ class cls_1387798915 extends Migrations
 
 	public function isConfirmed($returnBoolean = false){
 		Yii::app()->db->schema->refresh();
-		$table = Yii::app()->db->schema->getTable('CatItems');
+		$table = Yii::app()->db->schema->getTable('catItemsToItems');
 		$result = isset($table->columns['itemId']);
 
         if($returnBoolean){

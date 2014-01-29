@@ -107,3 +107,9 @@
   color: #aaa;
   cursor: text;
 }
+
+
+.editItem{
+  color: red;
+  cursor: pointer;
+}
