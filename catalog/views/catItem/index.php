@@ -22,9 +22,9 @@ $this->menu = $menu;
 
  $this->widget('bootstrap.widgets.TbGridView',array(
 	'id'=>'test-grid',
-	'dataProvider'=>$dataProvider,//$model->search($id),
-	//'filter'=>$model,
-        'type'=>'striped bordered condensed',
+	'dataProvider'=>$dataProvider->search(),
+	'filter'=>$dataProvider,
+    'type'=>'striped bordered condensed',
 	'columns'=>array(
                 array(
                     'class' => 'EImageColumn',
