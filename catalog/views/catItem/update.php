@@ -108,7 +108,7 @@ $this->menu = require dirname(__FILE__).'/commonMenu.php';
                     <option <?=$checked?> value="<?=$item->id?>"><?php echo $item->name?>(<?php echo number_format($item->price, 0, ',', ' ');?> руб.)<span class='editItem'></span></option>
 
 
-                <? endforeach;
+                <?php endforeach;
             endif;
         endif; 
       ?>
@@ -183,41 +183,5 @@ $this->menu = require dirname(__FILE__).'/commonMenu.php';
 
 
 
-<?php return; ?>
 
 
-<?php
-        if (!$model->isNewRecord) {  
-            $alreadyGot = CatItemsToItems::model()->findAll(array('select'=>'toItemId', 'condition' => 'itemId='.$model->id));
-
-            $arrayOfItems = array();
-            foreach ($alreadyGot as $item) {
-                array_push($arrayOfItems, $item->toItemId);
-            }
-            $arrayOfItems = array_filter($arrayOfItems);
-            $items = CatItem::model()->findAll(array('order'=>'id ASC'));
-
-            if (is_array($items) && count($items)>0){
-
-                foreach ($items as $item){ ?>
-
-                    <?php $checked = in_array($item->id, $arrayOfItems) ? "checked" : "" ?>
-                    
-                    <div class="price_col" style="width: 340px; display: inline-block;outline: 0px solid red; background-color: white; overflow: auto; box-sizing: border-box; padding-bottom: 43px;">
-                        <ul class="price_col_blocks" style=" vertical-align:top;display: inline-block;margin: 0px;width: 100%;">
-                           <li class="price_chekbox" style="height: 100px; outline: 0px solid red;list-style-type: none; float: left; margin-bottom: -1px ;"><span class="niceCheck"><input type="checkbox" <?=$checked?> name="itemsId[]" value='<?=$item->id?>'></span></li>
-                            <li class="price_pict" style="
-        width: 134px; height: 100px; outline: 0px solid red; background-image: url(../images/chek_pict_1.png); background-repeat: no-repeat;
-        list-style-type: none; float: left;"><img style="width:100%;" src="<?php echo $item->getItemMainPicture("three"); ?>" alt=""></li>
-                            <li class="price_describe" style="
-        width: 150px; height: 83px; outline: 0px solid red;display: inline; font: 14px Arial; color: #272e33; margin-top: 17px;
-    "><?php echo $item->name?><br> 
-                                <span class="price_describe_style"><?php echo number_format($item->price, 0, ',', ' ');?> руб.</span></li>
-                        </ul>
-                    </div>
-
-                <? }
-           }
-
-            
-        }?>
