@@ -158,7 +158,6 @@ class CatItemController extends Controller
                 $dataProvider = new CActiveDataProvider('CatItem',array('criteria'=>array('order'=>'`id` desc')));                
 
         $dataProvider = new CatItem('search');
-        $dataProvider->order = '`id` desc';
         if (isset($_GET['CatItem']))
     		$dataProvider->Attributes = $_GET['CatItem'];
 		$this->render('index',array(
