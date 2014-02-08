@@ -283,17 +283,17 @@ class CatCategory extends CActiveRecord
              return $menuEnd;
         }
 
-        public function insert(&$arr, $value, $index){       
-            $lengh = count($arr);
-            if($index<0||$index>$lengh)
-                return;
+        // public function insert(&$arr, $value, $index){       
+        //     $lengh = count($arr);
+        //     if($index<0||$index>$lengh)
+        //         return;
 
-            for($i=$lengh; $i>$index; $i--){
-                $arr[$i] = $arr[$i-1];
-            }
+        //     for($i=$lengh; $i>$index; $i--){
+        //         $arr[$i] = $arr[$i-1];
+        //     }
 
-            $arr[$index] = $value;
-        }
+        //     $arr[$index] = $value;
+        // }
         
         //get picture fav list array
         public function getCatFavPictures(){

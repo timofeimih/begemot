@@ -26,17 +26,19 @@ class CBOrderModelBehavior extends CActiveRecordBehavior {
 
         parent::beforeSave($event=null);
         if ($this->getOwner()->isNewRecord){
-          $criteria = new CDbCriteria;
+          if (isset($this->getOwner()->order)) {
+         
+            $criteria = new CDbCriteria;
 
-          $criteria->select = 'MAX(`order`) as `order`';
+            $criteria->select = 'MAX(`order`) as `order`';
 
 
-          $order = $this->getOwner()->find($criteria);
-          
-          $this->getOwner()->order = $order->order+1;
+            $order = $this->getOwner()->find($criteria);
+            
+            $this->getOwner()->order = $order->order+1;
 
-          return $order->order+1;
-
+            return $order->order+1;
+          }
         }
         return 0;
     }
