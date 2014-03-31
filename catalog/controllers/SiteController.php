@@ -22,6 +22,19 @@ class SiteController extends Controller {
         $this->render('index', array('categories' => $categories));
     }
 
+
+    public function actionGetField($itemId, $field)
+    {
+        $item = CatItem::model()->findByPk($itemId);
+
+        $returnVal = $item->$field;
+
+        if ($field == 'price') {
+            $returnVal = number_format($returnVal, 0, ',', ' ');
+        }
+        echo $returnVal;
+    }
+    
     public function actionItemView($catId = 0, $item = 0) {
         $uri = $_SERVER['REQUEST_URI'];
 
