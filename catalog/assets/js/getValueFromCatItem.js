@@ -8,7 +8,16 @@ $(document).ready(function(){
 
 
 		$.get('/catalog/site/getField/itemId/' + id + '/field/' + param, function(data){
-			field.html(data);
+	
+			if (field.prop("tagName") == 'INPUT') {
+
+				data = data.replace(/ /g, '');
+				field.attr("price", data);
+			}
+			else{
+				field.html(data);
+			}
+			
 		});
 	})
 })
