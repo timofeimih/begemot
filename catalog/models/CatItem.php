@@ -65,15 +65,23 @@ class CatItem extends ContentKitModel
 	/**
 	 * @return array relational rules.
 	 */
-        public function relations()
-         {
-             return array(
-                 'name'=>array(self::BELONGS_TO, 'catItemsToCat', 'itemId'),
-                 'category' => array(self::BELONGS_TO,'CatCategory','catId')
+  public function relations()
+   {
+       return array(
+           'name'=>array(self::BELONGS_TO, 'CatItemsToCat', 'itemId'),
+           'category' => array(self::BELONGS_TO,'CatCategory','catId')
+       );
+   }
 
-             );
-         }
-
+  public function getOption(){
+    $ids = CatItemsToItems::model()->findAll(array("condition"=> 'itemId='.$this->id, 'order' => 'id ASC'));
+    $arrayOfIds = array();
+    foreach ($ids as $id) {
+        array_push($arrayOfIds, $id->toItemId);
+    }
+    $arrayOfIds = array_filter($arrayOfIds);
+    return CatItem::model()->findAllByPk($arrayOfIds);
+  }
 	/**
 	 * @return array customized attribute labels (name=>label)
 	 */
@@ -132,7 +140,7 @@ class CatItem extends ContentKitModel
 		$criteria->compare('name_t',$this->name_t,true);
 		$criteria->compare('status',$this->status);
 		$criteria->compare('data',$this->data,true);
-
+    $criteria->order = '`id` desc';
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
 		));

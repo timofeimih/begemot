@@ -46,7 +46,13 @@ class MyCrawler extends PHPCrawler
   {
     
     preg_match("/<title>(.+)<\/title>/i", $DocInfo->content, $matches);
-    $title = $matches[1];
+
+    if (isset($matches[1])){
+        $title = $matches[1];
+    }
+    else{
+        $title = "title - не найден!";
+    }
 
     $model = new SeoPages();
   

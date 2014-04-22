@@ -22,9 +22,9 @@ $this->menu = $menu;
 
  $this->widget('bootstrap.widgets.TbGridView',array(
 	'id'=>'test-grid',
-	'dataProvider'=>$dataProvider,//$model->search($id),
-	//'filter'=>$model,
-        'type'=>'striped bordered condensed',
+	'dataProvider'=>$dataProvider->search(),
+	'filter'=>$dataProvider,
+    'type'=>'striped bordered condensed',
 	'columns'=>array(
                 array(
                     'class' => 'EImageColumn',
@@ -46,6 +46,9 @@ $this->menu = $menu;
 
 		array(
 			'class'=>'bootstrap.widgets.TbButtonColumn',
+            'viewButtonUrl'=>'Yii::app()->urlManager->createUrl(\'catalog/site/itemView\',array(\'title\'=>\'tmp_name\',\'catId\'=>$data->catId,\'itemName\'=>$data->name_t,\'item\'=>$data->id,))',
+            'viewButtonOptions'=>array('target'=>'_blank')
+
 		),
 	),
 ));

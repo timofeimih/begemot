@@ -4,10 +4,7 @@ $this->breadcrumbs=array(
 	'Manage',
 );
 
-$this->menu=array(
-	array('label'=>'List SeoLinks','url'=>array('index')),
-	array('label'=>'Create SeoLinks','url'=>array('create')),
-);
+$this->menu = require dirname(__FILE__) . '/../commonMenu.php';
 
 Yii::app()->clientScript->registerScript('search', "
 $('.search-button').click(function(){

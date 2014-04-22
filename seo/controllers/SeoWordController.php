@@ -35,7 +35,7 @@ class SeoWordController extends Controller
                 'expression'=>'Yii::app()->user->canDo("")'
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('admin','delete','changeGroup','csvUpload'),
+				'actions'=>array('admin','delete','changeGroup','csvUpload','csvExport'),
                 'expression'=>'Yii::app()->user->canDo("")'
 			),
 			array('deny',  // deny all users
@@ -167,12 +167,25 @@ class SeoWordController extends Controller
                         for ($c=0; $c < $num; $c++) {
                             $csvOutput .= $data[$c] . "<br />\n";
                         }
-                        
-                        $word = new SeoWord();
-                        $word->word = $data[0];
-                        $word->weight = $data[1];
-                        $word->group_id = $model->catId;
-                        $word->save();
+
+                        try {
+                            $word = new SeoWord();
+                            $word->word = $data[0];
+                            $word->weight = $data[1];
+                            $word->group_id = $model->catId;
+                            $word->save();
+                        } catch (Exception $e){
+
+                            $word=$word->findByAttributes(array('word'=>$data[0]));
+                            $id = $word->id;
+
+                            $word = SeoWord::model()->findByPk($id);
+
+                            $word->weight=$data[1];
+                            $word->update();
+                            //print_r($word->weight );//
+
+                        }
                     }
                     fclose($handle);
                 }
@@ -182,6 +195,10 @@ class SeoWordController extends Controller
             else
                 $this->render('csvUpload', array('form'=>$form));
 	}
+
+    public function actionCsvExport(){
+        $this->render('csvExport');
+    }
 
 	public function actionChangeGroup($groupId)
 	{

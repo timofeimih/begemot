@@ -25,28 +25,32 @@ class CBOrderModelBehavior extends CActiveRecordBehavior {
     public function beforeSave ($event=null){
 
         parent::beforeSave($event=null);
-
         if ($this->getOwner()->isNewRecord){
-          if (isset($this->owner->order)){
-              $criteria = new CDbCriteria;
+          if (isset($this->getOwner()->order)) {
+         
+            $criteria = new CDbCriteria;
 
-              $criteria->select = 'MAX(`order`) as `order`';
+            $criteria->select = 'MAX(`order`) as `order`';
 
 
-              $order = $this->getOwner()->findAll($criteria);
+            $order = $this->getOwner()->find($criteria);
+            
+            $this->getOwner()->order = $order->order+1;
 
-              $model = $this->getOwner()->order = $order[0]->order+1;
+            return $order->order+1;
           }
-
-
         }
-        return true;
+        return 0;
     }
     
     public function orderBeforeSave(){
         $this->beforeSave();
     }
     
+    public function getLastOrderValue()
+    {
+      return $this->beforeSave();
+    }
 }
 
 ?>

@@ -88,6 +88,7 @@ class Posts extends ContentKitModel {
         $criteria->compare('text', $this->text, true);
         $criteria->compare('author', $this->author);
         $criteria->compare('date', $this->date);
+        $criteria->order = 'id DESC'; 
 
         $criteria->compare('tag_id', $tag_id);
 

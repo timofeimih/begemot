@@ -11,7 +11,7 @@ $this->menu = require dirname(__FILE__).'/../commonMenu.php';
     'label'=>'Добавить страницу',
     'type'=>'primary', // null, 'primary', 'info', 'success', 'warning', 'danger' or 'inverse'
     'size'=>'small', // null, 'large', 'small' or 'mini'
-    'url'=>'title/newPage'
+    'url'=>'newPage'
 )); ?>
 
 <?php $this->widget('bootstrap.widgets.TbGridView', array(

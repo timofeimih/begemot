@@ -6,6 +6,7 @@
  * The followings are the available columns in table 'argo_posts_tags':
  * @property integer $id
  * @property string $tag_name
+ * @prorerty 
  */
 class PostsTags extends CActiveRecord {
 
@@ -103,6 +104,7 @@ class PostsTags extends CActiveRecord {
     }
     
     public static function getTagName($id){
+
        $tags = self::loadTags();
        
        return $tags[$id];
@@ -110,7 +112,7 @@ class PostsTags extends CActiveRecord {
     
     public static function getTagNameT($id){
        self::loadTags();
-       
+
        return self::$tagsT[$id];
     }
     

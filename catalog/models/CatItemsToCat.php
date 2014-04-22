@@ -6,6 +6,7 @@
  * The followings are the available columns in table 'CatItemsToCat':
  * @property integer $catId
  * @property integer $itemId
+ * @property integer $order
  */
 class CatItemsToCat extends CActiveRecord
 {
@@ -23,7 +24,6 @@ class CatItemsToCat extends CActiveRecord
                 return array(
                         'CBOrderModelBehavior' => array(
                                 'class' => 'begemot.extensions.order.BBehavior.CBOrderModelBehavior',
-                               
                         )
                 );
         }   
@@ -62,10 +62,11 @@ class CatItemsToCat extends CActiveRecord
         public function beforeSave(){
             if ($this->isNewRecord){
                 $result = count( $this->model()->findAll(array('condition'=>'catId ='.$this->catId.' and itemId='.$this->itemId)));
+
                 if ($result!=0) 
                     return false;
                 else{
-                    $this->orderBeforeSave();
+                    $this->order = $this->getLastOrderValue();
                     return true;
                 }
             } return true;

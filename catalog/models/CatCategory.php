@@ -231,7 +231,10 @@ class CatCategory extends CActiveRecord
             return $categories[$id];
         }
         
-        public function getPid($id){
+        public function getPid($id=null){
+            if (is_null($id)){
+                $id = $this->id;
+            }
             $categories = $this->getCatArray();
             return $categories[$id]['pid'];
         }   
@@ -255,29 +258,42 @@ class CatCategory extends CActiveRecord
 
              $menu = $categories;
 
+             $menuEnd = array();
              foreach ($menu as $id=>&$item){
  
-               if($item['pid']!=-1){
-                    if (!isset($menu[$item['pid']]['items']))
-                            $menu[$item['pid']]['items']=array();
-                    $item['label']=$item['name'];
-                    $item['url']=array('catItemsToCat/admin','id'=>$id);
-                    $item['itemOptions']=array('style'=>'123123');
-                  
-                    $menu[$item['pid']]['items'][$item['id']] = $item;
+               $menuItem = array();
 
-                    
-                   unset($menu[$id]);
-                } else{
-                    $menu[$id]['label']= $item['name'];
-                    if (!isset($menu[$id]['items'])){
-                        $menu[$id]['url']=array('catItemsToCat/admin','id'=>$id);
+                $menuItem['label']= $item['name'];
+                $menuItem['url']=array('catItemsToCat/admin','id'=>$id);
+                if($item['pid']==-1){
+                    $menuEnd[$id] = $menuItem;
+
+                    foreach ($this->getAllCatChilds($id) as $id => $item) {
+                        $menuEnd += array($id => array(
+                            'label' => $item['name'],
+                            'url' => array('catItemsToCat/admin','id'=>$item['id']),
+                            'itemOptions' => array('class'=>'sub-item')
+                        ));
                     }
                 }
              }
 
-             return $menu;
+
+
+             return $menuEnd;
         }
+
+        // public function insert(&$arr, $value, $index){       
+        //     $lengh = count($arr);
+        //     if($index<0||$index>$lengh)
+        //         return;
+
+        //     for($i=$lengh; $i>$index; $i--){
+        //         $arr[$i] = $arr[$i-1];
+        //     }
+
+        //     $arr[$index] = $value;
+        // }
         
         //get picture fav list array
         public function getCatFavPictures(){

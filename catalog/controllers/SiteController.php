@@ -22,12 +22,25 @@ class SiteController extends Controller {
         $this->render('index', array('categories' => $categories));
     }
 
+
+    public function actionGetField($itemId, $field)
+    {
+        $item = CatItem::model()->findByPk($itemId);
+
+        $returnVal = $item->$field;
+
+        if ($field == 'price') {
+            $returnVal = number_format($returnVal, 0, ',', ' ');
+        }
+        echo $returnVal;
+    }
+    
     public function actionItemView($catId = 0, $item = 0) {
         $uri = $_SERVER['REQUEST_URI'];
 
-        $this->layout = CatalogModule::$catalogItemViewLayout;
-        $category = CatCategory::model()->findByPk($catId);
         $item = CatItem::model()->findByPk($item);
+        $this->layout = CatalogModule::$catalogItemViewLayout;
+        $category = CatCategory::model()->findByPk($item->catId);
 
 
 
@@ -59,8 +72,8 @@ class SiteController extends Controller {
 
         $category = CatCategory::model()->findByPk($catId);
 
-        $dataProvider = new CActiveDataProvider('CatItemsToCat', array('criteria' => array('select' => 't.itemId', 'condition' => '`t`.`catId` = ' . $catId . '', 'with' =>array( 'item'=>array('condition'=>'published=1')), 'order' => 't.order'),'pagination'=>array( 'pageSize'=>1000)));
-       // $dataProvider=CatItemsToCat::model()->published()->with('item')->findAll();
+        $dataProvider = new CActiveDataProvider('CatItemsToCat', array('criteria' => array('select' => 't.itemId', 'condition' => '`t`.`catId` = ' . $catId . '', 'with' =>array( 'item'=>array('condition'=>'published=1')), 'order' => 'item.top DESC, t.order ASC'),'pagination'=>array( 'pageSize'=>1000)));
+       // $dataProvider=CatItemsToCat::model()->published()->with('item')->findAll();top
         $this->render('categoryView', array('categoryItems' => $dataProvider->getData(), 'category' => $category));
     }
 
@@ -83,7 +96,7 @@ class SiteController extends Controller {
 
         $iDsStr = '(' . implode(',', $iDsArray) . ')';
 
-        $dataProvider = new CActiveDataProvider('CatItemsToCat', array('criteria' => array('select' => 't.itemId', 'condition' => '`t`.`catId` in ' . $iDsStr . '', 'with' => 'item', 'order' => '`item`.`top` desc,`item`.`price`', 'distinct' => true, 'group'=>'`t`.`itemId`')));
+        $dataProvider = new CActiveDataProvider('CatItemsToCat', array('criteria' => array('select' => 't.itemId', 'condition' => '`t`.`catId` in ' . $iDsStr . '', 'with' => 'item', 'order' => 'item.top DESC, t.order ASC', 'distinct' => true, 'group'=>'`t`.`itemId`')));
 
         $dataProvider->pagination = array('pageSize' => 1000);
 
@@ -91,6 +104,7 @@ class SiteController extends Controller {
     }
 
     public function actionBuy ($itemId){
+
         Yii::import('catalog.models.forms.BuyForm');
         $buyFormModel = new BuyForm();
 
