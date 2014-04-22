@@ -5,6 +5,8 @@ $menu= array(
     array('label' => 'Группы слов', 'url' => array('/seo/seoWordGroup/index')),
     array('label' => 'Слова', 'url' => array('/seo/seoWord/admin')),
     array('label' => 'CSV Загрузка', 'url' => array('/seo/seoWord/CsvUpload')),
+    array('label' => 'CSV Экспорт', 'url' => array('/seo/seoWord/csvExport')),
+
     array('label' => 'Парсер'),
 
     array('label' => 'Страницы', 'url' => array('/seo/seoPages/admin')),

@@ -86,6 +86,27 @@ class CatItemController extends Controller
             $model->save();
         }
 
+        if(isset($_POST['saveItemsToItems']) && isset($_POST['options'])){
+        	CatItemsToItems::model()->deleteAll(array("condition"=> 'itemId='.$id));
+
+
+        	if (count($_POST['options'])) {
+        		foreach ($_POST['options'] as $itemId) {
+        			$item = new CatItemsToItems();
+
+	        		$item->itemId = $id;
+	        		$item->toItemId = $itemId;
+
+	        		$item->save();
+        		}
+        		
+        	}
+
+        }
+        else if(isset($_POST['saveItemsToItems']) && !isset($_POST['options'])){
+        	CatItemsToItems::model()->deleteAll(array("condition"=> 'itemId='.$id));
+        }
+
 		if(isset($_POST['CatItem']))
 		{
 			$model->attributes=$_POST['CatItem'];
@@ -98,7 +119,6 @@ class CatItemController extends Controller
 
 
         if ($testForm->submitted('catToItemSubmit') && $testForm->validate()){
-
             $itemToCat->attributes = $_POST['CatItemsToCat'];
             $itemToCat->save();
 
@@ -108,7 +128,7 @@ class CatItemController extends Controller
             }
 
         }
-                
+
 		$this->render('update',array(
 			'model'=>$model,
                         'tab'=>$tab,
@@ -137,6 +157,9 @@ class CatItemController extends Controller
                 
                 $dataProvider = new CActiveDataProvider('CatItem',array('criteria'=>array('order'=>'`id` desc')));                
 
+        $dataProvider = new CatItem('search');
+        if (isset($_GET['CatItem']))
+    		$dataProvider->Attributes = $_GET['CatItem'];
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
 

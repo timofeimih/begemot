@@ -35,7 +35,7 @@ class SeoWordController extends Controller
                 'expression'=>'Yii::app()->user->canDo("")'
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('admin','delete','changeGroup','csvUpload'),
+				'actions'=>array('admin','delete','changeGroup','csvUpload','csvExport'),
                 'expression'=>'Yii::app()->user->canDo("")'
 			),
 			array('deny',  // deny all users
@@ -195,6 +195,10 @@ class SeoWordController extends Controller
             else
                 $this->render('csvUpload', array('form'=>$form));
 	}
+
+    public function actionCsvExport(){
+        $this->render('csvExport');
+    }
 
 	public function actionChangeGroup($groupId)
 	{

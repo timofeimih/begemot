@@ -1,14 +1,13 @@
 <?php
 
 /**
- * This is the model class for table "CatItemsToCat".
+ * This is the model class for table "catItemsToItems".
  *
- * The followings are the available columns in table 'CatItemsToCat':
- * @property integer $catId
+ * The followings are the available columns in table 'catItemsToItems':
+ * @property integer $toItemId
  * @property integer $itemId
- * @property integer $order
  */
-class CatItemsToCat extends CActiveRecord
+class CatItemsToItems extends CActiveRecord
 {
 	/**
 	 * Returns the static model of the specified AR class.
@@ -24,6 +23,7 @@ class CatItemsToCat extends CActiveRecord
                 return array(
                         'CBOrderModelBehavior' => array(
                                 'class' => 'begemot.extensions.order.BBehavior.CBOrderModelBehavior',
+                               
                         )
                 );
         }   
@@ -40,7 +40,7 @@ class CatItemsToCat extends CActiveRecord
 	 */
 	public function tableName()
 	{
-		return 'catItemsToCat';
+		return 'catItemsToItems';
 	}
 
 	/**
@@ -51,25 +51,12 @@ class CatItemsToCat extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('catId, itemId', 'required'),
-			array('catId, itemId', 'numerical', 'integerOnly'=>true),
+			array('toItemId, itemId', 'required'),
+			array('toItemId, itemId', 'numerical', 'integerOnly'=>true),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('catId, itemId', 'safe', 'on'=>'search'),
+			array('toItemId, itemId', 'safe', 'on'=>'search'),
 		);
 	}
-        
-        public function beforeSave(){
-            if ($this->isNewRecord){
-                $result = count( $this->model()->findAll(array('condition'=>'catId ='.$this->catId.' and itemId='.$this->itemId)));
-
-                if ($result!=0) 
-                    return false;
-                else{
-                    $this->order = $this->getLastOrderValue();
-                    return true;
-                }
-            } return true;
-        }
 
 }
