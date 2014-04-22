@@ -104,6 +104,7 @@ class SiteController extends Controller {
     }
 
     public function actionBuy ($itemId){
+
         Yii::import('catalog.models.forms.BuyForm');
         $buyFormModel = new BuyForm();
 

@@ -183,7 +183,6 @@ $this->menu = require dirname(__FILE__).'/commonMenu.php';
 
 
 
-<?php return; ?>
 
 
 <?php
