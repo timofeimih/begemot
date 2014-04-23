@@ -29,7 +29,7 @@ class CatItemController extends Controller
 		return array(
 
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('delete','create','update','index','view','deleteItemToCat','tidyItemText'),
+				'actions'=>array('delete','create','update','index','view','deleteItemToCat','tidyItemText', 'getItemsFromCategory'),
                 'expression' => 'Yii::app()->user->canDo("catalogEditor")'
 			),
 			array('deny',  // deny all users
@@ -72,6 +72,35 @@ class CatItemController extends Controller
 		));
 	}
 
+	public function actionGetItemsFromCategory($catId, $curCatId)
+	{
+		$model = CatItemsToCat::model()->with('item')->findAll(array('condition'=>'t.catId='.$catId, 'order' => 't.order ASC'));
+
+		$currentPosition = 1;
+		$flag = true;
+		$array = array();
+		foreach ($model as $cat) {
+			if ($curCatId != $cat->item->id) {
+				$array['html'] .= "<option value='{$cat->item->id}'>{$cat->item->name} - ({$cat->item->id})</option>";
+				$array['ids'][] = $cat->item->id;
+
+				if ($flag) {
+					$currentPosition++;
+				}
+				
+			}
+			else{
+				$flag = false;
+			}
+
+			
+		}
+
+		$array['currentPos'] = $currentPosition;
+
+		echo json_encode($array);
+	}
+
 	/**
 	 * Updates a particular model.
 	 * If update is successful, the browser will be redirected to the 'view' page.
@@ -80,10 +109,69 @@ class CatItemController extends Controller
 	public function actionUpdate($id,$tab='data')
 	{
 		$model=$this->loadModel($id);
+		$message = '';
 
         if (isset($_GET['setMainCat'])){
             $model->catId=$_GET['setMainCat'];
             $model->save();
+        }
+
+
+        if(isset($_POST['changePosition'])){
+
+        	$category = $_POST['categoryId'];
+        	$item = $_POST['item'];
+        	$currentItem = $_POST['currentItem'];
+
+        	if (!empty($_POST['itemId'])) {
+        		$item = $_POST['itemId'];
+        	}
+
+        	
+        	if (isset($_POST['pasteOnFirstPosition'])) {
+        		$itemModel = $itemModel = CatItemsToCat::model()->with('item')->find(array('condition'=>'t.catId='.$category, 'order' => 't.order ASC'));
+        	}
+        	else if(isset($_POST['pasteOnLastPosition'])){
+				$itemModel = $itemModel = CatItemsToCat::model()->with('item')->find(array('condition'=>'t.catId='.$category, 'order' => 't.order DESC'));
+        	}
+        	else{
+        		$itemModel = CatItemsToCat::model()->with('item')->find(array('condition'=>'t.catId='.$category . " AND t.itemId=" . $item));
+        	}
+        	
+        	
+        	$currentItemModel = CatItemsToCat::model()->with('item')->find(array('condition'=>'t.catId='.$category . " AND t.itemId=" . $currentItem));
+
+        	if ($currentItemModel->catId != 0 && $itemModel->catId != 0) {
+
+        		$itemsToChange = CatItemsToCat::model()->with('item')->findAll(array('condition'=>'t.order >=' . $itemModel->order, 'order' => 't.order ASC'));
+
+
+        		if(isset($_POST['pasteOnLastPosition'])){
+        			$order = $itemModel->order - 1;
+        		}
+        		else{
+        			$order = $itemModel->order + 1;
+        		}
+        		
+
+        		foreach ($itemsToChange as $item) {
+        			$item->order = $order;
+        			$item->save();
+
+        			if(isset($_POST['pasteOnLastPosition'])){
+	        			$order--;
+	        		}
+	        		else{
+	        			$order++;
+	        		}
+        			
+        		}
+
+        		$currentItemModel->order = $itemModel->order;
+        		$currentItemModel->save();
+
+        		$message = "Сохранено";
+        	}
         }
 
         if(isset($_POST['saveItemsToItems']) && isset($_POST['options'])){
@@ -131,7 +219,8 @@ class CatItemController extends Controller
 
 		$this->render('update',array(
 			'model'=>$model,
-                        'tab'=>$tab,
+            'tab'=>$tab,
+            'message' => $message,
 		));
 	}
 

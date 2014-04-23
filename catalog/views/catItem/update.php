@@ -33,6 +33,7 @@ $this->menu = require dirname(__FILE__).'/commonMenu.php';
         array('label'=>'Данные', 'url'=>'/catalog/catItem/update/id/'.$model->id, 'active'=>$tab=='data'),
         array('label'=>'Разделы', 'url'=>'/catalog/catItem/update/id/'.$model->id.'/tab/cat', 'active'=>$tab=='cat'),
         array('label'=>'Опции', 'url'=>'/catalog/catItem/update/id/'.$model->id.'/tab/options', 'active'=>$tab=='options'),
+        array('label'=>'Перемещение позиции', 'url'=>'/catalog/catItem/update/id/'.$model->id.'/tab/position', 'active'=>$tab=='position'),
         array('label'=>'Изображения', 'url'=>'/catalog/catItem/update/id/'.$model->id.'/tab/photo', 'active'=>$tab=='photo'),
     ),
 )); ?>
@@ -81,6 +82,96 @@ $this->menu = require dirname(__FILE__).'/commonMenu.php';
         echo '<div class="container-fluid">'.$testForm->render().'</div>';
     }?>
 <?php }  ?>
+
+<?php if ($tab=='position'){ ?>
+    <script>
+
+        $(document).on("click", "#loadValues", function(){
+            
+            $.getJSON('/catalog/catItem/getItemsFromCategory/catId/' + $(this).val() + "/curCatId/" + $("#curPos").val(), function(data){
+               $("#category").html(data.html);
+
+               jQuery('#itemId').autocomplete({'minLength':'0','source':data.ids});
+               $("#itemId").attr("autocomplete", "on");
+               $("#currentPos").html(data.currentPos);
+               $(".hidden").show();
+            })
+        })
+
+        
+    </script>
+
+    <h2>Перемещение позиции</h2>
+    
+    <form method='post'></form>
+        
+        <input type="hidden" name='currentItem' value='<?php echo $model->id?>' id='curPos'>
+    </form>
+    <form method='post'></form>
+        
+        <input type="hidden" name='currentItem' value='<?php echo $model->id?>' id='curPos'>
+    </form>
+    
+    <?php if (!$model->isNewRecord): ?>
+        <div class="success" style='color: green'><?php echo $message?></div>
+        <?php $categories = CatItemsToCat::model()->with('item')->findAll(array('condition'=>'itemId='.$model->id)); ?>
+        <?php if (is_array($categories) && count($categories)>0) :?>
+        <form method='post'>
+            <label for="">Выберите раздел:</label>
+            <select name='categoryId' id='loadValues' >
+                <option value="">Выберите раздел</option>
+                <?php foreach ($categories as $cat): ?>
+                    <option value='<?php echo $cat->catId?>'><?php echo CatCategory::model()->getCatName( $cat->catId)?></option>"
+                <?php endforeach ?>
+            </select>
+            
+
+            <div class='hidden' style='display: none'>
+                
+                <input type='submit' name='pasteOnFirstPosition' class='btn btn-info' value='Переместить на первую позицию'/>
+                <input type='submit' name='pasteOnLastPosition' class='btn btn-info' value='Переместить на последнию позицию'/>
+
+
+                Сейчас находится на <span id='currentPos'>2</span><br/>
+                <label for="">Переместить перед:</label>
+                <select name='item' id='category'>
+
+                </select>
+                 или введите ID 
+                <?php 
+                $this->widget('zii.widgets.jui.CJuiAutoComplete',array(
+                    'name'=>'itemId',
+                    'source'=>array('ac1','ac2','ac3'),
+                    // additional javascript options for the autocomplete plugin
+                    'options'=>array(
+                        'minLength'=>'0',
+                    ),
+                    'htmlOptions'=>array(
+                        'style'=>'height:20px;',
+                    ),
+                )); ?>
+                <br/>
+                <input type="submit" class='btn '/>
+                <input type="hidden" name='changePosition'>
+                <input type="hidden" name='currentItem' value='<?php echo $model->id?>' id='curPos'>
+            </div>
+
+        </form>
+        <?php else: ?>
+            Для начала добавльте карточку хоть в одну категорию
+        <?php endif ?>
+
+
+       
+
+    <?php endif ?>
+
+    
+
+    <?php foreach ($categories as $key => $value): ?>
+        
+    <?php endforeach ?>
+<?php }   ?>
 
 <?php if ($tab=='options'){ ?>
 <h2>Опции</h2>
@@ -181,42 +272,3 @@ $this->menu = require dirname(__FILE__).'/commonMenu.php';
 ?>    
 <?php } ?>
 
-
-
-
-
-<?php
-        if (!$model->isNewRecord) {  
-            $alreadyGot = CatItemsToItems::model()->findAll(array('select'=>'toItemId', 'condition' => 'itemId='.$model->id));
-
-            $arrayOfItems = array();
-            foreach ($alreadyGot as $item) {
-                array_push($arrayOfItems, $item->toItemId);
-            }
-            $arrayOfItems = array_filter($arrayOfItems);
-            $items = CatItem::model()->findAll(array('order'=>'id ASC'));
-
-            if (is_array($items) && count($items)>0){
-
-                foreach ($items as $item){ ?>
-
-                    <?php $checked = in_array($item->id, $arrayOfItems) ? "checked" : "" ?>
-                    
-                    <div class="price_col" style="width: 340px; display: inline-block;outline: 0px solid red; background-color: white; overflow: auto; box-sizing: border-box; padding-bottom: 43px;">
-                        <ul class="price_col_blocks" style=" vertical-align:top;display: inline-block;margin: 0px;width: 100%;">
-                           <li class="price_chekbox" style="height: 100px; outline: 0px solid red;list-style-type: none; float: left; margin-bottom: -1px ;"><span class="niceCheck"><input type="checkbox" <?php echo $checked?> name="itemsId[]" value='<?php echo $item->id?>'></span></li>
-                            <li class="price_pict" style="
-        width: 134px; height: 100px; outline: 0px solid red; background-image: url(../images/chek_pict_1.png); background-repeat: no-repeat;
-        list-style-type: none; float: left;"><img style="width:100%;" src="<?php echo $item->getItemMainPicture("three"); ?>" alt=""></li>
-                            <li class="price_describe" style="
-        width: 150px; height: 83px; outline: 0px solid red;display: inline; font: 14px Arial; color: #272e33; margin-top: 17px;
-    "><?php echo $item->name?><br> 
-                                <span class="price_describe_style"><?php echo number_format($item->price, 0, ',', ' ');?> руб.</span></li>
-                        </ul>
-                    </div>
-
-                <?php }
-           }
-
-            
-        }?>
