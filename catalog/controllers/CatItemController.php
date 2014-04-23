@@ -78,10 +78,10 @@ class CatItemController extends Controller
 
 		$currentPosition = 1;
 		$flag = true;
-		$array = array();
+		$array = array('html' => '', 'ids' => array(), 'currentPos' => '');
 		foreach ($model as $cat) {
 			if ($curCatId != $cat->item->id) {
-				$array['html'] .= "<option value='{$cat->item->id}'>{$cat->item->name} - ({$cat->item->id})</option>";
+				$array['html'] .= "<option value='" . $cat->item->id . "'>" . $cat->item->name . "- (" . $cat->item->id . ")</option>";
 				$array['ids'][] = $cat->item->id;
 
 				if ($flag) {
