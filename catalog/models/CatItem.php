@@ -9,6 +9,9 @@
  * @property string $name_t
  * @property integer $status
  * @property string $data
+ * @property integer $quantity
+ * @property integer $delivery_date
+ * @property string $article
  */
 Yii::import('begemot.extensions.contentKit.ContentKitModel');
 class CatItem extends ContentKitModel
@@ -51,11 +54,11 @@ class CatItem extends ContentKitModel
 		// will receive user inputs.
 		 $rules = array(
 			array('name', 'required'),
-			array('status', 'numerical', 'integerOnly'=>true),
-			array('name, name_t', 'length', 'max'=>100),
+			array('status, quantity', 'numerical', 'integerOnly'=>true),
+			array('name, name_t, article', 'length', 'max'=>100),
 			array('seo_title', 'length', 'max'=>255),
 			// The following rule is used by search().
-			array('id, name, name_t, status, data, price, text, name', 'safe'),
+			array('id, name, name_t, status, data, price, text, name, delivery_date, quantity', 'safe'),
 			// Please remove those attributes that should not be searched.
 			array('id, name, name_t, status, data', 'safe', 'on'=>'search'),
 		);
@@ -93,31 +96,50 @@ class CatItem extends ContentKitModel
 			'name_t' => 'Name T',
 			'status' => 'Status',
 			'data' => 'Data',
+      'delivery_date' => 'Дата поставки:',
+      'quantity' => 'Количество',
 		);
 	}
         
-        public function itemTableName(){
-            return 'catItems_'.$this->id;
-        }
+  public function itemTableName(){
+      return 'catItems_'.$this->id;
+  }
 
-        public function beforeSave(){
-            parent::beforeSave();
+  public function beforeSave(){
+      parent::beforeSave();
 
-            $this->name_t = $this->mb_transliterate($this->name);
-            //$this->Video = $_REQUEST['CatItem']['Video'];
-            $itemAdditionalRows = CatItemsRow::model()->findAll();
-            if (is_array($itemAdditionalRows)){
-                
-                foreach($itemAdditionalRows as $itemRow){
-                  
-                   $paramName =  $itemRow->name_t;
-                   if (isset($_REQUEST['CatItem'][$itemRow->name_t]))
-                    $this->$paramName =$_REQUEST['CatItem'][$itemRow->name_t];
-                   
-                }
-            }
-            return true;
-        }
+      $this->name_t = $this->mb_transliterate($this->name);
+      //$this->Video = $_REQUEST['CatItem']['Video'];
+      $this->delivery_date = strtotime($this->delivery_date);
+      $itemAdditionalRows = CatItemsRow::model()->findAll();
+      if (is_array($itemAdditionalRows)){
+          
+          foreach($itemAdditionalRows as $itemRow){
+            
+             $paramName =  $itemRow->name_t;
+             if (isset($_REQUEST['CatItem'][$itemRow->name_t]))
+              $this->$paramName =$_REQUEST['CatItem'][$itemRow->name_t];
+             
+          }
+      }
+      return true;
+  }
+
+  protected function afterFind()
+  {
+      $this->delivery_date = date('m/d/Y', $this->delivery_date);
+
+      return parent::afterFind ();
+  }
+
+
+  protected function afterSave()
+  {
+      parent::afterSave ();
+      $this->delivery_date = date('m/d/Y', $this->delivery_date);
+
+      return true;
+  }
         
 
         
@@ -146,79 +168,79 @@ class CatItem extends ContentKitModel
 		));
 	}
         
-      //get picture fav list array
-        public function getItemFavPictures(){
+  //get picture fav list array
+  public function getItemFavPictures(){
+    
+      $imagesDataPath = Yii::getPathOfAlias('webroot').'/files/pictureBox/catalogItem/'.$this->id;  
+    
+       $favFilePath = $imagesDataPath.'/favData.php'; 
+       $images = array();
+       if (file_exists($favFilePath)){
+            $images = require($favFilePath);
+          };
           
-            $imagesDataPath = Yii::getPathOfAlias('webroot').'/files/pictureBox/catalogItem/'.$this->id;  
+       return $images;
           
-             $favFilePath = $imagesDataPath.'/favData.php'; 
-             $images = array();
-             if (file_exists($favFilePath)){
-                  $images = require($favFilePath);
-                };
-                
-             return $images;
-                
-        }
-        
-        //get picture list array
-        public function getItemPictures(){
+  }
+  
+  //get picture list array
+  public function getItemPictures(){
+    
+      $imagesDataPath = Yii::getPathOfAlias('webroot').'/files/pictureBox/catalogItem/'.$this->id;
+      $favFilePath = $imagesDataPath.'/data.php'; 
+      $images = array();
+     
+      if (file_exists($favFilePath)){
           
-            $imagesDataPath = Yii::getPathOfAlias('webroot').'/files/pictureBox/catalogItem/'.$this->id;
-            $favFilePath = $imagesDataPath.'/data.php'; 
-            $images = array();
-           
-            if (file_exists($favFilePath)){
-                
-                 $images = require($favFilePath);
-                 if (isset($images['images']))
-                    return $images['images'];      
-                 else
-                     return array();
-            } else {
-        
-                
-                 return array();
-            }
+           $images = require($favFilePath);
+           if (isset($images['images']))
+              return $images['images'];      
+           else
+               return array();
+      } else {
+  
+          
+           return array();
+      }
 
-        }       
-        
-        //get path of one main picture, wich take from fav or common images list
-        public function getItemMainPicture($tag=null){
-        
-            
-            $imagesDataPath = Yii::getPathOfAlias('webroot').'/files/pictureBox/catalogItem/'.$this->id;
-            $favFilePath = $imagesDataPath.'/favData.php'; 
-            
-            $images = array ();
-            $itemImage = '';
-            
-            $images = $this->getItemFavPictures();
-            if (count($images)!=0){
-              $imagesArray = array_values($images);
-              $itemImage = $imagesArray[0];
-            }
-            if (count($images)==0){
-                
-                    $images = $this->getItemPictures();
-                    if (count($images)>0){
-                        $imagesArray = array_values($images);
-                        $itemImage = $imagesArray[0];
-                    } else{
-                        return '#'; 
-                    }
-                
-            }
-            
-            if (is_null($tag)){
-                return array_shift($itemImage);
-            }
-            else{
-                if (isset($itemImage[$tag]))
-                    return $itemImage[$tag];
-                else
-                    return '#';
-            }
-        }        
+  }       
+  
+  //get path of one main picture, wich take from fav or common images list
+  public function getItemMainPicture($tag=null){
+  
+      
+      $imagesDataPath = Yii::getPathOfAlias('webroot').'/files/pictureBox/catalogItem/'.$this->id;
+      $favFilePath = $imagesDataPath.'/favData.php'; 
+      
+      $images = array ();
+      $itemImage = '';
+      
+      $images = $this->getItemFavPictures();
+      if (count($images)!=0){
+        $imagesArray = array_values($images);
+        $itemImage = $imagesArray[0];
+      }
+      if (count($images)==0){
+          
+              $images = $this->getItemPictures();
+              if (count($images)>0){
+                  $imagesArray = array_values($images);
+                  $itemImage = $imagesArray[0];
+              } else{
+                  return '#'; 
+              }
+          
+      }
+      
+      if (is_null($tag)){
+          return array_shift($itemImage);
+      }
+      else{
+          if (isset($itemImage[$tag]))
+              return $itemImage[$tag];
+          else
+              return '#';
+      }
+  }        
         
 }

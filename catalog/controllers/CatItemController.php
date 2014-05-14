@@ -63,13 +63,22 @@ class CatItemController extends Controller
 		if(isset($_POST['CatItem']))
 		{
 			$model->attributes=$_POST['CatItem'];
-			if($model->save())
-				$this->redirect(array('view','id'=>$model->id));
+			if($model->save()){
+				if (isset($_POST['returnId'])) {
+					echo $model->id;
+
+				} else $this->redirect(array('view','id'=>$model->id));
+
+			}
+				
 		}
 
-		$this->render('create',array(
-			'model'=>$model,
-		));
+		if (!isset($_POST['returnId'])) {
+			$this->render('create',array(
+				'model'=>$model,
+			));
+		}
+		
 	}
 
 	public function actionGetItemsFromCategory($catId, $curCatId)

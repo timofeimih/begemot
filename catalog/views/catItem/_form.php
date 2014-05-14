@@ -78,7 +78,29 @@
                
          }
         ?>
+    
+    <div class="row">
+        <?php echo $form->labelEx($model,'quantity'); ?>
+        <?php echo $form->textField($model,'quantity'); ?>
+        <?php echo $form->error($model,'quantity'); ?>
+    </div>   
+    <div class="row">
+        <?php echo $form->labelEx($model,'article'); ?>
+        <?php echo $form->textField($model,'article'); ?>
+        <?php echo $form->error($model,'article'); ?>
+    </div>   
+    
+    <div class="row">
+        <?php echo $form->labelEx($model,'delivery_date'); ?>
+        <?php $this->widget(
+            'bootstrap.widgets.TbDatePicker',
+            array(
+                'model'=>$model,
+                'attribute' => 'delivery_date',
 
+            )
+        ); ?>
+    </div>    
     <div class="row">
         <?php
         $this->widget('begemot.extensions.contentKit.widgets.KitFormPart',

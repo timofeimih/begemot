@@ -45,8 +45,13 @@
                             ),
                         ),
 
-
-                        array('label'=>'Миграция', 'url'=>array('/migrations'),'visible'=>Yii::app()->hasModule('migrations')),
+                        array('label'=>'Дополнительно',
+                            'items'=>array(
+                                array('label'=>'Миграция', 'url'=>array('/migrations'),'visible'=>Yii::app()->hasModule('migrations')),
+                                array('label'=>'Парсеры', 'url'=>array('/parsers'),'visible'=>Yii::app()->hasModule('parsers')),
+                            ),
+                        ),
+                        
                         array('label'=>'Файлы', 'url'=>array('/elfinder'),'visible'=>Yii::app()->hasModule('elfinder')),
                         array('label'=>'Сообщения',
                             'items'=>array(
