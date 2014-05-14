@@ -146,9 +146,7 @@ $this->menu = require dirname(__FILE__).'/commonMenu.php';
                     'options'=>array(
                         'minLength'=>'0',
                     ),
-                    'htmlOptions'=>array(
-                        'style'=>'height:20px;',
-                    ),
+
                 )); ?>
                 <br/>
                 <input type="submit" class='btn '/>
