@@ -41,7 +41,8 @@ class DefaultController extends Controller
 		foreach ($filenames as $filename)
 		{
 		  //remove off the path
-		  $file = end( explode( '/', $filename ) );
+		  $explode = explode( '/', $filename );
+		  $file = end( $explode );
 		  // remove the extension, strlen('.php') = 4
 		  $file = substr( $file, 0, strlen($file) - 4);
 		  $models[]= $file;

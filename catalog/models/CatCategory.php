@@ -22,15 +22,15 @@ class CatCategory extends CActiveRecord
 	 * @param string $className active record class name.
 	 * @return CatCategory the static model class
 	 */
-         
-        public $categories; 
+    
+    public $categories; 
     
 	public static function model($className=__CLASS__)
 	{
 		return parent::model($className);
 	}
 
-	/**
+	/**D ` 
 	 * @return string the associated database table name
 	 */
 	public function tableName()
