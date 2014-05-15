@@ -120,7 +120,7 @@ class DefaultController extends Controller
 
 	public function actionParseNew()
 	{
-		$json = file_get_contents('http://'.$_SERVER['HTTP_HOST'] . "/parsers/library/parseFile.php?file=" . $file . "&parseNew=1"); 
+		$json = file_get_contents('http://'.$_SERVER['HTTP_HOST'] . "/parsers/library/parseFile.php?file=" . $_GET['file'] . "&parseNew=1"); 
 		if ($json != "") {
 			echo "1";
 		}

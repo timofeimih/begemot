@@ -6,7 +6,7 @@ class m130818_093532_add_stock_in_and_date_of_delivery_and_article extends Migra
 	{
 		if($this->isConfirmed(true) == true) return false;
 		
-        $sql = "ALTER TABLE  `catItems` ADD  `quantity` INT NOT NULL DEFAULT '0' , ADD  `delivery_date` INT NOT NULL, ADD  `article` VAR_CHAR(100) NOT NULL";
+        $sql = "ALTER TABLE  `catItems` ADD  `quantity` INT NOT NULL DEFAULT '0' , ADD  `delivery_date` INT NOT NULL, ADD  `article` VARCHAR(100) NOT NULL";
         return $this->execute($sql);
 	}
 
