@@ -198,12 +198,12 @@ $this->menu = array(
 	      	<input type="text" id="search" placeholder='Поиск'>
 	      	<ul id="search_in_items">
 	      		<?php foreach ($allItems as $item): ?>
-	        		<li data-itemId='<?php echo $item->id ?>'><?php echo $item->name ?> (<?php echo $item->id ?>) <a href='<?php echo $this->createUrl("/catalog/catItem/update", array('id' => $item->id )) ?>'>Просмотреть</a></li>
+	        		<li data-itemid='<?php echo $item->id ?>'><?php echo $item->name ?> (<?php echo $item->id ?>) <a href='<?php echo $this->createUrl("/catalog/catItem/update", array('id' => $item->id )) ?>'>Просмотреть</a></li>
 	       		<?php endforeach ?>
 	      	</ul>
 			
 			Сохранится для id: <input type="text" name='ParsersStock[fromId]' id='name' class='required' required><br/>
-	      	Привяжет к ID карточки: <input type="text" name='ParsersStock[toId]' id='itemId' required >
+	      	Привяжет к ID карточки: <input type="text" name='ParsersStock[toId]' id='itemIdModal' required >
 	      	<input type="hidden" name='price' value='' class='price'>
 	      	<input type="hidden" name='name' value='' class='name'>
 	      </div>
@@ -268,7 +268,6 @@ $this->menu = array(
 		var id = $(this).parents("TR").find(".name").attr("data-id");
 		var className = $(this).parents("TR").attr('class');
 		var price = $(this).parents("TR").find(".name").attr("data-price");
-		$("#name").val(id);
 		$("#search").val(name);
 		$("#search").quicksearch('UL#search_in_items li').search(name);
 		$(".error").hide();
@@ -278,7 +277,7 @@ $this->menu = array(
 		$("#search_in_items LI").each(function(){
 			if ($(this).css("display") != "none") {
 				$(this).addClass('active');
-				$("#itemId").val($(this).attr("data-itemid"));
+				$("#itemIdModal").val($(this).attr("data-itemid"));
 				return false;
 			}
 			
@@ -288,15 +287,15 @@ $this->menu = array(
 		$(".modal FORM").attr("data-removeafter", '.' + className);
 		$(".modal FORM").find(".price").val(price);
 		$(".modal FORM").find(".cardName").html(name);
-		$(".modal FORM").find(".name").val(name);
+		$(".modal FORM").find("#name").val(id);
 
 	})
 
 	$(document).on("click", "#search_in_items LI", function(){
 		$(this).siblings().removeClass("active");
 		$(this).addClass("active");
-
-		$("#itemId").val($(this).attr("data-itemid"));
+	
+		$("#itemIdModal").val($(this).attr("data-itemid"));
 		
 	})
 
