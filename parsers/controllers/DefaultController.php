@@ -22,7 +22,7 @@ class DefaultController extends Controller
 		return array(
 
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('linking', 'create','update','index','view', 'do', 'syncCard', 'updateCard', 'doChecked', 'deleteLinking', 'parseChecked', 'parseNew'),
+				'actions'=>array('linking', 'create','update','index','view', 'do', 'syncCard', 'updateCard', 'doChecked', 'deleteLinking', 'parseChecked', 'parseNew', 'getParsedForCatItem'),
                 'expression'=>'Yii::app()->user->canDo("")'
 			),
 			array('deny',  // deny all users
@@ -34,13 +34,14 @@ class DefaultController extends Controller
 	public function actionParseChecked()
 	{
 		$files = $_GET['parse'];
+		$finded = ParsersLinking::model()->findAllByAttributes(array('filename'=>$files));
 		$items = array();
 
-		foreach ($files as $file) {
-
-			$items = array_merge((array)$items, (array)$this->getItemsToDo($file, 'combinedAndChanged'));
+		foreach ($finded as $item) {
+			if ($item->linking->price != $item->item->price || $item->linking->quantity != $item->item->quantity) {
+				$items[] = $item;
+			}
 		}
-
 		$this->render('parseChecked',array(
 		 	'items' => $items,
 		 ));
@@ -49,40 +50,50 @@ class DefaultController extends Controller
 
 	public function actionSyncCard()
 	{
-		$newPrice = $_POST['price'];
-		$name = $_POST['name'];
-
-		$model = new ParsersStock;
+		$model = new ParsersLinking;
 
 		$return = array('code'=> true, 'toUpdate' => '', 'toAllLinks' => '');
 
-		if(isset($_POST['ParsersStock']))
+		if(isset($_POST['ParsersLinking']))
 		{
-			$model->attributes=$_POST['ParsersStock'];
+			$model->attributes=$_POST['ParsersLinking'];
+
 			if($model->save()){
 
-				if ($model->item->price != $newPrice) {
+				$stockModel = ParsersStock::model()->findByPk($_POST['ParsersLinking']['fromId']);
+				$stockModel->linked = 1;
+				$stockModel->save();
+
+				if ($model->linking->price != $model->item->price || $model->linking->quantity != $model->item->quantity) {
 					$return['toUpdate'] = $this->renderPartial('oneItem',array(
 						'item'=>$model,
-						'newPrice' => $newPrice,
-						'name' => $name
 					), true);
 				}
 				
 
 				$return['toAllLinks'] = $this->renderPartial('oneItemLinking',array(
 					'item'=>$model,
-					'name' => $name
 				), true);
 			}
 				
 		}
 
 
-
+		ob_clean();
 		echo json_encode($return);
 
 
+	}
+
+	public function actionGetParsedForCatItem($itemId, $file)
+	{
+		$catItems = CatItem::model()->findByPk($itemId);
+
+		$this->renderPartial('listForCatItems',array(
+
+		 	'itemList' => ParsersStock::model()->findAllByAttributes(array('filename' => $file, 'linked' => 0)),
+		 	'itemId' => $itemId
+		));
 	}
 
 	public function actionUpdateCard()
@@ -93,6 +104,8 @@ class DefaultController extends Controller
 			$model = CatItem::model()->findByPk($_POST['id']);
 			$model->price = $_POST['price'];
 			$model->quantity = $_POST['quantity'];
+
+			ob_clean();
 			if ($model->save()) {
 				echo "1";
 			}
@@ -110,6 +123,7 @@ class DefaultController extends Controller
 				if (isset($item['id'])) {
 					$model = CatItem::model()->findByPk($item['id']);
 					$model->price = $item['price'];
+					$model->quantity = $item['quantity'];
 					$model->save();
 				}
 			}
@@ -120,10 +134,31 @@ class DefaultController extends Controller
 
 	public function actionParseNew()
 	{
-		$json = file_get_contents('http://'.$_SERVER['HTTP_HOST'] . "/parsers/library/parseFile.php?file=" . $_GET['file'] . "&parseNew=1"); 
-		if ($json != "") {
-			echo "1";
+		$json = file_get_contents('http://'.$_SERVER['HTTP_HOST'] . "/parsers/" . $_GET['file']); 
+		$json = json_decode($json);
+
+		ParsersStock::model()->deleteAll(array('condition' => "`filename`='" . $json->name . "'"));
+
+		foreach ($json->items as $item) {
+			$new = new ParsersStock;
+			$item = (array)$item;
+			$item['filename'] = $json->name;
+
+			if (ParsersLinking::model()->find(array(
+				'condition'=>'fromId=:fromId',
+    			'params'=>array(':fromId'=>$item['id'])))
+			) {
+				$item['linked'] = 1;
+
+				echo " lkkds";
+			}
+			$new->attributes = $item;
+			$new->save();
+
+			
 		}
+		ob_clean();
+		echo "1";
 
 	}
 
@@ -132,13 +167,27 @@ class DefaultController extends Controller
 
 		$catItems = CatItem::model()->findAll(array('order' => 'name ASC'));
 
+		$itemList = array(
+			'combined' => ParsersLinking::model()->findAllByAttributes(array('filename' => $file), array('order' => 'id ASC')), 
+			'combinedAndChanged' => array(),
+			'notCombined' => ParsersStock::model()->findAllByAttributes(array('filename' => $file, 'linked' => 0), array('order' => 'id ASC')), 
+		);
+
+		$items = ParsersLinking::model()->findAllByAttributes(array('filename' => $file), array('order' => 'id ASC'));
+
+		foreach ($items as $item) {
+			if ($item->linking->price != $item->item->price || $item->linking->quantity != $item->item->quantity) {
+			 	$itemList['combinedAndChanged'][] = $item;
+			}
+		}
+
 		
 
 		 $this->render('do',array(
 		 	// 'models'=>$models,
 		 	// 'return' => $return,
 		 	'filename' => $file,
-		 	'itemList' => $this->getItemsToDo($file),
+		 	'itemList' => $itemList,
 		 	'allItems' => $catItems
 		 ));
                        
@@ -147,65 +196,12 @@ class DefaultController extends Controller
 	public function actionLinking()
 	{
 
-		$model = ParsersStock::model()->findAll(array('order' => 'id DESC'));
+		$model = ParsersLinking::model()->findAll(array('order' => 'id DESC'));
 
 		 $this->render('linking',array(
 
 		 	'items' => $model
 		 ));
-	}
-
-	public function getItemsToDo($file, $param = '0')
-	{
-
-		$json = file_get_contents('http://'.$_SERVER['HTTP_HOST'] . "/parsers/library/parseFile.php?file=" . $file . "&parseNew=" . $param); 
-		$json = json_decode($json);
-
-		$itemList = array('combined' => array(), 'notCombined' => array(), 'combinedAndChanged' => array());
-
-
-		foreach ($json as $item) {
-			$finded = ParsersStock::model()->with('item')->find(array('condition' => "t.fromId='". $item->id . "'"));
-
-
-			if ($finded) {
-				$to = array('id' => '', 'fromId' => '', 'name' => '', 'itemName' => '');
-				$to['id'] = $finded->id;
-				$to['fromId'] = $finded->fromId;
-				$to['name'] = $item->name;
-				$to['itemName'] = $finded->item->name;
-				$to = (object) $to;
-				$itemList['combined'][] = $to;
-
-				if ($finded->item->price != $item->price) {
-
-					
-					$item = (array) $item;
-					$item['id'] = $finded->id;
-					$item['itemId'] = $finded->item->id;
-					$item['fromId'] = $finded->fromId;
-					$item['oldPrice'] = $finded->item->price;
-					$item = (object) $item;
-					$itemList['combinedAndChanged'][] = $item;
-				}
-				
-			} else{
-				$findedByArticle = CatItem::model()->find(array('condition' => "article='". $item->id . "'"));
-
-				if ($findedByArticle) {
-					$item = (array) $item;
-					$item['findedByArticle'] = $findedByArticle->id;
-					$item = (object) $item;
-				}
-				$itemList['notCombined'][] = $item;
-			}
-		}
-
-		if ($param == 'combinedAndChanged') {
-			return $itemList['combinedAndChanged'];
-		}
-
-		return $itemList;
 	}
 
 	public function actionIndex()
@@ -244,7 +240,18 @@ class DefaultController extends Controller
 
 	public function actionDeleteLinking($id)
 	{
-		$model=ParsersStock::model()->findByPk($id);
+
+		
+
+
+		$model=ParsersLinking::model()->findByPk($id);
+
+		$stockModel = ParsersStock::model()->findByPk($model->fromId);
+		$stockModel->linked = 0;
+		$stockModel->save();
+
+
+		ob_clean();
 		if ($model->delete()) {
 			echo "1";
 		} 

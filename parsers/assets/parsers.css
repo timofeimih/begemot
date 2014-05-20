@@ -2,6 +2,12 @@
 	border: 1px solid black;
 }
 
+
+#search_in_items LI{
+	padding: 5px;
+	list-style: none;
+	margin-left: -25px;
+}
 #error{
 	color: red;
 	text-align: center;

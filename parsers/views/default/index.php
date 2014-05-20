@@ -29,7 +29,7 @@ $this->menu = array(
 		</tbody>
 	</table>
 
-	<input type='submit' class='btn btn-primary btn-medium' value='Применить все'>
+	<input type='submit' class='btn btn-primary btn-medium' value='Применить выделенные'>
 
 </form>
 

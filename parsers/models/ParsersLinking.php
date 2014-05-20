@@ -4,15 +4,11 @@
  * This is the model class for table "parsers_stock".
  *
  * The followings are the available columns in table 'parsers_stock':
- * @property string $id
- * @property integer $price
- * @property string $name
- * @property text $text
- * @property integer $quantity
- * @property string $filename
- * @property integer $linked
+ * @property integer $id
+ * @property integer $fromId
+ * @property integer $toId
  */
-class ParsersStock extends CActiveRecord
+class ParsersLinking extends CActiveRecord
 {
 	/**
 	 * Returns the static model of the specified AR class.
@@ -30,7 +26,7 @@ class ParsersStock extends CActiveRecord
 	 */
 	public function tableName()
 	{
-		return 'parsers_stock';
+		return 'parsers_linking';
 	}
         
         
@@ -42,24 +38,24 @@ class ParsersStock extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('id, filename', 'required'),
-			array('price, quantity, linked', 'numerical', 'integerOnly'=>true),
-			array('name, id, filename', 'length', 'max'=>100),
-			array('text', 'length', 'max'=>1000),
-			array('id', 'unique')
+			array('fromId, toId, filename', 'required'),
+			array('fromId', 'unique')
 		);
 	}
 
-	public function findedByArticle()
-	{	
-		$catItem = CatItem::model()->find(array('condition' => "`article`='" . $this->id . "'"));
-
-		if ($catItem) {
-			return $catItem->id;
-		}
-
-		return false;
+	/**
+	 * @return array relational rules.
+	 */
+	public function relations()
+	{
+		// NOTE: you may need to adjust the relation name and the related
+		// class name for the relations automatically generated below.
+		return array(
+			'item'=>array(self::BELONGS_TO, 'CatItem', 'toId'),
+			'linking'=>array(self::BELONGS_TO, 'ParsersStock', 'fromId'),
+		);
 	}
+
 	/**
 	 * @return array customized attribute labels (name=>label)
 	 */
@@ -68,6 +64,5 @@ class ParsersStock extends CActiveRecord
 		return array(
 		);
 	}
-
 
 }
