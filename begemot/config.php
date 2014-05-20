@@ -160,7 +160,7 @@ return array(
                 //модуль catalog
                 'catalog' => 'catalog/site/index',
                 'catalog/<title:[\w-]+>_<catId:\d+>' => 'catalog/site/categoryView',
-                'catalog/<title:[\w-]+>_<catId:\d+>/<itemName:[\w-]+>_<item:\d+>' => 'catalog/site/itemView',
+                'catalog/<title:[\w-]+>_<catId:\d+>/<itemName:[\w-.]+>_<item:\d+>' => 'catalog/site/itemView',
                 //модуль post
                 'posts' => 'post/site/tagIndex',
                 'posts/<title:\w+>_<id:\d+>' => 'post/site/tagIndex',
