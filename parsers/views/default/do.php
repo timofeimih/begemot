@@ -32,13 +32,14 @@ $this->menu = array(
 <!-- Tab panes -->
 <div class="tab-content">
   <div class="tab-pane active" id="toDo">
-  	<?php if ($itemList['combinedAndChanged']): ?>
+  	
   		<form action="/parsers/default/doChecked" method='post'>
 
 			<table>
 				<thead>
 					<tr>
 						<td><input type="checkbox" class='checkAll'></td>
+						<td>Изображение</td>
 						<td>Артикул</td>
 						<td>Название</td>
 						<td>Старая цена</td>
@@ -48,42 +49,28 @@ $this->menu = array(
 					</tr>
 				</thead>
 				<tbody>
-
-				<?php foreach($itemList['combinedAndChanged'] as $item): ?>
-					<tr class='<?php echo $item->id?>'>
-						<td><input type="checkbox" name="item[<?php echo $item->itemId ?>][id]" value='<?php echo $item->itemId ?>'></td>
-						<td><?php echo $item->fromId?></td>
-						<td class='name'><?php echo $item->name?></td>
-						<td><?php echo $item->oldPrice?></td>
-						<td><input type='text' value='<?php echo $item->price?>' name='item[<?php echo $item->itemId ?>][price]' class='price input-small'></td>
-						<td><input type='text' value='<?php echo $item->quantity?>' name='item[<?php echo $item->itemId ?>][quantity]' class='quantity input-small'></td>
-						<td><button type='button' class='updatePrice' data-id='<?php echo $item->itemId ?>'>Обновить цену и наличие</button></td>
-					</tr>
-						
-				<?php endforeach ?>
+				<?php if ($itemList['combinedAndChanged']): ?>
+					<?php foreach($itemList['combinedAndChanged'] as $item): ?>
+						<tr class='<?php echo $item->id?>'>
+							<td><input type="checkbox" name="item[<?php echo $item->item->id ?>][id]" value='<?php echo $item->item->id ?>'></td>
+							<td><img src="<?php echo $item->item->getItemMainPicture("innerSmall")?>"></td>
+							<td><?php echo $item->fromId?></td>
+							<td class='name'><?php echo $item->item->name?></td>
+							<td><?php echo $item->item->price?></td>
+							<td><input type='text' value='<?php echo $item->linking->price?>' name='item[<?php echo $item->item->id ?>][price]' class='price input-small'></td>
+							<td><input type='text' value='<?php echo $item->linking->quantity?>' name='item[<?php echo $item->item->id ?>][quantity]' class='quantity input-small'></td>
+							<td><button type='button' class='updatePrice' data-id='<?php echo $item->item->id ?>'>Обновить цену и наличие</button></td>
+						</tr>
+							
+					<?php endforeach ?>
+				<?php endif ?>
 				</tbody>
 			</table>
 
 			<input type="hidden" name='url' value='<?php echo $_SERVER['REQUEST_URI']?>'>
-			<input type='submit' class='btn btn-primary btn-medium' value='Применить все'>
+			<input type='submit' class='btn btn-primary btn-medium' value='Применить выделенные'>
 
 		</form>
-	<?php else: ?>
-		<table>
-			<thead>
-				<tr>
-					<td>Id</td>
-					<td>Название</td>
-					<td>Связан с</td>
-					<td>Удалить связь</td>
-				</tr>
-			</thead>
-			<tbody>
-			</tbody>
-		</table>
-		Ничего не надо обновлять
-  	<?php endif ?>
-  	
   </div>
   <div class="tab-pane" id="new">
   	
@@ -112,19 +99,18 @@ $this->menu = array(
 				<td class='id'><?php echo $item->id?></td>
 				<td class='name' data-id='<?php echo $item->id?>' data-price='<?php echo $item->price?>'><?php echo $item->name?></td>
 				<td><?php echo $item->price?></td>
-				<td><button type='button' class='composite btn btn-info' name='<?php echo $item->name?>'>Объединить с ...</button>
-					<?php if (isset($item->findedByArticle)): ?>
+				<td><button type='button'  data-filename='<?php echo $item->filename?>' class='composite btn btn-info' name='<?php echo $item->name?>'>Объединить с ...</button>
+					<?php if ($item->findedByArticle()): ?>
 					<form action="/parsers/default/syncCard" data-removeAfter='.item-<?php echo $number ?>' class='ajaxSubmit'>
-						<input type="hidden" name='ParsersStock[fromId]' id='name' value='<?php echo $item->id?>'><br/>
-				      	<input type="hidden" name='ParsersStock[toId]' id='itemId' value='<?php echo $item->findedByArticle?>' >
-				      	<input type="hidden" name='price' value='<?php echo $item->price?>' class='price'>
-				      	<input type="hidden" name='name' value='<?php echo $item->name?>' class='name'>
-						<button type='submit' class='compositeRightNow btn btn-primary' data-id='<?php echo $item->findedByArticle?>'>Привязать сразу по артиклю к (<a style='color:white;text-decoration:underline' href='<?php echo $this->createUrl("/catalog/catItem/update", array('id' => $item->findedByArticle )) ?>'><?php echo $item->findedByArticle ?></a>)</button></td>
-					</form>
+						<input type="hidden" name='ParsersLinking[fromId]' id='name' value='<?php echo $item->id?>'><br/>
+				      	<input type="hidden" name='ParsersLinking[toId]' id='itemId' value='<?php echo $item->findedByArticle()?>' >
+				      	<input type="hidden" name='ParsersLinking[filename]' id='itemId' value='<?php echo $item->filename?>' >
+						<button type='submit' class='compositeRightNow btn btn-primary' data-id='<?php echo $item->findedByArticle()?>'>Привязать сразу по артиклю к (<a style='color:white;text-decoration:underline' href='<?php echo $this->createUrl("/catalog/catItem/update", array('id' => $item->findedByArticle() )) ?>'><?php echo $item->findedByArticle() ?></a>)</button></td>
+					</form> 
 						
 					<?php endif ?>
 					
-				<td><button type='button' class='addAsNew ' price='<?php echo $item->price?>' name='<?php echo $item->name?>' text='<?php echo $item->text?>'>Добавить как новый</button></td>
+				<td><button type='button' class='addAsNew' data-filename='<?php echo $item->filename?>' data-id='<?php echo $item->id?>' price='<?php echo $item->price?>' name='<?php echo $item->name?>' text='<?php echo $item->text?>'>Добавить как новый</button></td>
 			</tr>
 			<?php $number++; ?>
 		<?php endforeach ?>
@@ -132,47 +118,32 @@ $this->menu = array(
 	</table>
   </div>
   <div class="tab-pane" id="combined">
-  	<?php if ($itemList['combined']): ?>
-
-			<table>
-				<thead>
-					<tr>
-						<td>Id</td>
-						<td>Название</td>
-						<td>Связан с</td>
-						<td>Удалить связь</td>
-					</tr>
-				</thead>
-				<tbody>
-
-				<?php foreach($itemList['combined'] as $item): ?>
-					<tr>
-						<td><?php echo $item->fromId?></td>
-						<td class='name'><?php echo $item->itemName ?></td>
-						<td><?php echo $item->name ?></td>
-						<td><input type='button' value='Удалить связь' data-id='<?php echo $item->id?>' class='deteleLinking'></td>
-					</tr>
-						
-				<?php endforeach ?>
-				</tbody>
-			</table>
-
-
-	<?php else: ?>
-		<table>
-				<thead>
-					<tr>
-						<td>Id</td>
-						<td>Название</td>
-						<td>Связан с</td>
-						<td>Удалить связь</td>
-					</tr>
-				</thead>
-				<tbody>
-				</tbody>
-		</table>
-		Пока нету связей
-  	<?php endif ?>
+	<table>
+		<thead>
+			<tr>
+				<td>Id</td>
+				<td>Изображение</td>
+				<td>Название</td>
+				<td>Связан с</td>
+				<td>Удалить связь</td>
+			</tr>
+		</thead>
+		<tbody>
+		<?php if ($itemList['combined']): ?>
+			<?php foreach($itemList['combined'] as $item): ?>
+				<tr>
+					<td><?php echo $item->fromId?></td>
+					<td><img src="<?php echo $item->item->getItemMainPicture("innerSmall")?>"></td>
+					<td class='name'><?php echo $item->linking->name ?></td>
+					<td><?php echo $item->item->name ?></td>
+					<td><input type='button' value='Удалить связь' data-id='<?php echo $item->id?>' class='deleteLinking'></td>
+				</tr>
+					
+			<?php endforeach ?>
+		<?php endif ?>
+		
+		</tbody>
+	</table>
   </div>
 </div>
 
@@ -202,14 +173,18 @@ $this->menu = array(
 	       		<?php endforeach ?>
 	      	</ul>
 			
-			Сохранится для id: <input type="text" name='ParsersStock[fromId]' id='name' class='required' required><br/>
-	      	Привяжет к ID карточки: <input type="text" name='ParsersStock[toId]' id='itemIdModal' required >
-	      	<input type="hidden" name='price' value='' class='price'>
-	      	<input type="hidden" name='name' value='' class='name'>
+			
+	      	<input type="hidden" name='ParsersLinking[filename]' id='filename' required >
 	      </div>
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-default closeModal" data-dismiss="modal">Закрыть</button>
 	        <button class='syncCard btn btn-primary' type='submit'>Соединить карточку (<span class='cardName'></span>)</button>
+	        <br/>
+	        <div class="bottom" style='margin-top: 10px;'>
+	        	<div style='margin:auto'>Сохранится для id: <input type="text" name='ParsersLinking[fromId]' id='name' class='required' required></div>
+	      		<div style='margin:auto'>Привяжет к ID карточки: <input type="text" name='ParsersLinking[toId]' id='itemIdModal' required ></div>
+	        </div>
+	        
 	      </div>
 
       </form>
@@ -231,13 +206,31 @@ $this->menu = array(
 
 		$.post('/catalog/catItem/create', params, function(data){
 			button.parents("TR").find(".composite").html("Уже обьединено");
+			button.parents("TR").find("BUTTON").attr("disabled", true);
 			button.parent().html("<a href='/catalog/catItem/update/id/" + data +"' target='_blank'>Редактировать</a>");
-			
+			var toId = data;
+
+			$.post('/parsers/default/syncCard', {'ParsersLinking': {'fromId': button.attr('data-id'), 'toId': toId, 'filename': button.attr('data-filename')}}, function(data){
+				data = $.parseJSON(data);
+				console.log(data);
+				if (data.code) {
+
+					if (data.toUpdate != "") {
+						$("#toDo").find("TBODY").append(data.toUpdate);
+						$(".countChanged").html(parseInt($(".countChanged").html()) + 1);
+					}
+
+					if (data.toAllLinks != "") {
+						$("#combined").find("TBODY").append(data.toAllLinks);
+					}
+					console.log(data);
+				}
+			});
 		})
 
 	})
 
-	$(document).on("click", ".deteleLinking", function(e){
+	$(document).on("click", ".deleteLinking", function(e){
 
 		var link = $(this);
 		var id = $(this).attr("data-id");
@@ -248,7 +241,10 @@ $this->menu = array(
 				link.parents("TR").fadeOut('1000');
 
 				if ($("." + id).attr("class") != "") {
-					$(".countChanged").html(parseInt($(".countChanged").html()) - 1);
+					if (parseInt($(".countChanged").html() >= 0)) {
+						$(".countChanged").html(parseInt($(".countChanged").html()) - 1);
+					}
+					
 					$("." + id).remove();
 				};
 				setTimeout(function(){
@@ -268,6 +264,7 @@ $this->menu = array(
 		var id = $(this).parents("TR").find(".name").attr("data-id");
 		var className = $(this).parents("TR").attr('class');
 		var price = $(this).parents("TR").find(".name").attr("data-price");
+		var filename = $(this).attr("data-filename");
 		$("#search").val(name);
 		$("#search").quicksearch('UL#search_in_items li').search(name);
 		$(".error").hide();
@@ -285,10 +282,9 @@ $this->menu = array(
 		
 		$(".modal").show().addClass("in");
 		$(".modal FORM").attr("data-removeafter", '.' + className);
-		$(".modal FORM").find(".price").val(price);
 		$(".modal FORM").find(".cardName").html(name);
 		$(".modal FORM").find("#name").val(id);
-
+		$(".modal FORM").find("#filename").val(filename);
 	})
 
 	$(document).on("click", "#search_in_items LI", function(){
@@ -323,7 +319,6 @@ $this->menu = array(
 
 		$.post(form.attr("action"), form.serialize(), function(data){
 			data = $.parseJSON(data);
-			console.log(data);
 			if (data.code) {
 				$(hideAfter).removeClass('in').hide();
 				$(removeAfter).fadeOut(1000);

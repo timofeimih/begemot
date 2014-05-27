@@ -33,6 +33,7 @@ $this->menu = require dirname(__FILE__).'/commonMenu.php';
         array('label'=>'Данные', 'url'=>'/catalog/catItem/update/id/'.$model->id, 'active'=>$tab=='data'),
         array('label'=>'Разделы', 'url'=>'/catalog/catItem/update/id/'.$model->id.'/tab/cat', 'active'=>$tab=='cat'),
         array('label'=>'Опции', 'url'=>'/catalog/catItem/update/id/'.$model->id.'/tab/options', 'active'=>$tab=='options'),
+        array('label'=>'Парсер', 'url'=>'/catalog/catItem/update/id/'.$model->id.'/tab/parser', 'active'=>$tab=='parser', 'visible' => isset(Yii::app()->modules['parsers']) ),
         array('label'=>'Перемещение позиции', 'url'=>'/catalog/catItem/update/id/'.$model->id.'/tab/position', 'active'=>$tab=='position'),
         array('label'=>'Изображения', 'url'=>'/catalog/catItem/update/id/'.$model->id.'/tab/photo', 'active'=>$tab=='photo'),
     ),
@@ -244,6 +245,156 @@ $this->menu = require dirname(__FILE__).'/commonMenu.php';
     <input type="submit" name='saveItemsToItems' class='btn btn-primary' value='сохранить'/>
 </form>
 <?php }?>
+
+ <?php if (!$model->isNewRecord): ?>
+    <?php if (isset(Yii::app()->modules['parsers'])): ?>
+        <?php if ($tab=='parser'){ ?>
+            <h1>Парсеры</h1>
+            <?php if ($synched): ?>
+                <div class="append redColored">Сохраненно</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <td>Артикул</td>
+                            <td>Название</td>
+                            <td>Старая цена</td>
+                            <td>Новая цена</td>
+                            <td>Наличие</td>
+                            <td>Обновить</td>
+                            <td>Удалить связь</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr class='<?php echo $synched->id?>'>
+                            <td><?php echo $synched->fromId?></td>
+                            <td class='name'><?php echo $synched->item->name?></td>
+                            <td><?php echo $synched->item->price?></td>
+                            <td><input type='text' value='<?php echo $synched->linking->price?>' name='item[<?php echo $synched->item->id ?>][price]' class='price input-small'></td>
+                            <td><input type='text' value='<?php echo $synched->linking->quantity?>' name='item[<?php echo $synched->item->id ?>][quantity]' class='quantity input-small'></td>
+                            <td><button type='button' class='updatePrice btn btn-primary' data-id='<?php echo $synched->item->id ?>'>Обновить цену и наличие</button></td>
+                            <td><button type='button' class='deleteLinking btn btn-danger' data-id='<?php echo $synched->id ?>'>Удалить связь</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            <?php else: ?>
+                <table>
+                    <thead>
+                        <tr>
+                            <td>Название файла</td>
+                            <td>Спарсить новые данные</td>
+                            <td>Применить</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach($fileListOfDirectory as $item): ?>
+                        <tr>
+                            <td><?php echo $item?></td>
+                            <td><input type='button' class='parseNew' data-file='<?php echo $item?>' value='Спарсить новые данные'></td>
+                            <td><input type='button' class='getParsedForCatItem btn btn-small btn-info' data-file='<?php echo $item?>' data-id='<?php echo $model->id?>' value='Работать с текущими данными'></td>
+                            
+                        </tr>
+                            
+                    <?php endforeach ?>
+                    </tbody>
+                </table>
+
+                <div class="append"></div>
+
+
+
+                
+            <?php endif ?>
+
+            <script>
+                $(document).on("click", ".parseNew", function(){
+                    var button = $(this);
+                    var params = {'CatItem': {'name': $(this).attr("name"), 'price': $(this).attr("price"), 'text': $(this).attr("text")}, 'returnId': true};
+
+
+                    $.get('/parsers/default/parseNew/file/' + $(this).attr("data-file") + '/', function(data){
+                        if (data == 1) {
+                            button.val("Спарсенно");
+                        };
+                        
+                    })
+
+                })
+
+                $(document).on("click", ".getParsedForCatItem", function(){
+                    var button = $(this);
+                    var params = {'CatItem': {'name': $(this).attr("name"), 'price': $(this).attr("price"), 'text': $(this).attr("text")}, 'returnId': true};
+
+                    $(".append").html("<span class='spinner'></span>");
+                    $.get('/parsers/default/getParsedForCatItem/itemId/' + $(this).attr("data-id") + '/file/' + $(this).attr("data-file") + '/', function(data){
+                        $(".append").html(data);
+                        
+                    })
+
+                })
+
+                $(document).on("submit", ".ajaxSubmit", function(e){
+                    e.preventDefault();
+                    var form = $(this);
+                    var hideAfter = $(this).attr("data-hideafter");
+                    var removeAfter = $(this).attr("data-removeAfter");
+                    var status = true;
+                    $(this).find(".required").removeClass("form_error");
+
+                    $(this).find(".required").each(function(){
+                        if ($(this).val() == "") {status = false}
+                            $(this).addClass("form_error");
+                    })
+                    if (!status) return false;
+
+                    $.post(form.attr("action"), form.serialize(), function(data){
+                        location.reload();    
+                    })
+                })
+
+                $(document).on("click", ".deleteLinking", function(e){
+
+                    var link = $(this);
+                    var id = $(this).attr("data-id");
+
+
+                    $.get('/parsers/default/deleteLinking/id/' + id, function(data){
+                        if (data == '1') {
+                            location.reload();
+                            
+                        } else{
+                            alert("error");
+                        }
+                        
+                    })
+
+                })
+
+                $(document).on("click", ".updatePrice", function(e){
+
+                    var button = $(this);
+                    var params = {'id': $(this).attr("data-id"), 'price': $(this).parents("TR").find(".price").val(), 'quantity': $(this).parents("TR").find(".quantity").val()};
+
+
+                    $.post('/parsers/default/updateCard', params, function(data){
+                        if (data == '1') {
+                            $('.append').fadeIn('1000');
+                            setTimeout(function(){
+                                $('.append').fadeOut('1000');
+                            }, 1000)
+                            
+                            button.attr('disabled', true);
+                        };
+                        
+                    })
+
+                })
+
+            </script>
+            
+        <?php }?>  
+    <?php endif ?>
+<?php endif; ?>
 
 
 

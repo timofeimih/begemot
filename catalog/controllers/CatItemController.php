@@ -204,6 +204,38 @@ class CatItemController extends Controller
         	CatItemsToItems::model()->deleteAll(array("condition"=> 'itemId='.$id));
         }
 
+
+        if (isset(Yii::app()->modules['parsers'])) {
+
+        	$synched = ParsersLinking::model()->with('item')->find(array('condition' => "t.toId='". $model->id . "'"));
+
+        	$fileListOfDirectory = array ();
+        	if (!$synched) {
+        		
+				$pathTofileListDirectory = Yii::app()->basePath.'/../parsers' ;
+
+				if(!is_dir($pathTofileListDirectory ))
+				{
+				    die(" Invalid Directory");
+				}
+
+				if(!is_readable($pathTofileListDirectory ))
+				{
+				    die("You don't have permission to read Directory");
+				}
+
+				foreach ( new DirectoryIterator ( $pathTofileListDirectory ) as $file ) {
+				    if ($file->isFile () === TRUE && $file->getBasename () !== '.DS_Store') {
+
+				        if ($file->getExtension () == "php") {
+				            array_push ( $fileListOfDirectory, $file->getBasename () );
+				        }
+				    }
+				}
+        	}
+        	
+        }
+
 		if(isset($_POST['CatItem']))
 		{
 			$model->attributes=$_POST['CatItem'];
@@ -230,6 +262,8 @@ class CatItemController extends Controller
 			'model'=>$model,
             'tab'=>$tab,
             'message' => $message,
+            'fileListOfDirectory' => $fileListOfDirectory,
+            'synched' => $synched
 		));
 	}
 
@@ -253,7 +287,7 @@ class CatItemController extends Controller
 	public function actionIndex()
 	{  
                 
-                $dataProvider = new CActiveDataProvider('CatItem',array('criteria'=>array('order'=>'`id` desc')));                
+        $dataProvider = new CActiveDataProvider('CatItem',array('criteria'=>array('order'=>'`id` desc')));                
 
         $dataProvider = new CatItem('search');
         if (isset($_GET['CatItem']))

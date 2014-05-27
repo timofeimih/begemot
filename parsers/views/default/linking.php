@@ -14,8 +14,7 @@ $this->menu = array(
 		<thead>
 			<tr>
 				<td>id</td>
-				<td>Старая цена</td>
-				<td>Новая цена</td>
+				<td>Имя</td>
 				<td>Обновить</td>
 			</tr>
 		</thead>

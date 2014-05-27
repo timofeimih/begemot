@@ -42,6 +42,11 @@ $this->menu = $menu;
                     ),
                 ),            
 		'id',
+        array(
+            'header' => 'Парсится',
+            'type'=>'raw',
+            'value'=>'$data->combinedWithParser()',
+        ),
 		'name',    
 
 		array(

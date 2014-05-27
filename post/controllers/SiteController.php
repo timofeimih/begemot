@@ -51,7 +51,7 @@ class SiteController extends Controller
             'tag_id'=>null,
         ));
     }
-    
+
     public function actionTagIndex($id=null) {
 
         $this->layout = PostModule::$postLayout;

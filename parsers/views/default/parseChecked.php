@@ -16,8 +16,8 @@ $this->menu = array(
 			<thead>
 				<tr>
 					<td><input type="checkbox" class='checkAll'></td>
+					<td>Изображение</td>
 					<td>Название</td>
-					<td>Старая цена</td>
 					<td>Новая цена</td>
 					<td>Наличие</td>
 					<td>Обновить</td>
@@ -27,12 +27,12 @@ $this->menu = array(
 
 			<?php foreach($items as $item): ?>
 				<tr class='<?php echo $item->id?>'>
-					<td><input type="checkbox" name="item[<?php echo $item->itemId ?>][id]" value='<?php echo $item->itemId ?>'></td>
-					<td class='name'><?php echo $item->name?></td>
-					<td><?php echo $item->oldPrice?></td>
-					<td><input type='text' value='<?php echo $item->price?>' name='item[<?php echo $item->itemId ?>][price]' class='price'></td>
-					<td><input type='text' value='<?php echo $item->quantity?>' name='item[<?php echo $item->itemId ?>][quantity]' class='quantity input-small'></td>
-					<td><button type='button' class='updatePrice' data-id='<?php echo $item->itemId ?>'>Обновить цену и наличие</button></td>
+					<td><input type="checkbox" name="item[<?php echo $item->item->id ?>][id]" value='<?php echo $item->item->id ?>'></td>
+					<td><img src="<?php echo $item->item->getItemMainPicture("innerSmall")?>"></td>
+					<td class='name'><?php echo $item->item->name?></td>
+					<td><input type='text' value='<?php echo $item->linking->price?>' name='item[<?php echo $item->item->id ?>][price]' class='price input-small'><br/>(было <?php echo $item->item->price ?>)</td>
+					<td><input type='text' value='<?php echo $item->linking->quantity?>' name='item[<?php echo $item->item->id ?>][quantity]' class='quantity input-small'><br/>(было <?php echo $item->item->quantity ?>)</td>
+					<td><button type='button' class='updatePrice' data-id='<?php echo $item->item->id ?>'>Обновить цену и наличие</button></td>
 				</tr>
 					
 			<?php endforeach ?>
