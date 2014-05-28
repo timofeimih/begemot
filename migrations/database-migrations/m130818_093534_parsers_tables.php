@@ -7,7 +7,7 @@ class m130818_093534_parsers_tables extends Migrations
 
 		if($this->isConfirmed(true) == true) return false;
 
-        $sql = "RENAME TABLE `timofeimih-gmail_rosvesdehod`.`parsers_stock` TO  `timofeimih-gmail_rosvesdehod`.`parsers_linking` ;
+        $sql = "RENAME TABLE `parsers_stock` TO  `parsers_linking` ;
         ALTER TABLE  `parsers_linking` ADD  `filename` VARCHAR( 100 ) NOT NULL;
         CREATE TABLE IF NOT EXISTS `parsers_stock` (
 		  `id` varchar(100) COLLATE utf8_bin NOT NULL,
