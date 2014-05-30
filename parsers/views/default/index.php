@@ -11,6 +11,7 @@ $this->menu = array(
 		<thead>
 			<tr>
 				<td>Название файла</td>
+				<td>Дата парсинга</td>
 				<td>Применять?</td>
 				<td>Применить</td>
 			</tr>
@@ -18,10 +19,12 @@ $this->menu = array(
 		<tbody>
 		<?php foreach($fileListOfDirectory as $item): ?>
 			<tr>
-				<td><?php echo $item?></td>
-				<td><input type="checkbox" value='<?php echo $item?>' name='parse[]'/></td>
-				<td><input type='button' class='parseNew' data-file='<?php echo $item?>' value='Спарсить новые данные'></td>
-				<td><a href='<?php echo $this->createUrl("/parsers/default/do", array('file' => $item)) ?>' class="btn btn-info btn-mini">Работать с текущими данными</a></td>
+				<td><?php echo $item['name']?></td>
+				<td class='date'><?php echo date("d.m.Y H:i", $item['time']) ?></td>
+				<td><input type="checkbox" value='<?php echo $item['name']?>' name='parse[]'/></td>
+				
+				<td><input type='button' class='parseNew' data-file='<?php echo $item['name']?>' value='Спарсить новые данные'></td>
+				<td><a href='<?php echo $this->createUrl("/parsers/default/do", array('file' => $item['name'])) ?>' class="btn btn-info btn-mini">Работать с текущими данными</a></td>
 				
 			</tr>
 				
@@ -41,8 +44,9 @@ $this->menu = array(
 
 
 		$.get('/parsers/default/parseNew/file/' + $(this).attr("data-file") + '/', function(data){
-			if (data == 1) {
+			if (data != "") {
 				button.val("Спарсенно");
+				button.parents("TR").find(".date").html(data);
 			};
 			
 		})

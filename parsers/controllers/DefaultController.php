@@ -134,21 +134,19 @@ class DefaultController extends Controller
 
 	public function actionParseNew()
 	{
-		$json = file_get_contents('http://'.$_SERVER['HTTP_HOST'] . "/parsers/" . $_GET['file']); 
+		$json = file_get_contents('http://'.$_SERVER['HTTP_HOST'] . "/parsers/" . $_GET['file'] . "?newDate"); 
 		$json = json_decode($json);
 
 		ParsersStock::model()->deleteAll(array('condition' => "`filename`='" . $json->name . "'"));
 
 		$length = count($json->items);
-		for ($i = 0; $i < $length; $i++) {
-			$item = $json->items[$i];
 
+		foreach ($json->items as $item) {
 			$new = new ParsersStock;
 			$item = (array)$item;
 			$item['filename'] = $json->name;
 			$item['name'] = substr($item['name'], 0, 99);
 
-			//echo $item['id'] . " ";
 			if (ParsersLinking::model()->find(array(
 				'condition'=>'fromId=:fromId',
     			'params'=>array(':fromId'=>$item['id'])))
@@ -160,13 +158,8 @@ class DefaultController extends Controller
 			
 			$new->save();
 		}
-		// foreach ($json->items as $item) {
-			
-
-		// 	$j++;
-		// }
 		ob_clean();
-		echo "1";
+		echo date("d.m.Y H:i", $json->time);
 
 	}
 
@@ -218,6 +211,11 @@ class DefaultController extends Controller
 		$fileListOfDirectory = array ();
 		$pathTofileListDirectory = Yii::app()->basePath.'/../parsers' ;
 
+		$tempfile = file_get_contents($pathTofileListDirectory . '/history/time.txt');
+        $timeArray = json_decode($tempfile);
+        $timeArray = (array)$timeArray;
+
+
 		if(!is_dir($pathTofileListDirectory ))
 		{
 		    die(" Invalid Directory");
@@ -232,7 +230,13 @@ class DefaultController extends Controller
 		    if ($file->isFile () === TRUE && $file->getBasename () !== '.DS_Store') {
 
 		        if ($file->getExtension () == "php") {
-		            array_push ( $fileListOfDirectory, $file->getBasename () );
+
+		        	$time = 0;
+
+		        	if (array_key_exists($file->getBasename(), $timeArray)) {
+		        		$time = $timeArray[$file->getBasename()];
+		        	}
+		            array_push ( $fileListOfDirectory, array('name' => $file->getBasename(), 'time' => $time) );
 		        }
 		    }
 		}
