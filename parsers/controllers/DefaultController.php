@@ -139,24 +139,32 @@ class DefaultController extends Controller
 
 		ParsersStock::model()->deleteAll(array('condition' => "`filename`='" . $json->name . "'"));
 
-		foreach ($json->items as $item) {
+		$length = count($json->items);
+		for ($i = 0; $i < $length; $i++) {
+			$item = $json->items[$i];
+
 			$new = new ParsersStock;
 			$item = (array)$item;
 			$item['filename'] = $json->name;
+			$item['name'] = substr($item['name'], 0, 99);
 
+			//echo $item['id'] . " ";
 			if (ParsersLinking::model()->find(array(
 				'condition'=>'fromId=:fromId',
     			'params'=>array(':fromId'=>$item['id'])))
 			) {
 				$item['linked'] = 1;
-
-				echo " lkkds";
 			}
-			$new->attributes = $item;
-			$new->save();
 
+			$new->attributes = $item;
 			
+			$new->save();
 		}
+		// foreach ($json->items as $item) {
+			
+
+		// 	$j++;
+		// }
 		ob_clean();
 		echo "1";
 
