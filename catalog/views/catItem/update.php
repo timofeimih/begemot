@@ -1,4 +1,6 @@
 <?php
+
+
 /* @var $this CatItemController */
 /* @var $model CatItem */
 $assets=Yii::app()->clientScript;
@@ -14,6 +16,7 @@ Yii::app()->clientScript->registerScriptFile(
 Yii::app()->clientScript->registerScriptFile(
     Yii::app()->assetManager->publish(Yii::app()->getModule('catalog')->basePath . '/assets/js/editItem.js'), CClientScript::POS_HEAD
 );
+
 
 $this->breadcrumbs=array(
 	'Cat Items'=>array('index'),
@@ -84,93 +87,93 @@ $this->menu = require dirname(__FILE__).'/commonMenu.php';
     }?>
 <?php }  ?>
 
-<?php if ($tab=='position'){ ?>
-    <script>
-
-        $(document).on("click", "#loadValues", function(){
-            
-            $.getJSON('/catalog/catItem/getItemsFromCategory/catId/' + $(this).val() + "/curCatId/" + $("#curPos").val(), function(data){
-               $("#category").html(data.html);
-
-               jQuery('#itemId').autocomplete({'minLength':'0','source':data.ids});
-               $("#itemId").attr("autocomplete", "on");
-               $("#currentPos").html(data.currentPos);
-               $(".hidden").show();
-            })
-        })
-
-        
-    </script>
-
-    <h2>Перемещение позиции</h2>
-    
-    <form method='post'></form>
-        
-        <input type="hidden" name='currentItem' value='<?php echo $model->id?>' id='curPos'>
-    </form>
-    <form method='post'></form>
-        
-        <input type="hidden" name='currentItem' value='<?php echo $model->id?>' id='curPos'>
-    </form>
-    
-    <?php if (!$model->isNewRecord): ?>
-        <div class="success" style='color: green'><?php echo $message?></div>
-        <?php $categories = CatItemsToCat::model()->with('item')->findAll(array('condition'=>'itemId='.$model->id)); ?>
-        <?php if (is_array($categories) && count($categories)>0) :?>
-        <form method='post'>
-            <label for="">Выберите раздел:</label>
-            <select name='categoryId' id='loadValues' >
-                <option value="">Выберите раздел</option>
-                <?php foreach ($categories as $cat): ?>
-                    <option value='<?php echo $cat->catId?>'><?php echo CatCategory::model()->getCatName( $cat->catId)?></option>"
-                <?php endforeach ?>
-            </select>
-            
-
-            <div class='hidden' style='display: none'>
-                
-                <input type='submit' name='pasteOnFirstPosition' class='btn btn-info' value='Переместить на первую позицию'/>
-                <input type='submit' name='pasteOnLastPosition' class='btn btn-info' value='Переместить на последнию позицию'/>
-
-
-                Сейчас находится на <span id='currentPos'>2</span><br/>
-                <label for="">Переместить перед:</label>
-                <select name='item' id='category'>
-
-                </select>
-                 или введите ID 
-                <?php 
-                $this->widget('zii.widgets.jui.CJuiAutoComplete',array(
-                    'name'=>'itemId',
-                    'source'=>array('ac1','ac2','ac3'),
-                    // additional javascript options for the autocomplete plugin
-                    'options'=>array(
-                        'minLength'=>'0',
-                    ),
-
-                )); ?>
-                <br/>
-                <input type="submit" class='btn '/>
-                <input type="hidden" name='changePosition'>
-                <input type="hidden" name='currentItem' value='<?php echo $model->id?>' id='curPos'>
-            </div>
-
-        </form>
-        <?php else: ?>
-            Для начала добавльте карточку хоть в одну категорию
-        <?php endif ?>
-
-
-       
-
-    <?php endif ?>
-
-    
-
-    <?php foreach ($categories as $key => $value): ?>
-        
-    <?php endforeach ?>
-<?php }   ?>
+<?php //if ($tab=='position'){ ?>
+<!--    <script>-->
+<!---->
+<!--        $(document).on("click", "#loadValues", function(){-->
+<!--            -->
+<!--            $.getJSON('/catalog/catItem/getItemsFromCategory/catId/' + $(this).val() + "/curCatId/" + $("#curPos").val(), function(data){-->
+<!--               $("#category").html(data.html);-->
+<!---->
+<!--               jQuery('#itemId').autocomplete({'minLength':'0','source':data.ids});-->
+<!--               $("#itemId").attr("autocomplete", "on");-->
+<!--               $("#currentPos").html(data.currentPos);-->
+<!--               $(".hidden").show();-->
+<!--            })-->
+<!--        })-->
+<!---->
+<!--        -->
+<!--    </script>-->
+<!---->
+<!--    <h2>Перемещение позиции</h2>-->
+<!--    -->
+<!--    <form method='post'></form>-->
+<!--        -->
+<!--        <input type="hidden" name='currentItem' value='--><?php //echo $model->id?><!--' id='curPos'>-->
+<!--    </form>-->
+<!--    <form method='post'></form>-->
+<!--        -->
+<!--        <input type="hidden" name='currentItem' value='--><?php //echo $model->id?><!--' id='curPos'>-->
+<!--    </form>-->
+<!--    -->
+<!--    --><?php //if (!$model->isNewRecord): ?>
+<!--        <div class="success" style='color: green'>--><?php //echo $message?><!--</div>-->
+<!--        --><?php //$categories = CatItemsToCat::model()->with('item')->findAll(array('condition'=>'itemId='.$model->id)); ?>
+<!--        --><?php //if (is_array($categories) && count($categories)>0) :?>
+<!--        <form method='post'>-->
+<!--            <label for="">Выберите раздел:</label>-->
+<!--            <select name='categoryId' id='loadValues' >-->
+<!--                <option value="">Выберите раздел</option>-->
+<!--                --><?php //foreach ($categories as $cat): ?>
+<!--                    <option value='--><?php //echo $cat->catId?><!--'>--><?php //echo CatCategory::model()->getCatName( $cat->catId)?><!--</option>"-->
+<!--                --><?php //endforeach ?>
+<!--            </select>-->
+<!--            -->
+<!---->
+<!--            <div class='hidden' style='display: none'>-->
+<!--                -->
+<!--                <input type='submit' name='pasteOnFirstPosition' class='btn btn-info' value='Переместить на первую позицию'/>-->
+<!--                <input type='submit' name='pasteOnLastPosition' class='btn btn-info' value='Переместить на последнию позицию'/>-->
+<!---->
+<!---->
+<!--                Сейчас находится на <span id='currentPos'>2</span><br/>-->
+<!--                <label for="">Переместить перед:</label>-->
+<!--                <select name='item' id='category'>-->
+<!---->
+<!--                </select>-->
+<!--                 или введите ID -->
+<!--                --><?php //
+//                $this->widget('zii.widgets.jui.CJuiAutoComplete',array(
+//                    'name'=>'itemId',
+//                    'source'=>array('ac1','ac2','ac3'),
+//                    // additional javascript options for the autocomplete plugin
+//                    'options'=>array(
+//                        'minLength'=>'0',
+//                    ),
+//
+//                )); ?>
+<!--                <br/>-->
+<!--                <input type="submit" class='btn '/>-->
+<!--                <input type="hidden" name='changePosition'>-->
+<!--                <input type="hidden" name='currentItem' value='--><?php //echo $model->id?><!--' id='curPos'>-->
+<!--            </div>-->
+<!---->
+<!--        </form>-->
+<!--        --><?php //else: ?>
+<!--            Для начала добавльте карточку хоть в одну категорию-->
+<!--        --><?php //endif ?>
+<!---->
+<!---->
+<!--       -->
+<!---->
+<!--    --><?php //endif ?>
+<!---->
+<!--    -->
+<!---->
+<!--    --><?php //foreach ($categories as $key => $value): ?>
+<!--        -->
+<!--    --><?php //endforeach ?>
+<?php //}   ?>
 
 <?php if ($tab=='options'){ ?>
 <h2>Опции</h2>

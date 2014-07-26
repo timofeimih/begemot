@@ -2,8 +2,8 @@
 return array(
     'basePath' => dirname(__FILE__) . DIRECTORY_SEPARATOR . '../..',
 
-
-    //'theme' => 'custom',
+    'name' => 'My Web Application',
+    'theme' => 'custom',
     // preloading 'log' component
     'preload' => array('log'),
     // autoloading model and component classes
@@ -19,7 +19,7 @@ return array(
         'application.modules.user.models.*',
         'application.modules.user.components.*',
         'application.modules.vars.*',
-    ),
+    ), 
     'language' => 'ru',
     'modules' => array(
         'pictureBox',
@@ -64,7 +64,13 @@ return array(
             // must be an existing alias
         ),
         'videoGallery',
-
+        'callback'=>array(
+            'mails'=>array(
+                'sales@buggy-motor.ru',
+                'scott2to@gmail.com',
+                'sladkovsp@yandex.ru'
+            )
+        ),
         'user' => array(
             # encrypting method (php hash function)
             'hash' => 'md5',
@@ -145,31 +151,49 @@ return array(
             'class' => 'begemot.extensions.bootstrap.components.Bootstrap', // assuming you extracted bootstrap under extensions
         ),
         // uncomment the following to enable URLs in path-format
-
+        
         'urlManager' => array(
+
             'urlFormat' => 'path',
             'showScriptName' => false,
+            'caseSensitive' =>true,
             'urlSuffix' => '.html',
             'rules' => array(
+                
+                
                 '/admin' => '/begemot',
                 //модуль gallery
                 '/photo' => array('gallery/siteGallery/index'),
                 '/photo/<title:[\w-]+>_<id:[\w-]+>' => array('gallery/siteGallery/viewGallery'),
+		'/contact' => '/site/contact/',
                 //модуль pages
-                array('class' => 'pages.components.PageUrlRule'),
+                array('class' => 'application.modules.pages.components.PageUrlRule'),
                 //модуль catalog
-                'catalog' => 'catalog/site/index',
+		        '/catalog' => '/catalog/site/',
                 'catalog/<title:[\w-]+>_<catId:\d+>' => 'catalog/site/categoryView',
-                'catalog/<title:[\w-]+>_<catId:\d+>/<itemName:[\w-.]+>_<item:\d+>' => 'catalog/site/itemView',
+                'catalog/<catName:[\w-]+>_<catId:\d+>' => 'catalog/site/RCategoryView',
+                'catalog/<title:[\w-]+>_<catId:\d+>/<itemName:[\w-\"\']+>_<item:\d+>' => 'catalog/site/itemView',
                 //модуль post
                 'posts' => 'post/site/tagIndex',
                 'posts/<title:\w+>_<id:\d+>' => 'post/site/tagIndex',
                 'postsView/<title:[\w-]+>_<id:\d+>' => 'post/site/view',
-
-                'contact' => 'site/contact'
+                'index' => '/',
+                'contacts' => '/site/contact',
+                'katalog' => '/site/ModelsAndPrices',
+                'moto' => '/catalog/site/RCategoryView/catId/72/V_nalichii',
+                'video' => '/site/video'
             )
-        ),
 
+        ), 
+        
+        'db' => array(
+            'connectionString' => 'mysql:host=localhost;dbname=timofeimih-gmail_rosvesdehod',
+            'emulatePrepare' => true,
+            'username' => 'rosves',
+            'password' => 'iZSZ2w$-]sUk',
+
+            'charset' => 'utf8',
+        ),
         'errorHandler' => array(
             // use 'site/error' action to display errors
             'errorAction' => 'site/error',
@@ -192,7 +216,7 @@ return array(
 //                        'baseUrl' => 'http://www.buggy-motor.ru',
 //                    ),
         /*'cache' => array(
-            'class' => 'system.caching.CDbCache',
+            'class' => 'system.caching.CDbCache', 
         ),*/
 
     ),

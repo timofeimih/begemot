@@ -96,7 +96,11 @@ class ParseBase{
 	public function runAll()
 	{
 		$all = $this->getListJob();
+<<<<<<< HEAD
 		$save = array();
+=======
+
+>>>>>>> 48ebd67b1e3736a0807868177cda7b80ee2334c7
 
 		if ($all) {
 			foreach ($all as $key => $item) {
@@ -106,6 +110,7 @@ class ParseBase{
 					$this->runJob($key);
 
 					$item['lastExecuted'] = mktime(0, 0, 0, date('n'), date('j'));
+<<<<<<< HEAD
 
 					
 					echo "run" . time() .  " - " . $key .  " - " . $item['lastExecuted'];
@@ -119,6 +124,15 @@ class ParseBase{
 
 
 			$this->writeFile($save);
+=======
+					echo "run" . time() .  " - " . $key .  " - " . $item['lastExecuted'];
+				}
+				else echo 'no run' . time();
+			}
+
+
+			$this->writeFile($all);
+>>>>>>> 48ebd67b1e3736a0807868177cda7b80ee2334c7
 		}
 		
 
@@ -126,6 +140,7 @@ class ParseBase{
 
 	private function runJob($filename)
 	{
+<<<<<<< HEAD
 		$websiteName = 'rosvezdehod.ru';
 
 		$json = file_get_contents('http://'. $websiteName . "/parsers/" . $filename . "?newDate"); 
@@ -152,6 +167,8 @@ class ParseBase{
 			
 			$new->save();
 		}
+=======
+>>>>>>> 48ebd67b1e3736a0807868177cda7b80ee2334c7
 
 		$items = ParsersLinking::model()->findAllByAttributes(array('filename' => $filename), array('order' => 'id ASC'));
 
@@ -233,4 +250,7 @@ class ParseBase{
 		}
 	}
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 48ebd67b1e3736a0807868177cda7b80ee2334c7

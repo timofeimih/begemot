@@ -15,9 +15,17 @@ class ParseCommand extends CConsoleCommand
 		// Отправляем
 		mail('timofeimih@gmail.com', 'My Subject', $message);
 
+<<<<<<< HEAD
     	$n = new CrontabBase();
+=======
+    	$n = new ParseBase();
+>>>>>>> 48ebd67b1e3736a0807868177cda7b80ee2334c7
 
     	$n->runAll();
 
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 48ebd67b1e3736a0807868177cda7b80ee2334c7
