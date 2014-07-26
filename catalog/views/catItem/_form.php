@@ -13,7 +13,7 @@
 
 	<p class="note">Поля со знаком <span class="required">*</span> обязательны для заполнения.</p>
         
-        <div  class="container-fluid">
+        <div  class="container-fluid">  
 	
         <?php echo $form->errorSummary($model); ?>
         
@@ -71,7 +71,7 @@
                     } else{
                     echo $form->labelEx($model,$itemRow->name);
                     echo $form->textArea($model,$itemRow->name_t);
-                 
+
                     }
                        echo '</div>  ';
                 }

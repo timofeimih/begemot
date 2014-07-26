@@ -118,12 +118,16 @@ class DefaultController extends Controller
 	public function actionCron()
 	{
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Парсер и планировщик
 		$cron = new CrontabBase();
 	 	
 	 	if (isset($_GET['createNew'])) {
 
 	 		$website = $_SERVER['HTTP_HOST'];
 	 		$cron->addJob($_GET['filename'], intval($_GET['time']), $_GET['class'], $website);
+<<<<<<< HEAD
 =======
 		$cron = new ParseBase();
 	 	
@@ -131,6 +135,8 @@ class DefaultController extends Controller
 
 	 		$cron->addJob($_GET['filename'], intval($_GET['time']));
 >>>>>>> Парсер и мелкие правки
+=======
+>>>>>>> Парсер и планировщик
 	 	}
 
 	 	if (isset($_GET['deleteJob'])) {
@@ -208,12 +214,17 @@ class DefaultController extends Controller
 		);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 		if ($itemList['combined']) {
 			foreach ($itemList['combined'] as $item) {
 =======
 		if ($catItems) {
 			foreach ($catItems as $item) {
 >>>>>>> Парсер и мелкие правки
+=======
+		if ($itemList['combined']) {
+			foreach ($itemList['combined'] as $item) {
+>>>>>>> Парсер и планировщик
 				if ($item->linking->price != $item->item->price || $item->linking->quantity != $item->item->quantity) {
 				 	$itemList['combinedAndChanged'][] = $item;
 				}
