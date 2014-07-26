@@ -22,7 +22,7 @@ class DefaultController extends Controller
 		return array(
 
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('linking', 'create','update','index','view', 'do', 'syncCard', 'updateCard', 'doChecked', 'deleteLinking', 'parseChecked', 'parseNew', 'getParsedForCatItem', 'cron'),
+				'actions'=>array('index', 'turnOnOff', 'changeTime'),
                 'expression'=>'Yii::app()->user->canDo("")'
 			),
 			array('deny',  // deny all users
@@ -31,21 +31,43 @@ class DefaultController extends Controller
 		);
 	}
 
-	public function actionParseChecked()
+	public function actionIndex()
 	{
-		$files = $_GET['parse'];
-		$finded = ParsersLinking::model()->findAllByAttributes(array('filename'=>$files));
-		$items = array();
+		$crons = new CrontabBase();
 
-		foreach ($finded as $item) {
-			if ($item->linking->price != $item->item->price || $item->linking->quantity != $item->item->quantity) {
-				$items[] = $item;
-			}
-		}
-		$this->render('parseChecked',array(
-		 	'items' => $items,
+		$this->render('index',array(
+		 	'itemList' => (array) $crons->getListJob(),
 		 ));
 
+	}
+
+	public function actionTurnOnOff()
+	{
+		if (isset($_POST['name']) AND isset($_POST['turn'])) {
+
+			$CrontabBase = new CrontabBase;
+			if ($_POST['turn'] == 1) {
+				$CrontabBase->turnOn($_POST['name']);
+			} else{
+				$CrontabBase->turnOff($_POST['name']);
+			}
+
+			echo "1";
+		}
+
+
+	}
+
+	public function actionChangeTime()
+	{
+		if (isset($_POST['time']) AND isset($_POST['name'])) {
+
+			$CrontabBase = new CrontabBase;
+			
+			echo $CrontabBase->changeTime($_POST['name'], (int) $_POST['time']);
+
+			
+		}
 	}
 
 	public function actionSyncCard()
@@ -117,12 +139,11 @@ class DefaultController extends Controller
 
 	public function actionCron()
 	{
-		$cron = new CrontabBase();
+		$cron = new ParseBase();
 	 	
 	 	if (isset($_GET['createNew'])) {
 
-	 		$website = $_SERVER['HTTP_HOST'];
-	 		$cron->addJob($_GET['filename'], intval($_GET['time']), $_GET['class'], $website);
+	 		$cron->addJob($_GET['filename'], intval($_GET['time']));
 	 	}
 
 	 	if (isset($_GET['deleteJob'])) {
@@ -220,26 +241,6 @@ class DefaultController extends Controller
                        
 	}
 
-	public function actionLinking()
-	{
-
-		$model = ParsersLinking::model()->findAll(array('order' => 'id DESC'));
-
-		 $this->render('linking',array(
-
-		 	'items' => $model
-		 ));
-	}
-
-	public function actionIndex()
-	{	
-		$this->render('index',array(
-			// 'models'=>$models,
-			// 'return' => $return,
-			'fileListOfDirectory' => $this->getFiles()
-		));
-                       
-	}
 
 	public function getFiles()
 	{
@@ -253,12 +254,12 @@ class DefaultController extends Controller
 
 		if(!is_dir($pathTofileListDirectory ))
 		{
-		    //die(" Invalid Directory");
+		    die(" Invalid Directory");
 		}
 
 		if(!is_readable($pathTofileListDirectory ))
 		{
-		    //die("You don't have permission to read Directory");
+		    die("You don't have permission to read Directory");
 		}
 
 		foreach ( new DirectoryIterator ( $pathTofileListDirectory ) as $file ) {

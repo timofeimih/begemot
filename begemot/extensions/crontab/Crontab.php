@@ -49,7 +49,7 @@ class Crontab extends CApplicationComponent{
 	 *	@access	public
 	 */
 	function Crontab($filename=NULL, $dir=NULL, $crontabPath=NULL){
-		$result				=(!$dir) ? $this->setDirectory(Yii::getPathOfAlias('application.modules.begemot.extensions.crontab.crontabs').'/') : $this->setDirectory($dir);
+		$result				=(!$dir) ? $this->setDirectory() : $this->setDirectory($dir);
 		if(!$result)
 			exit('Directory error');
 		$result				=(!$filename) ? $this->createCronFile("crons") : $this->createCronFile($filename);
@@ -148,7 +148,7 @@ class Crontab extends CApplicationComponent{
 		if(!$this->filename)
 			exit('No name specified for cron file');
 					
-		if(exec($this->crontabPath."crontab ".$this->directory.$this->filename))
+		if(exec($this->crontabPath."crontab".$this->directory . 'custom' . $this->filename))
 			return $this;
 		else
 			return false;
@@ -263,21 +263,26 @@ class Crontab extends CApplicationComponent{
 	 */
 	protected function loadJobs()
 	{
+
+
 		fseek($this->handle, 0);
 	    while (! feof ($this->handle)) 
 	    {
 	        $line= fgets ($this->handle);
 	        $line = trim(trim($line), "\t");
+
 	        if(!empty($line))
 	        {
 		        if(CronApplicationJob::isApplicationJob($line))
 		        {
+
 		        	$obj = CronApplicationJob::parseFromCommand($line);
 		        	if($obj !== FALSE)
 		        		$this->jobs[] = $obj;
 		        }
 		        else
 		        {
+
 					$obj = Cronjob::parseFromCommand($line);
 					if($obj !== FALSE)
 	        			$this->jobs[] = $obj;
@@ -499,8 +504,9 @@ class CronApplicationJob extends Cronjob
 	 * parse system job command and return an object
 	 */
 	static function parseFromCommand($command)
-	{
-		$vars = explode("[ \t]",ltrim($command, " \t"), 6);
+	{	
+		$temp = ltrim($command, " \t");
+		$vars = preg_split('/[\s]+/',$temp, 6);
 		
 		if(count($vars) < 5)
 			return false;
@@ -532,10 +538,13 @@ class CronApplicationJob extends Cronjob
 	 */
 	static function isApplicationJob($line)
 	{
-		$vars = explode("[ \t]",ltrim(ltrim($line), "\t"), 6);
-		
+		$temp = ltrim($line);
+		$temp = ltrim($temp, "\t");
+		$vars = preg_split('/[\s]+/', $temp, 6);
+
 		if(count($vars) < 5)
 			return false;
+
 
 		return (bool)preg_match("|^php ([^\\\]*.php) ([^\\\]*)|", $vars[5]);
 	}
