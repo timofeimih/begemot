@@ -117,13 +117,14 @@ class CatItemController extends Controller
 	 */
 	public function actionUpdate($id,$tab='data')
 	{
-		$model=$this->loadModel($id);
-		$message = '';
+        $model=$this->loadModel($id);
+        $message = '';
 
         if (isset($_GET['setMainCat'])){
             $model->catId=$_GET['setMainCat'];
             $model->save();
         }
+
 
 
         if(isset($_POST['changePosition'])){
@@ -205,36 +206,36 @@ class CatItemController extends Controller
         }
 
 
-        if (isset(Yii::app()->modules['parsers'])) {
-
-        	$synched = ParsersLinking::model()->with('item')->find(array('condition' => "t.toId='". $model->id . "'"));
-
-        	$fileListOfDirectory = array ();
-        	if (!$synched) {
-        		
-				$pathTofileListDirectory = Yii::app()->basePath.'/../parsers' ;
-
-				if(!is_dir($pathTofileListDirectory ))
-				{
-				    die(" Invalid Directory");
-				}
-
-				if(!is_readable($pathTofileListDirectory ))
-				{
-				    die("You don't have permission to read Directory");
-				}
-
-				foreach ( new DirectoryIterator ( $pathTofileListDirectory ) as $file ) {
-				    if ($file->isFile () === TRUE && $file->getBasename () !== '.DS_Store') {
-
-				        if ($file->getExtension () == "php") {
-				            array_push ( $fileListOfDirectory, $file->getBasename () );
-				        }
-				    }
-				}
-        	}
-        	
-        }
+//        if (false && isset(Yii::app()->modules['parsers'])) {
+//
+//        	$synched = ParsersLinking::model()->with('item')->find(array('condition' => "t.toId='". $model->id . "'"));
+//
+//        	$fileListOfDirectory = array ();
+//        	if (!$synched) {
+//
+//				$pathTofileListDirectory = Yii::app()->basePath.'/../parsers' ;
+//
+//				if(!is_dir($pathTofileListDirectory ))
+//				{
+//				   // die(" Invalid Directory");
+//				}
+//
+//				if(!is_readable($pathTofileListDirectory ))
+//				{
+//				   // die("You don't have permission to read Directory");
+//				}
+//
+//				foreach ( new DirectoryIterator ( $pathTofileListDirectory ) as $file ) {
+//				    if ($file->isFile () === TRUE && $file->getBasename () !== '.DS_Store') {
+//
+//				        if ($file->getExtension () == "php") {
+//				            array_push ( $fileListOfDirectory, $file->getBasename () );
+//				        }
+//				    }
+//				}
+//        	}
+//
+//        }
 
 		if(isset($_POST['CatItem']))
 		{
@@ -262,8 +263,8 @@ class CatItemController extends Controller
 			'model'=>$model,
             'tab'=>$tab,
             'message' => $message,
-            'fileListOfDirectory' => $fileListOfDirectory,
-            'synched' => $synched
+           // 'fileListOfDirectory' => $fileListOfDirectory,
+           // 'synched' => $synched
 		));
 	}
 

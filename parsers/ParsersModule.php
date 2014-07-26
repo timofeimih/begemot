@@ -11,7 +11,8 @@ class ParsersModule extends CWebModule {
         $this->setImport(array(
         	'parsers.components.*',
             'parsers.models.*',
-            'catalog.models.CatItem'
+            'catalog.models.CatItem',
+            'begemot.commands.ParseBase'
         ));
 
     }

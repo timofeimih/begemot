@@ -22,7 +22,7 @@ class DefaultController extends Controller
 		return array(
 
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('linking', 'create','update','index','view', 'do', 'syncCard', 'updateCard', 'doChecked', 'deleteLinking', 'parseChecked', 'parseNew', 'getParsedForCatItem'),
+				'actions'=>array('linking', 'create','update','index','view', 'do', 'syncCard', 'updateCard', 'doChecked', 'deleteLinking', 'parseChecked', 'parseNew', 'getParsedForCatItem', 'cron'),
                 'expression'=>'Yii::app()->user->canDo("")'
 			),
 			array('deny',  // deny all users
@@ -115,6 +115,30 @@ class DefaultController extends Controller
 		}
 	}
 
+	public function actionCron()
+	{
+		$cron = new ParseBase();
+	 	
+	 	if (isset($_GET['createNew'])) {
+
+	 		$cron->addJob($_GET['filename'], intval($_GET['time']));
+	 	}
+
+	 	if (isset($_GET['deleteJob'])) {
+	 		$cron->removeJob($_GET['deleteJob']);
+
+	 	}
+
+
+	 	
+
+		$this->render('cron',array(
+		 	'jobs_obj' => $cron->getListJob(),
+		 	'files' => $this->getFiles(),
+		 	'cron' => $cron,
+		 ));
+	}
+
 	public function actionDoChecked()
 	{
 		
@@ -134,21 +158,19 @@ class DefaultController extends Controller
 
 	public function actionParseNew()
 	{
-		$json = file_get_contents('http://'.$_SERVER['HTTP_HOST'] . "/parsers/" . $_GET['file']); 
+		$json = file_get_contents('http://'.$_SERVER['HTTP_HOST'] . "/parsers/" . $_GET['file'] . "?newDate"); 
 		$json = json_decode($json);
 
 		ParsersStock::model()->deleteAll(array('condition' => "`filename`='" . $json->name . "'"));
 
 		$length = count($json->items);
-		for ($i = 0; $i < $length; $i++) {
-			$item = $json->items[$i];
 
+		foreach ($json->items as $item) {
 			$new = new ParsersStock;
 			$item = (array)$item;
 			$item['filename'] = $json->name;
 			$item['name'] = substr($item['name'], 0, 99);
 
-			//echo $item['id'] . " ";
 			if (ParsersLinking::model()->find(array(
 				'condition'=>'fromId=:fromId',
     			'params'=>array(':fromId'=>$item['id'])))
@@ -160,13 +182,8 @@ class DefaultController extends Controller
 			
 			$new->save();
 		}
-		// foreach ($json->items as $item) {
-			
-
-		// 	$j++;
-		// }
 		ob_clean();
-		echo "1";
+		echo date("d.m.Y H:i", $json->time);
 
 	}
 
@@ -181,14 +198,15 @@ class DefaultController extends Controller
 			'notCombined' => ParsersStock::model()->findAllByAttributes(array('filename' => $file, 'linked' => 0), array('order' => 'id ASC')), 
 		);
 
-		$items = ParsersLinking::model()->findAllByAttributes(array('filename' => $file), array('order' => 'id ASC'));
-
-		foreach ($items as $item) {
-			if ($item->linking->price != $item->item->price || $item->linking->quantity != $item->item->quantity) {
-			 	$itemList['combinedAndChanged'][] = $item;
+		if ($catItems) {
+			foreach ($catItems as $item) {
+				if ($item->linking->price != $item->item->price || $item->linking->quantity != $item->item->quantity) {
+				 	$itemList['combinedAndChanged'][] = $item;
+				}
 			}
-		}
 
+		}
+		
 		
 
 		 $this->render('do',array(
@@ -214,9 +232,23 @@ class DefaultController extends Controller
 
 	public function actionIndex()
 	{	
+		$this->render('index',array(
+			// 'models'=>$models,
+			// 'return' => $return,
+			'fileListOfDirectory' => $this->getFiles()
+		));
+                       
+	}
 
+	public function getFiles()
+	{
 		$fileListOfDirectory = array ();
 		$pathTofileListDirectory = Yii::app()->basePath.'/../parsers' ;
+
+		$tempfile = file_get_contents($pathTofileListDirectory . '/history/time.txt');
+        $timeArray = json_decode($tempfile);
+        $timeArray = (array)$timeArray;
+
 
 		if(!is_dir($pathTofileListDirectory ))
 		{
@@ -232,26 +264,22 @@ class DefaultController extends Controller
 		    if ($file->isFile () === TRUE && $file->getBasename () !== '.DS_Store') {
 
 		        if ($file->getExtension () == "php") {
-		            array_push ( $fileListOfDirectory, $file->getBasename () );
+
+		        	$time = 0;
+
+		        	if (array_key_exists($file->getBasename(), $timeArray)) {
+		        		$time = $timeArray[$file->getBasename()];
+		        	}
+		            array_push ( $fileListOfDirectory, array('name' => $file->getBasename(), 'time' => $time) );
 		        }
 		    }
 		}
-		
 
-		$this->render('index',array(
-			// 'models'=>$models,
-			// 'return' => $return,
-			'fileListOfDirectory' => $fileListOfDirectory
-		));
-                       
+		return $fileListOfDirectory;
 	}
 
 	public function actionDeleteLinking($id)
 	{
-
-		
-
-
 		$model=ParsersLinking::model()->findByPk($id);
 
 		$stockModel = ParsersStock::model()->findByPk($model->fromId);

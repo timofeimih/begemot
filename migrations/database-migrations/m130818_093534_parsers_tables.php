@@ -7,10 +7,14 @@ class m130818_093534_parsers_tables extends Migrations
 
 		if($this->isConfirmed(true) == true) return false;
 
-
-        $sql = "RENAME TABLE `parsers_stock` TO  `parsers_linking` ;
-        ALTER TABLE  `parsers_linking` ADD  `filename` VARCHAR( 100 ) NOT NULL;
-
+        $sql = "
+        CREATE TABLE IF NOT EXISTS `parsers_linking` (
+		  `id` int(11) NOT NULL AUTO_INCREMENT,
+		  `fromId` varchar(255) NOT NULL,
+		  `toId` int(11) NOT NULL,
+		  `filename` varchar(100) NOT NULL,
+		  PRIMARY KEY (`id`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1 ;
         CREATE TABLE IF NOT EXISTS `parsers_stock` (
 		  `id` varchar(100) COLLATE utf8_bin NOT NULL,
 		  `price` int(15) NOT NULL,
