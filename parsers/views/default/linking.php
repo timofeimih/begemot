@@ -2,6 +2,7 @@
 $this->menu = array(
     array('label' => 'Все парсеры', 'url' => array('/parsers/default/index')),
     array('label' => 'Все связи', 'url' => array('/parsers/default/linking')),
+    array('label' => 'Задания по расписанию', 'url' => array('/parsers/default/cron')),
 );
  ?>
 
@@ -30,7 +31,6 @@ $this->menu = array(
 		</tbody>
 	</table>
 
-	<input type="hidden" name='file' value='<?php echo $_GET['file']?>'>
 	<input type='submit' class='btn btn-primary btn-medium' value='Применить все'>
 <?php else: ?>
 	Ничего не надо обновлять

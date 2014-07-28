@@ -10,6 +10,7 @@ Yii::app()->clientScript->registerScriptFile(
 $this->menu = array(
     array('label' => 'Все парсеры', 'url' => array('/parsers/default/index')),
     array('label' => 'Все связи', 'url' => array('/parsers/default/linking')),
+    array('label' => 'Задания по расписанию', 'url' => array('/parsers/default/cron')),
 );
  ?>
 
@@ -347,6 +348,10 @@ $this->menu = array(
 		$(".modal").removeClass('in').hide();
 	})
 
+	$(".close").click(function(){
+		$(".modal").removeClass("in").addClass("out");
+	})
+
 	$(document).on("click", ".updatePrice", function(e){
 
 		var button = $(this);
@@ -376,9 +381,7 @@ $this->menu = array(
 
 	
 
-	$(".close").click(function(){
-		$(".modal").removeClass("in").addClass("out");
-	})
+	
 
 	$('input#search').quicksearch('UL#search_in_items li');
 

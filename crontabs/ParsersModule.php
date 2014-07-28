@@ -1,6 +1,6 @@
 <?php
 
-class ParsersModule extends CWebModule {
+class CrontabsModule extends CWebModule {
 
     static public $galleryLayout = 'application.views.layouts.galleryLayout';
 
@@ -12,7 +12,7 @@ class ParsersModule extends CWebModule {
         	'parsers.components.*',
             'parsers.models.*',
             'catalog.models.CatItem',
-            'crontabs.components.CrontabBase'
+            'begemot.commands.ParseBase'
         ));
 
     }
