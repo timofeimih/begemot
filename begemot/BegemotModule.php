@@ -27,6 +27,7 @@ class BegemotModule extends CWebModule
 		$this->setImport(array(
 			'begemot.models.*',
 			'begemot.components.*',
+			'crontabs.components.CrontabBase'
 		));
                  Yii::app()->getComponent('bootstrap');
 	}

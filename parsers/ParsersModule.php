@@ -13,10 +13,14 @@ class ParsersModule extends CWebModule {
             'parsers.models.*',
             'catalog.models.CatItem',
 <<<<<<< HEAD
+<<<<<<< HEAD
             'crontabs.components.CrontabBase'
 =======
             'begemot.commands.ParseBase'
 >>>>>>> 48ebd67b1e3736a0807868177cda7b80ee2334c7
+=======
+            'crontabs.components.CrontabBase'
+>>>>>>> 54087355c3ea62ec0af894855a004786a2ff8558
         ));
 
     }

@@ -348,6 +348,10 @@ $this->menu = array(
 		$(".modal").removeClass('in').hide();
 	})
 
+	$(".close").click(function(){
+		$(".modal").removeClass("in").addClass("out");
+	})
+
 	$(document).on("click", ".updatePrice", function(e){
 
 		var button = $(this);
@@ -377,9 +381,7 @@ $this->menu = array(
 
 	
 
-	$(".close").click(function(){
-		$(".modal").removeClass("in").addClass("out");
-	})
+	
 
 	$('input#search').quicksearch('UL#search_in_items li');
 
