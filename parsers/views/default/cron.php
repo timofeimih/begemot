@@ -1,60 +1,53 @@
-<?php 
+<?php
 $this->menu = array(
     array('label' => 'Все парсеры', 'url' => array('/parsers/default/index')),
     array('label' => 'Все связи', 'url' => array('/parsers/default/linking')),
     array('label' => 'Задания по расписанию', 'url' => array('/parsers/default/cron')),
 );
- ?>
+?>
 
 
-<h1>Создать новое задание</h1>
+    <h1>Создать новое задание</h1>
 
-<form>
-	Файл: <select name="filename" >
-		<?php foreach ($files as $file): ?>
-			<option><?php echo $file['name'] ?></option>
-		<?php endforeach ?>
-	</select><br/>
-	Временой период: <select name="time">
-		<option value="604800">Раз в неделю в понедельник</option>
-		<option value="302400">Два раза в неделю(в понедельник и четверг)</option>
-		<option value="86400">Ежедневно</option>
-	</select><br/>
-<<<<<<< HEAD
-<<<<<<< HEAD
-	<input type="hidden" name='class' value='CatItemCron'/>
-=======
->>>>>>> 48ebd67b1e3736a0807868177cda7b80ee2334c7
-=======
-	<input type="hidden" name='class' value='CatItemCron'/>
->>>>>>> 54087355c3ea62ec0af894855a004786a2ff8558
-	<input type="submit" class='btn btn-primary' value='Сохранить' name='createNew'>
-</form>
+    <form>
+        Файл: <select name="filename" >
+            <?php foreach ($files as $file): ?>
+                <option><?php echo $file['name'] ?></option>
+            <?php endforeach ?>
+        </select><br/>
+        Временой период: <select name="time">
+            <option value="604800">Раз в неделю в понедельник</option>
+            <option value="302400">Два раза в неделю(в понедельник и четверг)</option>
+            <option value="86400">Ежедневно</option>
+        </select><br/>
+        <input type="hidden" name='class' value='CatItemCron'/>
+        <input type="submit" class='btn btn-primary' value='Сохранить' name='createNew'>
+    </form>
 
-<h1>Все задания</h1>
+    <h1>Все задания</h1>
 
 <?php if ($jobs_obj): ?>
-<table>
-	<thead>
-		<tr>
-			<td>Команда</td>
-			<td>Исполняется</td>
-			<td>Действия</td>
-		</tr>
-	</thead>
-	<tbody>
-		<?php foreach ($jobs_obj as $key => $job ): ?>
-			<tr>
-				<td><?php echo $key?></td>
-				<td><?php echo $cron->timeToString($job->period)?></td>
-				<td><form><input type="hidden"  name='deleteJob' value='<?php echo $key?>'><input type="submit" value='Удалить'></form></td>
-			</tr>
-		<?php endforeach ?>
-		
-		
-	</tbody>
-</table>
+    <table>
+        <thead>
+        <tr>
+            <td>Команда</td>
+            <td>Исполняется</td>
+            <td>Действия</td>
+        </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($jobs_obj as $key => $job ): ?>
+            <tr>
+                <td><?php echo $key?></td>
+                <td><?php echo $cron->timeToString($job->period)?></td>
+                <td><form><input type="hidden"  name='deleteJob' value='<?php echo $key?>'><input type="submit" value='Удалить'></form></td>
+            </tr>
+        <?php endforeach ?>
+
+
+        </tbody>
+    </table>
 
 <?php else: ?>
-	Пока нету ни одного задания
+    Пока нету ни одного задания
 <?php endif ?>
