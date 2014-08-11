@@ -25,6 +25,7 @@ return array(
         'pictureBox',
         'begemot',
         'catalog',
+        'crontabs',
         'pages',
         'parsers',
         'elfinder',
