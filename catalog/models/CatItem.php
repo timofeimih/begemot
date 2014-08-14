@@ -251,7 +251,31 @@ class CatItem extends ContentKitModel
        return '<span class="icon icon-big icon-random"></span>';
     } else return "Нет";
   }   
-      
+  
+  public function getItemWithMaximalPrice($catId)
+  {
+
+    $returnPrice = 0;
+
+    $items = CatItemsToCat::model()->findAll(array(
+      'select' => 'itemId',
+      'condition' => 'catId = :catId',
+      'params' => array(
+          ':catId' => $catId
+      ),
+    ));
+
+
+    foreach ($items as $item) {
+      $itemModel =  $this->findByAttributes(array('id' => $item->itemId, 'published' => 1));
+
+      if($returnPrice < $itemModel->price) $returnPrice = $itemModel->price;
+    }
+
+
+    return (int) $returnPrice;
+  }
+
 
   public function runJob($filename)
   {
