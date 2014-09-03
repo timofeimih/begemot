@@ -1,4 +1,6 @@
 <?php
+
+
 /* @var $this CatItemController */
 /* @var $model CatItem */
 $assets=Yii::app()->clientScript;
@@ -15,10 +17,11 @@ Yii::app()->clientScript->registerScriptFile(
     Yii::app()->assetManager->publish(Yii::app()->getModule('catalog')->basePath . '/assets/js/editItem.js'), CClientScript::POS_HEAD
 );
 
+
 $this->breadcrumbs=array(
-	'Cat Items'=>array('index'),
-	$model->name=>array('view','id'=>$model->id),
-	'Update',
+    'Cat Items'=>array('index'),
+    $model->name=>array('view','id'=>$model->id),
+    'Update',
 );
 
 $this->menu = require dirname(__FILE__).'/commonMenu.php';
@@ -47,30 +50,48 @@ $this->menu = require dirname(__FILE__).'/commonMenu.php';
 <h2>Разделы</h2>
 <?php
     if (!$model->isNewRecord) {  
+        $categories = CatItemsToCat::model()->with(array('item', 'cat' => array('select' => 'id, pid')))->findAll(array('condition'=>'itemId='.$model->id));
 
-        $categories = CatItemsToCat::model()->with('item')->findAll(array('condition'=>'itemId='.$model->id));
-
-        if (is_array($categories) && count($categories)>0){
-            foreach ($categories as $cat){
-
-                $this->widget('bootstrap.widgets.TbButton', array(
-                    'buttonType'=>'ajaxButton',
-                    'icon'=>'icon-remove',
-                    'label'=>'',
-                    'type'=>'danger', // null, 'primary', 'info', 'success', 'warning', 'danger' or 'inverse'
-                    'size'=>'mini', // null, 'large', 'small' or 'mini'
-                    'url'=>'/catalog/catItem/deleteItemToCat/catId/'.$cat->catId.'/itemId/'.$model->id,
-                    'ajaxOptions'=>array('success'=>'function (){location.reload()}'),
-                ));
-
-
-                if ($cat->catId!=$cat->item->catId){
-                    echo ' <a href="?setMainCat='.$cat->catId.'">'.CatCategory::model()->getCatName( $cat->catId).'</a><br/>';
-                } else{
-
-                echo ' '.CatCategory::model()->getCatName( $cat->catId).'  [<strong>основной раздел</strong>]<br/>';
+        if (is_array($categories) && count($categories) > 0) {
+            foreach ($categories as $cat) {
+                if ($cat->is_through_display_child == 0) {
+                    Yii::app()->clientScript->registerCss('link', 
+                        "
+                        #td-link {
+                            margin-left:15px;
+                            padding: 4px; 
+                            background-color: #ccc;
+                            cursor: pointer;
+                            border-radius: 5px;
+                        }
+                        #td-link.active {
+                            background-color: orange;
+                            border: 1px solid orange;
+                        }
+                        " 
+                    );
+                    $active = ($cat->through_display == 0) ? '' : 'active';
+                    $linkTitle = (empty($active)) ? 'Неактивно' : 'Активно';
+                    echo "<div class='category-item'>";
+                        $this->widget('bootstrap.widgets.TbButton', array(
+                            'buttonType'=>'ajaxButton',
+                            'icon'=>'icon-remove',
+                            'label'=>'',
+                            'type'=>'danger', // null, 'primary', 'info', 'success', 'warning', 'danger' or 'inverse'
+                            'size'=>'mini', // null, 'large', 'small' or 'mini'
+                            'url'=>'/catalog/catItem/deleteItemToCat/catId/'.$cat->catId.'/itemId/'.$model->id,
+                            'ajaxOptions'=>array('success'=>'function (){location.reload()}'),
+                        ));
+                    
+                        echo ($cat->catId != $cat->item->catId) 
+                            ? ' <a href="?setMainCat='.$cat->catId.'">'.CatCategory::model()->getCatName( $cat->catId).'</a>' 
+                            : ' '.CatCategory::model()->getCatName( $cat->catId).'  [<strong>основной раздел</strong>]'; 
+                    
+                        if ($cat->cat->pid != -1)
+                            echo "<a title='Сквозное отображение - $linkTitle' id='td-link' class='$active' data-value='".$cat->catId."'><span class='icon icon-white icon-retweet'></span></a>";
+                    echo "</div>";
+                    echo "<br>";
                 }
-
             }
             echo '<br/>';
        }
@@ -78,17 +99,27 @@ $this->menu = require dirname(__FILE__).'/commonMenu.php';
         $itemToCat = new CatItemsToCat();
         $testForm = new CForm('catalog.models.forms.catToItemForm',$itemToCat);
 
-
         $testForm['itemId']->value = $model->id;
+        echo "<div id='data'></div>";
         echo '<div class="container-fluid">'.$testForm->render().'</div>';
     }?>
+<script>
+    $('#td-link').click(function () {
+        var $this = $(this);
+        var cat_id = $this.attr('data-value');
+        if (!$this.hasClass('active')) {
+            $.post('/catalog/catItemsToCat/changeThroughDisplayValue/cat_id/' + cat_id + '/item_id/' + <?=$model->id?> + '/value/' + 1, function (){location.reload()})
+        } else {
+            $.post('/catalog/catItemsToCat/changeThroughDisplayValue/cat_id/' + cat_id + '/item_id/' + <?=$model->id?> + '/value/' + 0, function (){location.reload()})
+        }
+    });
+</script>    
 <?php }  ?>
 
 <?php if ($tab=='position'){ ?>
-    <script>
+<script>
 
-        $(document).on("click", "#loadValues", function(){
-            
+        $(document).on("change", "#loadValues", function(){
             $.getJSON('/catalog/catItem/getItemsFromCategory/catId/' + $(this).val() + "/curCatId/" + $("#curPos").val(), function(data){
                $("#category").html(data.html);
 
@@ -99,56 +130,45 @@ $this->menu = require dirname(__FILE__).'/commonMenu.php';
             })
         })
 
-        
     </script>
-
     <h2>Перемещение позиции</h2>
-    
-    <form method='post'></form>
-        
-        <input type="hidden" name='currentItem' value='<?php echo $model->id?>' id='curPos'>
+  
+    <form method='post'>
+        <input type="hidden" name='currentItem' value='<?=$model->id?>' id='curPos'>
     </form>
-    <form method='post'></form>
-        
-        <input type="hidden" name='currentItem' value='<?php echo $model->id?>' id='curPos'>
-    </form>
-    
-    <?php if (!$model->isNewRecord): ?>
-        <div class="success" style='color: green'><?php echo $message?></div>
-        <?php $categories = CatItemsToCat::model()->with('item')->findAll(array('condition'=>'itemId='.$model->id)); ?>
-        <?php if (is_array($categories) && count($categories)>0) :?>
+
+<?php if (!$model->isNewRecord): ?>
+         <div class="success" style='color: green'><?php echo $message?></div>
+       <?php $categories = CatItemsToCat::model()->with('item')->findAll(array('condition'=>'itemId='.$model->id)); ?>
+       <?php if (is_array($categories) && count($categories)>0) :?>
         <form method='post'>
             <label for="">Выберите раздел:</label>
             <select name='categoryId' id='loadValues' >
-                <option value="">Выберите раздел</option>
-                <?php foreach ($categories as $cat): ?>
-                    <option value='<?php echo $cat->catId?>'><?php echo CatCategory::model()->getCatName( $cat->catId)?></option>"
-                <?php endforeach ?>
+               <option value="">Выберите раздел</option>
+               <?php foreach ($categories as $cat): ?>
+                    <option value='<?php echo $cat->catId?>'><?php echo CatCategory::model()->getCatName( $cat->catId)?></option>
+                    <?php $items[$cat->catId] = CatItem::model()->findAll(array('condition'=>'catId='.$cat->catId)); ?>
+              <?php endforeach ?>
             </select>
-            
-
-            <div class='hidden' style='display: none'>
-                
+            <div class='hidden' style='display:none;'>
                 <input type='submit' name='pasteOnFirstPosition' class='btn btn-info' value='Переместить на первую позицию'/>
                 <input type='submit' name='pasteOnLastPosition' class='btn btn-info' value='Переместить на последнию позицию'/>
-
 
                 Сейчас находится на <span id='currentPos'>2</span><br/>
                 <label for="">Переместить перед:</label>
                 <select name='item' id='category'>
-
+<!---->
                 </select>
-                 или введите ID 
-                <?php 
-                $this->widget('zii.widgets.jui.CJuiAutoComplete',array(
-                    'name'=>'itemId',
-                    'source'=>array('ac1','ac2','ac3'),
-                    // additional javascript options for the autocomplete plugin
-                    'options'=>array(
-                        'minLength'=>'0',
-                    ),
-
-                )); ?>
+                или введите ID
+              <?php //
+               $this->widget('zii.widgets.jui.CJuiAutoComplete',array(
+                   'name'=>'itemId',
+                   'source'=>array('ac1','ac2','ac3'),
+                   // additional javascript options for the autocomplete plugin
+                   'options'=>array(
+                       'minLength'=>'0',
+                   ),
+               )); ?>
                 <br/>
                 <input type="submit" class='btn '/>
                 <input type="hidden" name='changePosition'>
@@ -156,20 +176,16 @@ $this->menu = require dirname(__FILE__).'/commonMenu.php';
             </div>
 
         </form>
-        <?php else: ?>
-            Для начала добавльте карточку хоть в одну категорию
-        <?php endif ?>
+      <?php else: ?>
+            <!-- Для начала добавльте карточку хоть в одну категорию -->
+      <?php endif ?>
 
 
-       
+  <?php endif ?>
 
-    <?php endif ?>
-
-    
-
-    <?php foreach ($categories as $key => $value): ?>
-        
-    <?php endforeach ?>
+  <?php foreach ($categories as $key => $value): ?>
+      
+  <?php endforeach ?>
 <?php }   ?>
 
 <?php if ($tab=='options'){ ?>

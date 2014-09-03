@@ -32,6 +32,7 @@ class CatItemsToCat extends CActiveRecord
         {
             return array(
                 'item'=>array(self::BELONGS_TO, 'CatItem', 'itemId'),
+                'cat'=>array(self::BELONGS_TO, 'CatCategory', 'catId'),
             );
         }
         
