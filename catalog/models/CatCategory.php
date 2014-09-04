@@ -213,9 +213,9 @@ class CatCategory extends CActiveRecord
             if (count($childs)>0){
                 
                 foreach ($childs as $id=>$child){
-                    $tmpChildsAray=array();
-                    $tmpChildsAray = $this->getCatChilds($id);
-                    $resultArray = array_merge($resultArray,$tmpChildsAray);
+                    $tmpChildsArray=array();
+                    $tmpChildsArray = $this->getCatChilds($child['id']);
+                    $resultArray = array_merge($resultArray,$tmpChildsArray);
                 } 
             }
             return $resultArray;
@@ -268,15 +268,20 @@ class CatCategory extends CActiveRecord
                 if($item['pid']==-1){
                     $menuEnd[$id] = $menuItem;
 
-                    foreach ($this->getAllCatChilds($id) as $id => $item) {
-                        $menuEnd += array($id => array(
+                    foreach ($this->getAllCatChilds($id) as $item) {
+
+                        $class = ($item['pid'] != $id) ? "sub-sub-item" : "sub-item";
+                        $menuEnd += array($item['id'] => array(
                             'label' => $item['name'],
                             'url' => array('catItemsToCat/admin','id'=>$item['id']),
-                            'itemOptions' => array('class'=>'sub-item')
+                            'itemOptions' => array('class'=>$class)
                         ));
                     }
                 }
+
              }
+
+
 
 
 
