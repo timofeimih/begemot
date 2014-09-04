@@ -9,6 +9,7 @@ class CatItemsToCatController extends Controller
 		return array(
 			'accessControl', // perform access control for CRUD operations
 			'postOnly + delete', // we only allow deletion via POST request
+			'ajaxOnly + changeThroughDisplayValue',
 		);
 	}
         
@@ -17,7 +18,9 @@ class CatItemsToCatController extends Controller
 		return array(
 
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('delete','orderUp','orderDown','admin'),
+				'actions'=>array('delete','orderUp','orderDown', 'changeThroughDisplayValue', 
+					// 'index',
+					'admin'),
                 'expression' => 'Yii::app()->user->canDo("catalogEditor")'
 			),
 			array('deny',  // deny all users
@@ -77,4 +80,43 @@ class CatItemsToCatController extends Controller
 			throw new CHttpException(404,'The requested page does not exist.');
 		return $model;
 	}
+
+    public function actionChangeThroughDisplayValue($cat_id, $item_id, $value)
+    {
+    	$model = CatItemsToCat::model()->find(array(
+    		'condition' => 'catId = :cat AND itemId = :item',
+    		'params' => array(':cat' => $cat_id, ':item' => $item_id)
+    	));
+
+    	$parent_id = CatCategory::model()->findByPk($cat_id)->pid;
+    	$root_id = CatCategory::model()->findByPk($parent_id)->pid;
+		$table = CatItemsToCat::model()->tableName();
+		$maxOrderValue = (Yii::app()->db->createCommand()
+					->select('max(`order`) as max')
+					->from($table)
+					->queryScalar()) + 1;
+    	
+    	if ($root_id != -1) {
+			// CHECKED
+				if ($value == 1) {
+					$sql = "INSERT INTO $table (itemId, catId, `order`, is_through_display_child) VALUES (:itemId, :catId, :order, 1)";
+					$parameters = array(":itemId"=>$item_id, ":catId"=>$parent_id, ":order"=>$maxOrderValue);
+					Yii::app()->db->createCommand($sql)->execute($parameters);
+	    
+	    		} else {
+
+			// UNCHECKED
+	    			$itemsToCat = CatItemsToCat::model()->find(array(
+	    				'condition' => 'itemId = :itemId AND catId = :catId',
+	    				'params' => array(
+	    					':itemId' => $item_id,
+	    					':catId' => $parent_id
+	    				)
+	    			))->delete();
+	    		}
+    	}
+
+    	$model->through_display = $value;
+    	$model->save();
+   }
 }

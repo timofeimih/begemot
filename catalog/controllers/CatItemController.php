@@ -1,5 +1,7 @@
 <?php
-
+	ini_set('display_errors',1);
+	error_reporting(E_ALL);
+	
 class CatItemController extends Controller
 {
 	/**
@@ -106,7 +108,10 @@ class CatItemController extends Controller
 		}
 
 		$array['currentPos'] = $currentPosition;
-		ob_clean();
+		
+		if (ob_get_contents()) 
+			ob_end_clean();
+
 		echo json_encode($array);
 	}
 
@@ -126,8 +131,9 @@ class CatItemController extends Controller
         }
 
 
+     // change positions
+        if (isset($_POST['changePosition'])) {
 
-        if(isset($_POST['changePosition'])){
 
         	$category = $_POST['categoryId'];
         	$item = $_POST['item'];
@@ -183,6 +189,7 @@ class CatItemController extends Controller
         		$message = "Сохранено";
         	}
         }
+     // --change positions
 
         if(isset($_POST['saveItemsToItems']) && isset($_POST['options'])){
         	CatItemsToItems::model()->deleteAll(array("condition"=> 'itemId='.$id));
