@@ -165,13 +165,14 @@ class CrontabBase extends CApplicationComponent{
 
 				if ($item['executable'] == true) {
 					if (($item['lastExecuted'] + $item['period']) < time()) {
-						$item['class']->runJob($filename);
+						$classItem = new $item['class'];
+						$classItem->runJob($filename);
 						//$this->runJob($filename);
 
 						$item['lastExecuted'] = mktime(0, 0, 0, date('n'), date('j'));
 
 						
-						echo "run" . time() .  " - " . $key .  " - " . $item['lastExecuted'];
+						echo "run" . time() .  " - " . $filename .  " - " . $item['lastExecuted'];
 					}
 					else echo 'no run' . time();
 				}

@@ -3,9 +3,9 @@
 include('ParseBase.php');
 class ParseCommand extends CConsoleCommand
 {
-    public function run($args)
+    public function run()
     {
-
+        echo "ok";
     	// Сообщение
 		$message = "Line 1\nLine 2\nLine 3";
 
@@ -20,4 +20,5 @@ class ParseCommand extends CConsoleCommand
     	$n->runAll();
 
     }
+
 }

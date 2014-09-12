@@ -120,6 +120,8 @@ class ParseBase{
 
 			$this->writeFile($save);
 		}
+
+		echo "done";
 		
 
 	}

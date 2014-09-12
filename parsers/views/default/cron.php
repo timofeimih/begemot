@@ -20,7 +20,7 @@ $this->menu = array(
 		<option value="302400">Два раза в неделю(в понедельник и четверг)</option>
 		<option value="86400">Ежедневно</option>
 	</select><br/>
-	<input type="hidden" name='class' value='CatItemCron'/>
+	<input type="hidden" name='class' value='CatItem'/>
 	<input type="submit" class='btn btn-primary' value='Сохранить' name='createNew'>
 </form>
 
