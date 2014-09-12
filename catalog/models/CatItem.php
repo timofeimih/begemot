@@ -361,4 +361,3 @@ class CatItem extends ContentKitModel
       echo "no message";
     }
   }  
-}

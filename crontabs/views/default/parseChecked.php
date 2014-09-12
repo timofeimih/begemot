@@ -4,8 +4,7 @@ $this->menu = array(
     array('label' => 'Все парсеры', 'url' => array('/parsers/default/index')),
     array('label' => 'Все связи', 'url' => array('/parsers/default/linking')),
     array('label' => 'Задания по расписанию', 'url' => array('/parsers/default/cron')),
-    ));
-
+);
  ?>
 
 

@@ -9,7 +9,7 @@ class ParsersModule extends CWebModule {
         // you may place code here to customize the module or the application
         // import the module-level models and components
         $this->setImport(array(
-        	'parsers.components.*',
+            'parsers.components.*',
             'parsers.models.*',
             'catalog.models.CatItem',
             'crontabs.components.CrontabBase'
@@ -18,10 +18,10 @@ class ParsersModule extends CWebModule {
     }
 
     public function beforeControllerAction($controller, $action) {
-        
+
         if ($controller->id != 'site') {
 
-           Yii::app()->getComponent('bootstrap');
+            Yii::app()->getComponent('bootstrap');
         }
         return true;
     }
