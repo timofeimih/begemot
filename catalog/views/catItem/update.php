@@ -57,14 +57,14 @@ $this->menu = require dirname(__FILE__).'/commonMenu.php';
                 if ($cat->is_through_display_child == 0) {
                     Yii::app()->clientScript->registerCss('link', 
                         "
-                        #td-link {
+                        .td-link {
                             margin-left:15px;
                             padding: 4px; 
                             background-color: #ccc;
                             cursor: pointer;
                             border-radius: 5px;
                         }
-                        #td-link.active {
+                        .td-link.active {
                             background-color: orange;
                             border: 1px solid orange;
                         }
@@ -88,7 +88,7 @@ $this->menu = require dirname(__FILE__).'/commonMenu.php';
                             : ' '.CatCategory::model()->getCatName( $cat->catId).'  [<strong>основной раздел</strong>]'; 
                     
                         if ($cat->cat->pid != -1)
-                            echo "<a title='Сквозное отображение - $linkTitle' id='td-link' class='$active' data-value='".$cat->catId."'><span class='icon icon-white icon-retweet'></span></a>";
+                            echo "<a title='Сквозное отображение - $linkTitle' class='$active td-link' data-value='".$cat->catId."'><span class='icon icon-white icon-retweet'></span></a>";
                     echo "</div>";
                     echo "<br>";
                 }
@@ -104,7 +104,7 @@ $this->menu = require dirname(__FILE__).'/commonMenu.php';
         echo '<div class="container-fluid">'.$testForm->render().'</div>';
     }?>
 <script>
-    $('#td-link').click(function () {
+    $('.td-link').click(function () {
         var $this = $(this);
         var cat_id = $this.attr('data-value');
         if (!$this.hasClass('active')) {

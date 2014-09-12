@@ -121,7 +121,6 @@ class ParseBase{
             $this->writeFile($save);
         }
 
-
     }
 
     private function runJob($filename)
