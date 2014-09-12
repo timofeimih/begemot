@@ -41,6 +41,11 @@ $model = new CatItemsToCat();
                         'height' => 120,
                     ),
                 ),
+                 array(
+                    'header' => 'Парсится',
+                    'type'=>'raw',
+                    'value'=>'$data->item->combinedWithParser()',
+                ),
                 array(
                       'name'=>'name',
                       'value'=>'$data->item->name',
