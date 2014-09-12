@@ -39,11 +39,17 @@
                                 array('label'=>'Каталог', 'url'=>array('/catalog/catItem'),'visible'=>Yii::app()->hasModule('catalog')),
                                 array('label'=>'Статьи', 'url'=>array('/post/default/admin'),'visible'=>Yii::app()->hasModule('post')),
                                 array('label'=>'HTML', 'url'=>array('/pages'),'visible'=>Yii::app()->hasModule('pages')),
+                                array('label'=>'Переменные', 'url'=>array('/vars'),'visible'=>Yii::app()->hasModule('vars')),
                             ),
                         ),
 
-
-
+                        array('label'=>'Дополнительно',
+                            'items'=>array(
+                                array('label'=>'Миграция', 'url'=>array('/migrations'),'visible'=>Yii::app()->hasModule('migrations')),
+                                array('label'=>'Парсеры', 'url'=>array('/parsers'),'visible'=>Yii::app()->hasModule('parsers')),
+                            ),
+                        ),
+                        
                         array('label'=>'Файлы', 'url'=>array('/elfinder'),'visible'=>Yii::app()->hasModule('elfinder')),
                         array('label'=>'Сообщения',
                             'items'=>array(
