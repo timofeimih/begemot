@@ -255,9 +255,9 @@ class CatItem extends ContentKitModel
 
   public function runJob($filename)
   {
-    $websiteName = 'rosvezdehod.ru';
+    $websiteName = Yii::app()->params['adminEmail'];
 
-    $json = file_get_contents('http://'. $websiteName . "/parsers/" . $filename . "?newDate"); 
+    $json = file_get_contents($websiteName . "/parsers/" . $filename . "?newDate"); 
     $json = json_decode($json);
 
     ParsersStock::model()->deleteAll(array('condition' => "`filename`='" . $json->name . "'"));
