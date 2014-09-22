@@ -255,7 +255,7 @@ class CatItem extends ContentKitModel
 
   public function runJob($filename)
   {
-    $websiteName = Yii::app()->params['adminEmail'];
+    $websiteName = Yii::app()->params['website'];
 
     $json = file_get_contents($websiteName . "/parsers/" . $filename . "?newDate"); 
     $json = json_decode($json);
@@ -361,3 +361,4 @@ class CatItem extends ContentKitModel
       echo "no message";
     }
   }  
+}
