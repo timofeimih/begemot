@@ -1,8 +1,8 @@
 // yiicmd.php
 <?php
 // change the following paths if necessary
-$yii 	=   './../yiic';
-$config =	'./../config/console.php';
+$yii 	=   realpath(dirname(__FILE__)) . "/../yiic";
+$config =   realpath(dirname(__FILE__)) . '/../config/console.php';
  
 // remove the following line when in production mode
 defined('YII_DEBUG') or define('YII_DEBUG',true);

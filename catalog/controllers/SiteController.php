@@ -72,6 +72,11 @@ class SiteController extends Controller {
 
     }
 
+    public function actionTestMaximum()
+    {
+        echo CatItem::model()->getItemWithMaximalPrice(74);
+    }
+
     public function actionCategoryView($catId = 0) {
         $this->layout = CatalogModule::$catalogCategoryViewLayout;
         $category = CatCategory::model()->findByPk($catId);
@@ -101,6 +106,7 @@ class SiteController extends Controller {
         $dataProvider = new CActiveDataProvider('CatItemsToCat', array('criteria' => $criteria,'pagination'=>array('pageSize'=>1000)));
 
        // $dataProvider=CatItemsToCat::model()->published()->with('item')->findAll();top
+
         $this->render('categoryView', array('categoryItems' => $dataProvider->getData(), 'category' => $category, 'maximalPriceValue' => $maximalPriceValue));
     }
 
@@ -109,6 +115,7 @@ class SiteController extends Controller {
         $this->layout = CatalogModule::$catalogCategoryViewLayout;
 
         $category = CatCategory::model()->findByPk($catId);
+        $maximalPriceValue = CatItem::model()->getItemWithMaximalPrice($catId);
         $parentCategory = null;
         if ($category->pid != "-1"){
             $parentCategory = CatCategory::model()->findByPk($category->pid);
@@ -122,12 +129,34 @@ class SiteController extends Controller {
         }
 
         $iDsStr = '(' . implode(',', $iDsArray) . ')';
+        $criteria = new CDbCriteria;
 
-        $dataProvider = new CActiveDataProvider('CatItemsToCat', array('criteria' => array('select' => 't.itemId', 'condition' => '`t`.`catId` in ' . $iDsStr . '', 'with' => 'item', 'order' => 'item.top DESC, t.order ASC', 'distinct' => true, 'group'=>'`t`.`itemId`')));
+        $criteria->select = 't.itemId';
+        $criteria->condition = '`t`.`catId` in ' . $iDsStr . '';
+        $criteria->with = array(
+            'item'=>array(
+                'condition'=>'published=1'
+            )
+        ); 
+        $criteria->distinct = true;
+        $criteria->order = 'item.top DESC, t.order ASC';
 
-        $dataProvider->pagination = array('pageSize' => 1000);
+        if (isset($_GET['sort'])) {
+           $sort = ($_GET['sort'] == 'asc') ? 'asc' : 'desc';
+           $criteria->order = 'item.price '.$sort;
+        }
+            
+        if ( isset($_GET['priceMin']) && isset($_GET['priceMax']) ) {
+           $priceMin = (int)$_GET['priceMin'];
+           $priceMax = (int)$_GET['priceMax'];
 
-        $this->render('rCategoryView', array('categoryItems' => $dataProvider->getData(),'category'=>$category,'parentCat'=>$parentCategory));
+           $criteria->addBetweenCondition('price', $priceMin,$priceMax);
+        }
+
+        $dataProvider = new CActiveDataProvider('CatItemsToCat', array('criteria' => $criteria, 'pagination' => array('pageSize'=>1000)));
+
+
+        $this->render('rCategoryView', array('categoryItems' => $dataProvider->getData(),'category'=>$category,'parentCat'=>$parentCategory, 'maximalPriceValue' => $maximalPriceValue));
     }
 
     public function actionBuy ($itemId){
