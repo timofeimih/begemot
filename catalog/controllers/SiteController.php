@@ -72,10 +72,6 @@ class SiteController extends Controller {
 
     }
 
-    public function actionTestMaximum()
-    {
-        echo CatItem::model()->getItemWithMaximalPrice(74);
-    }
 
     public function actionCategoryView($catId = 0) {
         $this->layout = CatalogModule::$catalogCategoryViewLayout;

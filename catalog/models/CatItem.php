@@ -250,8 +250,18 @@ class CatItem extends ContentKitModel
     if ($model) {
        return '<span class="icon icon-big icon-random"></span>';
     } else return "Нет";
-  }   
-      
+  }
+
+    public function getItemWithMaximalPrice($catId)
+    {
+        return $this->find(array(
+            'select' => 'MAX(price) as price',
+            'condition' => 'published = 1 AND catId = :catId',
+            'params' => array(
+                ':catId' => $catId
+            ),
+        ))->price;
+    }
 
   public function runJob($filename)
   {
