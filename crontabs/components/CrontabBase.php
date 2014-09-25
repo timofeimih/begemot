@@ -43,13 +43,14 @@ class CrontabBase extends CApplicationComponent{
         
 	}
 
-	public function changeTime($jobIndex, $period = 86400)
+	public function changeTime($jobIndex, $period = 86400, $time = '1')
 	{
 		$all = (array) $this->getListJob();
 
 		if (array_key_exists($jobIndex, $all)) {
 
 			$all[$jobIndex]->period = $period;
+			$all[$jobIndex]->time = $time;
 
 			$this->writeFile((array) $all);
 
@@ -114,9 +115,12 @@ class CrontabBase extends CApplicationComponent{
 			$string = 'Раз в неделю';
 		} else if ($time == 302400){
 			$string = 'Два раза в неделю';
+		} else if ($time < 86400){
+			$string = $time / 3600;
 		} else{
 			$string = 'Не известно';
 		}
+
 
 		return $string;
 	}
@@ -137,20 +141,48 @@ class CrontabBase extends CApplicationComponent{
 
 		$files  = scandir($this->dir);
 
-		$tempFile = fopen($this->dir . 'cronConfig.php', 'r');
+		if (array_search('cronConfig.php', $files)) {
+		    $json = json_decode(file_get_contents($this->dir . 'cronConfig.php'));
+		    
+		    $array = $json;
 
-        if (array_search('cronConfig.php', $files)) {
-            $json = json_decode(file_get_contents($this->dir . 'cronConfig.php'));
-            
-            $array = $json;
-
-            
-        }
-
-        fclose($tempFile); 
+		    
+		}
 		
 
 		return (array) $array;
+	}
+
+	public function changeTimeOfLastExecuted($name, $time = 0)
+	{
+
+		$array = array();
+		$directory = dirname(Yii::app()->basePath) . "/parsers/history/";
+
+		$files  = scandir($directory);
+
+		
+
+		if (array_search('time.txt', $files)) {
+			$tempFile = fopen($directory . 'time.txt', 'c');
+
+		    $json = json_decode(file_get_contents($directory . 'time.txt'));
+		    //print_r($files);
+		    $array = (array) $json;
+
+		    if(is_array($array)){
+		    	if (array_key_exists($name, $array)) {
+			    	$array[$name] = $time;
+			    }
+
+			    fwrite($tempFile, json_encode($array)); 
+		    }
+		    
+
+		    fclose($tempFile); 
+		}
+		
+		return true;
 	}
 
 	public function runAll()
@@ -164,14 +196,17 @@ class CrontabBase extends CApplicationComponent{
 				$item = (array) $item;
 
 				if ($item['executable'] == true) {
-					if (($item['lastExecuted'] + $item['period']) < time()) {
-						$item['class']->runJob($filename);
-						//$this->runJob($filename);
-
-						$item['lastExecuted'] = mktime(0, 0, 0, date('n'), date('j'));
-
 						
-						echo "run" . time() .  " - " . $key .  " - " . $item['lastExecuted'];
+					if (($item['lastExecuted'] + $item['period'] + $item['time']) < time()) {
+						
+						$classItem = new $item['class'];
+						//$classItem->runJob($filename);
+						$this->runJob($filename);
+						$this->changeTimeOfLastExecuted($filename, time());
+
+						$item['lastExecuted'] = mktime(0, 0, 0, date('n'), date('j')) + $item['period'] + $item['time'];
+						
+						echo "run" . time() .  " - " . $filename .  " - " . $item['lastExecuted'];
 					}
 					else echo 'no run' . time();
 				}

@@ -72,6 +72,11 @@ class SiteController extends Controller {
 
     }
 
+    public function actionTestMaximum()
+    {
+        echo CatItem::model()->getItemWithMaximalPrice(74);
+    }
+
     public function actionCategoryView($catId = 0) {
         $this->layout = CatalogModule::$catalogCategoryViewLayout;
         $category = CatCategory::model()->findByPk($catId);
@@ -101,6 +106,7 @@ class SiteController extends Controller {
         $dataProvider = new CActiveDataProvider('CatItemsToCat', array('criteria' => $criteria,'pagination'=>array('pageSize'=>1000)));
 
        // $dataProvider=CatItemsToCat::model()->published()->with('item')->findAll();top
+
         $this->render('categoryView', array('categoryItems' => $dataProvider->getData(), 'category' => $category, 'maximalPriceValue' => $maximalPriceValue));
     }
 
