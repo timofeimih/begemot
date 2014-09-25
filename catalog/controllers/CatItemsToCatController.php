@@ -95,27 +95,40 @@ class CatItemsToCatController extends Controller
 					->select('max(`order`) as max')
 					->from($table)
 					->queryScalar()) + 1;
-    	
-    	if ($root_id != -1) {
+
+    	while (true) {
 			// CHECKED
-				if ($value == 1) {
-					$sql = "INSERT INTO $table (itemId, catId, `order`, is_through_display_child) VALUES (:itemId, :catId, :order, 1)";
-					$parameters = array(":itemId"=>$item_id, ":catId"=>$parent_id, ":order"=>$maxOrderValue);
-					Yii::app()->db->createCommand($sql)->execute($parameters);
-	    
-	    		} else {
+			if ($value == 1) {
 
-			// UNCHECKED
-	    			$itemsToCat = CatItemsToCat::model()->find(array(
-	    				'condition' => 'itemId = :itemId AND catId = :catId',
-	    				'params' => array(
-	    					':itemId' => $item_id,
-	    					':catId' => $parent_id
-	    				)
-	    			))->delete();
+				$sql = "INSERT INTO $table (itemId, catId, `order`, is_through_display_child) VALUES (:itemId, :catId, :order, 1)";
+				$parameters = array(":itemId"=>$item_id, ":catId"=>$parent_id, ":order"=>$maxOrderValue);
+				Yii::app()->db->createCommand($sql)->execute($parameters);
+
+				if (CatCategory::model()->findByPk($parent_id)->pid == -1) {
+	    			break;
 	    		}
-    	}
+						    
+	    	} else {
 
+	    		$cat_level = CatCategory::model()->findByPk($parent_id)->pid;
+				// UNCHECKED
+    			$itemsToCat = CatItemsToCat::model()->find(array(
+    				'condition' => 'itemId = :itemId AND catId = :catId',
+    				'params' => array(
+    					':itemId' => $item_id,
+    					':catId' => $parent_id
+    				)
+    			))->delete();
+
+    			if ($cat_level == -1) {
+	    			break;
+	    		}
+    		}
+
+    		
+
+	    	$parent_id = CatCategory::model()->findByPk($parent_id)->pid;
+	    }
     	$model->through_display = $value;
     	$model->save();
    }
