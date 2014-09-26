@@ -100,10 +100,7 @@ class SiteController extends Controller {
         $dataProvider = new CActiveDataProvider('CatItemsToCat', array('criteria' => $criteria,'pagination'=>array('pageSize'=>1000)));
 
        // $dataProvider=CatItemsToCat::model()->published()->with('item')->findAll();top
-<<<<<<< HEAD
 
-=======
->>>>>>> f606a4a0df832fc1a738bc680fadc4737b9886ec
         $this->render('categoryView', array('categoryItems' => $dataProvider->getData(), 'category' => $category, 'maximalPriceValue' => $maximalPriceValue));
     }
 

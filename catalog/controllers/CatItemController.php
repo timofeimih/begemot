@@ -131,17 +131,8 @@ class CatItemController extends Controller
         }
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-        
-=======
->>>>>>> f606a4a0df832fc1a738bc680fadc4737b9886ec
      // change positions
         if (isset($_POST['changePosition'])) {
-=======
-
-        if(isset($_POST['changePosition'])){
->>>>>>> Парсер и мелкие правки
 
 
         	$category = $_POST['categoryId'];
