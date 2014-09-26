@@ -12,6 +12,7 @@ $this->menu = array(
 				<td>Название файла</td>
 				<td>Включенно</td>
 				<td>Период исполнения</td>
+				<td>Исполняется в</td>
 				<td>Действия</td>
 			</tr>
 		</thead>
@@ -23,6 +24,7 @@ $this->menu = array(
 				<td><?php echo $key?></td>
 				<td><?php echo ($item->executable == true) ? "Да" : "Нет"?></td>
 				<td class='period'><?php echo CrontabBase::timeToString($item->period);?></td>
+				<td class='time'><?php if(property_exists($item, 'time')) echo CrontabBase::timeToString($item->time) . ":00";?></td>
 				<td>
 					<input type="button" 
 						class='btn btn-primary turnOnOff' 
@@ -66,6 +68,17 @@ $this->menu = array(
 				<option value="302400">Два раза в неделю(в понедельник и четверг)</option>
 				<option value="86400">Каждый день</option>
 			</select><br/>
+			Точное время выполнения: <select name="hour">
+				<option value='3600'>1</option>
+				<option value='10800'>3</option>
+				<option value='25200'>7</option>
+				<option value='32400'>9</option>
+				<option value='36000'>10</option>
+				<option value='43200'>12</option>
+				<option value='54000'>15</option>
+				<option value='64800'>18</option>
+				<option value='82800'>23</option>
+			</select> час<br/>
 
 			<input type="hidden" name='name' value='' class='name'>
 			<input type="hidden" class='item' />
@@ -144,6 +157,8 @@ $this->menu = array(
 				$(form).find("#success").html("Сохранено");
 
 				$("." + $(form).find(".item").val()).find(".period").html(data);
+
+				$("." + $(form).find(".item").val()).find(".time").html($(form).find("SELECT[name='hour'] OPTION:selected").html() + ":00");
 
 			} else alert("ERROR");
 		})

@@ -51,6 +51,7 @@
                             'items'=>array(
                                 array('label'=>'Миграция', 'url'=>array('/migrations'),'visible'=>Yii::app()->hasModule('migrations')),
                                 array('label'=>'Парсеры', 'url'=>array('/parsers'),'visible'=>Yii::app()->hasModule('parsers')),
+                                array('label'=>'Кронтаб', 'url'=>array('/crontabs'),'visible'=>Yii::app()->hasModule('crontabs')),
                             ),
                         ),
                         
