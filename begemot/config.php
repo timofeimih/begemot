@@ -161,8 +161,6 @@ return array(
             'urlSuffix' => '.html',
             'rules' => array(
                 
-                
-<<<<<<< HEAD
                 '/admin' => '/begemot',
                 //модуль gallery
                 '/photo' => array('gallery/siteGallery/index'),
@@ -184,29 +182,6 @@ return array(
                 'katalog' => '/site/ModelsAndPrices',
                 'moto' => '/catalog/site/RCategoryView/catId/72/V_nalichii',
                 'video' => '/site/video'
-=======
-  //               '/admin' => '/begemot',
-  //               //модуль gallery
-  //               '/photo' => array('gallery/siteGallery/index'),
-  //               '/photo/<title:[\w-]+>_<id:[\w-]+>' => array('gallery/siteGallery/viewGallery'),
-		// '/contact' => '/site/contact/',
-  //               //модуль pages
-  //               array('class' => 'application.modules.pages.components.PageUrlRule'),
-  //               //модуль catalog
-		//         '/catalog' => '/catalog/site/',
-  //               'catalog/<title:[\w-]+>_<catId:\d+>' => 'catalog/site/categoryView',
-  //               'catalog/<catName:[\w-]+>_<catId:\d+>' => 'catalog/site/RCategoryView',
-  //               'catalog/<title:[\w-]+>_<catId:\d+>/<itemName:[\w-\"\']+>_<item:\d+>' => 'catalog/site/itemView',
-  //               //модуль post
-  //               'posts' => 'post/site/tagIndex',
-  //               'posts/<title:\w+>_<id:\d+>' => 'post/site/tagIndex',
-  //               'postsView/<title:[\w-]+>_<id:\d+>' => 'post/site/view',
-  //               'index' => '/',
-  //               'contacts' => '/site/contact',
-  //               'katalog' => '/site/ModelsAndPrices',
-  //               'moto' => '/catalog/site/RCategoryView/catId/72/V_nalichii',
-  //               'video' => '/site/video'
->>>>>>> f606a4a0df832fc1a738bc680fadc4737b9886ec
             )
 
         ), 
