@@ -40,10 +40,6 @@
                                 array('label'=>'Статьи', 'url'=>array('/post/default/admin'),'visible'=>Yii::app()->hasModule('post')),
                                 array('label'=>'HTML', 'url'=>array('/pages'),'visible'=>Yii::app()->hasModule('pages')),
                                 array('label'=>'Переменные', 'url'=>array('/vars'),'visible'=>Yii::app()->hasModule('vars')),
-<<<<<<< HEAD
-
-=======
->>>>>>> Парсер и мелкие правки
                             ),
                         ),
 
