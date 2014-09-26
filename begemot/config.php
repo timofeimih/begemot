@@ -161,6 +161,7 @@ return array(
             'urlSuffix' => '.html',
             'rules' => array(
                 
+                
                 '/admin' => '/begemot',
                 //модуль gallery
                 '/photo' => array('gallery/siteGallery/index'),
