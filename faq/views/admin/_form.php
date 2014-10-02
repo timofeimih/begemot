@@ -49,9 +49,12 @@
 		<?php echo $form->error($model,'answer'); ?>
 	</div>
 	<div class="row">
-		<?php echo $form->labelEx($model,'published'); ?>
-		<?php echo $form->dropDownList($model,'published',Faq::itemAlias('Published')); ?>
-		<?php echo $form->error($model,'published'); ?>
+		<?php        $this->widget('begemot.extensions.contentKit.widgets.KitFormPart',
+            array(
+                'form'=>$form,
+                'model'=>$model
+            )
+        ); ?> 
 	</div>
 
 	<div class="row">

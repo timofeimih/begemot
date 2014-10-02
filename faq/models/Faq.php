@@ -64,7 +64,7 @@ class Faq extends CActiveRecord
 			'question' => 'Вопрос',
 			'answer' => 'Ответ',
 			'answered' => 'Наличие ответа',
-			'published' => 'Статус',
+			'published' => 'Опубликовано',
 			'create_at' => 'Создано',
 			'cid' => 'Раздел',
 		);

@@ -74,11 +74,11 @@ $this->breadcrumbs = array(
                     </div>
                     
                     <div>
-                        <?php echo $form->textField($model, 'site', array('placeholder' => 'Сайт')); ?>
-                        <?php echo $form->error($model, 'site'); ?>
+                        <?php echo $form->textField($model, 'phone', array('placeholder' => 'Телефон')); ?>
+                        <?php echo $form->error($model, 'phone'); ?>
                         <div class="form_info">
 
-                            <i>Сайт</i>
+                            <i>Номер телефона</i>
                         </div>
                     </div>
                     <div class="txt_line">
