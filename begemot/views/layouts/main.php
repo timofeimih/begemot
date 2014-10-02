@@ -47,7 +47,6 @@
                             'items'=>array(
                                 array('label'=>'Миграция', 'url'=>array('/migrations'),'visible'=>Yii::app()->hasModule('migrations')),
                                 array('label'=>'Парсеры', 'url'=>array('/parsers'),'visible'=>Yii::app()->hasModule('parsers')),
-                                array('label'=>'FAQ', 'url'=>array('/faq/admin'),'visible'=>Yii::app()->hasModule('faq')),
                             ),
                         ),
                         
@@ -56,6 +55,7 @@
                             'items'=>array(
                                 array('label'=>'CallBack', 'url'=>array('/callback/callback/index'),'visible'=>Yii::app()->hasModule('callback')),
                                 array('label'=>'Коменты', 'url'=>array('/comments'),'visible'=>Yii::app()->hasModule('comments')),
+                                array('label'=>'FAQ', 'url'=>array('/faq/admin'),'visible'=>Yii::app()->hasModule('faq')),
                             ),
                         ),
                         array('label'=>'Галлерея',

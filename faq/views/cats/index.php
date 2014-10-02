@@ -7,10 +7,7 @@ $this->breadcrumbs=array(
 	'Manage',
 );
 
-$this->menu=array(
-	array('label'=>Yii::t('FaqModule.faq','Create Cat'), 'url'=>array('create')),
-	array('label'=>Yii::t('FaqModule.faq','Manage Faq'), 'url'=>array('admin/')),
-);
+require Yii::getPathOfAlias('webroot').'/protected/modules/faq/views/admin/_postsMenu.php';
 
 Yii::app()->clientScript->registerScript('search', "
 $('.search-button').click(function(){

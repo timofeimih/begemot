@@ -6,7 +6,7 @@
 
 <div class="form">
 
-<?php $form=$this->beginWidget('CActiveForm', array(
+<?php $form=$this->beginWidget('bootstrap.widgets.TbActiveForm', array(
 	'id'=>'faq-form',
 	// Please note: When you enable ajax validation, make sure the corresponding
 	// controller action is handling ajax validation correctly.
@@ -18,25 +18,25 @@
 	<p class="note"><?php echo Yii::t('FaqModule.faq','Fields with <span class="required">*</span> are required.'); ?></p>
 
 	<?php echo $form->errorSummary($model); ?>
-   <? if($model->isNewRecord) { ?>
+   <?php if($model->isNewRecord): ?>
       <div class="row">
          <?php echo $form->labelEx($model,'name'); ?>
-         <?php echo $form->textArea($model,'name',array('rows'=>6, 'cols'=>50)); ?>
+         <?php echo $form->textField($model,'name'); ?>
          <?php echo $form->error($model,'name'); ?>
       </div>
 
       <div class="row">
          <?php echo $form->labelEx($model,'email'); ?>
-         <?php echo $form->textArea($model,'email',array('rows'=>6, 'cols'=>50)); ?>
+         <?php echo $form->textField($model,'email'); ?>
          <?php echo $form->error($model,'email'); ?>
       </div>
 
       <div class="row">
-         <?php echo $form->labelEx($model,'site'); ?>
-         <?php echo $form->textArea($model,'site',array('rows'=>6, 'cols'=>50)); ?>
-         <?php echo $form->error($model,'site'); ?>
+         <?php echo $form->labelEx($model,'phone'); ?>
+         <?php echo $form->textField($model,'phone'); ?>
+         <?php echo $form->error($model,'phone'); ?>
       </div>
-   <? }; ?>
+   <?php endif; ?>
 	<div class="row">
 		<?php echo $form->labelEx($model,'question'); ?>
 		<?php echo $form->textArea($model,'question',array('rows'=>6, 'cols'=>50)); ?>
@@ -48,12 +48,12 @@
 		<?php echo $form->textArea($model,'answer',array('rows'=>6, 'cols'=>50)); ?>
 		<?php echo $form->error($model,'answer'); ?>
 	</div>
-
 	<div class="row">
 		<?php echo $form->labelEx($model,'published'); ?>
 		<?php echo $form->dropDownList($model,'published',Faq::itemAlias('Published')); ?>
 		<?php echo $form->error($model,'published'); ?>
 	</div>
+
 	<div class="row">
 		<?php echo $form->labelEx($model,'cid'); ?>
 		<?php echo $form->dropDownList($model,'cid', CHtml::listData(FaqCats::model()->findAll(), 'id', 'name'), array('prompt'=>'Выберите раздел'),array('options'=>array($model->cid=>array('selected'=>'selected')))); ?>

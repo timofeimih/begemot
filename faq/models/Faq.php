@@ -32,12 +32,12 @@ class Faq extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('name, email, question', 'required'),
+			array('name, question', 'required'),
 			array('answered, published, cid', 'numerical', 'integerOnly'=>true),
-			array('answer, question, name, email, site', 'type', 'type'=>'string'),
+			array('answer, question, name, email, phone', 'type', 'type'=>'string'),
          array('create_at', 'default', 'value' => date('Y-m-d H:i:s'), 'setOnEmpty' => true, 'on' => 'insert'),
          array('cid', 'default', 'value' => '0', 'setOnEmpty' => true, 'on' => 'insert'),
-			array('name, question, answer, answered, published, site', 'safe', 'on'=>'search'),
+			array('name, question, answer, answered, published, phone', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -60,7 +60,7 @@ class Faq extends CActiveRecord
 			'id' => 'ID',
 			'name' => 'Имя',
 			'email' => 'E-mail',
-			'site' => 'Сайт',
+			'phone' => 'Номер телефона',
 			'question' => 'Вопрос',
 			'answer' => 'Ответ',
 			'answered' => 'Наличие ответа',
@@ -92,7 +92,7 @@ class Faq extends CActiveRecord
 		$criteria->compare('cid',$cid, true);
 		$criteria->compare('name',$this->name,true);
 		$criteria->compare('email',$this->email,true);
-		$criteria->compare('site',$this->site,true);
+		$criteria->compare('phone',$this->phone,true);
 		$criteria->compare('question',$this->question,true);
 		$criteria->compare('answer',$this->answer,true);
 		$criteria->compare('answered',$this->answered);
@@ -122,6 +122,10 @@ class Faq extends CActiveRecord
       } else {
          return False;
       }
+   }
+   
+   public static function getCount($cid = 0) {
+      return " (".self::model()->count("cid = '0'").")";
    }
    
 	public static function itemAlias($type,$code=NULL) {

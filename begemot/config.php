@@ -32,9 +32,9 @@ return array(
         'gallery',
         'post',
         'seo',
-        'faq',
         'migrations',
         'RolesImport',
+        'faq',
         'srbac' => array(
             'userclass'=>'User', //default: User
             'userid'=>'id', //default: userid

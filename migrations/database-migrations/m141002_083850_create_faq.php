@@ -12,7 +12,7 @@ class m141002_083850_create_faq extends Migrations
            `id` int(11) NOT NULL AUTO_INCREMENT,
            `name` text NOT NULL,
            `email` text NOT NULL,
-           `site` text NOT NULL,
+           `phone` text NOT NULL,
            `question` text NOT NULL,
            `answer` text NOT NULL,
            `answered` tinyint(1) NOT NULL,

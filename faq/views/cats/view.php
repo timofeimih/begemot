@@ -7,12 +7,7 @@ $this->breadcrumbs=array(
 	$model->name,
 );
 
-$this->menu=array(
-	array('label'=>Yii::t('FaqModule.faq','Manage Cat'), 'url'=>array('index')),
-	array('label'=>Yii::t('FaqModule.faq','Create Cat'), 'url'=>array('create')),
-	array('label'=>Yii::t('FaqModule.faq','Edit Cat'), 'url'=>array('update', 'id'=>$model->id)),
-	array('label'=>Yii::t('FaqModule.faq','Delete Cat'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
-);
+require Yii::getPathOfAlias('webroot').'/protected/modules/faq/views/admin/_postsMenu.php';
 ?>
 
 <h1><?php echo Yii::t('FaqModule.faq','View Cat');?></h1>
