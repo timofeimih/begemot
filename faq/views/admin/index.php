@@ -4,6 +4,7 @@ $this->breadcrumbs=array(
 );
 
 require Yii::getPathOfAlias('webroot').'/protected/modules/faq/views/admin/_postsMenu.php';
+Yii::app()->clientScript->registerScript("", "$('.ipopover').popover();", CClientScript::POS_READY);
 
 ?>
 <h1><? echo Yii::t('FaqModule.faq','Manage Faq'); ?></h1>
@@ -13,8 +14,8 @@ require Yii::getPathOfAlias('webroot').'/protected/modules/faq/views/admin/_post
 	'filter'=>$model,
 	'columns'=>array(
       'name',
-		'question',
-		'email',
+		array('name'=>'question','value'=>function($data) { $this->widget('begemot.extensions.contentKit.widgets.KitPopupPart', 
+      array('defaultText'=>Yii::t('FaqModule.faq','Question Text'),'header'=>Yii::t('FaqModule.faq','Question Text'),'text'=>$data->question )); }, 'type' => 'raw'),
 		'create_at',
 		array(
 			'name'=>'answered',

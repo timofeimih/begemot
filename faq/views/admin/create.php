@@ -6,9 +6,7 @@ $this->breadcrumbs=array(
 	'Create',
 );
 
-$this->menu=array(
-	array('label'=>Yii::t('FaqModule.faq','Manage Faq'), 'url'=>array('index')),
-);
+require Yii::getPathOfAlias('webroot').'/protected/modules/faq/views/admin/_postsMenu.php';
 ?>
 
 <h1><? echo Yii::t('FaqModule.faq','Create Faq'); ?></h1>

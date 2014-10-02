@@ -8,11 +8,7 @@ $this->breadcrumbs=array(
 	'Update',
 );
 
-$this->menu=array(
-	array('label'=>Yii::t('FaqModule.faq','Manage Cat'), 'url'=>array('index')),
-	array('label'=>Yii::t('FaqModule.faq','Create Cat'), 'url'=>array('create')),
-	array('label'=>Yii::t('FaqModule.faq','View Cat'), 'url'=>array('view', 'id'=>$model->id)),
-);
+require Yii::getPathOfAlias('webroot').'/protected/modules/faq/views/admin/_postsMenu.php';
 ?>
 
 <h1><?php echo Yii::t('FaqModule.faq','Edit Cat'); ?></h1>
