@@ -32,6 +32,7 @@ return array(
         'gallery',
         'post',
         'seo',
+        'faq',
         'migrations',
         'RolesImport',
         'srbac' => array(
