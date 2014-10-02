@@ -28,11 +28,4 @@ class FaqModule extends CWebModule
         return true;
     }
    
-	public static function t($str='',$params=array(),$dic='user') {
-		if (Yii::t("FaqModule", $str)==$str)
-		    return Yii::t("FaqModule.".$dic, $str, $params);
-        else
-            return Yii::t("FaqModule", $str, $params);
-	}
-   
 }
