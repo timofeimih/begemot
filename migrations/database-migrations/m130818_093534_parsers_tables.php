@@ -49,7 +49,7 @@ class m130818_093534_parsers_tables extends Migrations
 		Yii::app()->db->schema->refresh();
 		$table = Yii::app()->db->schema->getTable('parsers_stock');
 		$table2 = Yii::app()->db->schema->getTable('parsers_linking');
-		$result = isset($table->columns['id']) AND isset($table->columns['id']);
+		$result = isset($table->columns['id']) AND isset($table2->columns['id']);
 
         if($returnBoolean){
         	return $result;
