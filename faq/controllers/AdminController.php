@@ -19,6 +19,15 @@ class AdminController extends Controller
 		);
 	}
 
+  public function behaviors(){
+          return array(
+                  'CBOrderControllerBehavior' => array(
+                          'class' => 'begemot.extensions.order.BBehavior.CBOrderControllerBehavior',
+                          'groupName' => 'cid'
+                  )
+          );
+   }
+   
 	/**
 	 * Specifies the access control rules.
 	 * This method is used by the 'accessControl' filter.
@@ -28,7 +37,7 @@ class AdminController extends Controller
 	{
 		return array(
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('admin','delete','index','view','create','update'),
+				'actions'=>array('admin','delete','index','view','create','update','orderUp','orderDown'),
             'expression' => 'Yii::app()->user->canDo("")'
 			),
 			array('deny',  // deny all users
@@ -133,4 +142,17 @@ class AdminController extends Controller
 			Yii::app()->end();
 		}
 	}
+   
+   public function actionOrderUp($id){
+      $model = $this->loadModel($id);  
+      $this->groupId = $model->cid;
+      $this->orderUp($id);
+   }
+
+   public function actionOrderDown($id){
+      $model = $this->loadModel($id);
+      $this->groupId = $model->cid;
+      $this->orderDown($id);
+   }  
+   
 }
