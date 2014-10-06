@@ -84,8 +84,8 @@ class AdminController extends Controller
          $this->checkDir();
          $model->image=CUploadedFile::getInstance($model,'image');
 			if($model->save()){
-            $model->image->saveAs("files/slider/".$model->image);
-            $model->image = "/files/slider/{$model->image}";
+            $model->image->saveAs($this->imageDir.$model->image);
+            $model->image = "/{$this->imageDir}{$model->image}";
             $model->update();
 				$this->redirect(array('view','id'=>$model->id));
          }
@@ -115,8 +115,9 @@ class AdminController extends Controller
          $model->image=CUploadedFile::getInstance($model,'image');
 			if($model->save()){
             if(!empty($model->image)){
-               $model->image->saveAs("files/slider/".$model->image);
-               $model->image = "/files/slider/{$model->image}";
+               unlink(ltrim($prevImage, "/"));
+               $model->image->saveAs($this->imageDir.$model->image);
+               $model->image = "/{$this->imageDir}/{$model->image}";
             } else {
                $model->image = $prevImage;
             }
