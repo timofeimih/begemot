@@ -7,10 +7,6 @@ class m130818_093534_parsers_tables extends Migrations
 
 		if($this->isConfirmed(true) == true) return false;
 
-<<<<<<< HEAD
-
-=======
->>>>>>> Парсер и мелкие правки
         $sql = "
         CREATE TABLE IF NOT EXISTS `parsers_linking` (
 		  `id` int(11) NOT NULL AUTO_INCREMENT,

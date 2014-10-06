@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <?php
 
 
@@ -864,5 +863,3 @@ $this->menu = require dirname(__FILE__).'/commonMenu.php';
     }
 ?>    
 <?php } ?>
-
->>>>>>> Парсер и мелкие правки

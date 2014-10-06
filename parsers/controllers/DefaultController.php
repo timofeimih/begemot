@@ -122,7 +122,7 @@ class DefaultController extends Controller
         if (isset($_GET['createNew'])) {
 
             $website = $_SERVER['HTTP_HOST'];
-            $cron->addJob($_GET['filename'], intval($_GET['time']), $_GET['class'], $website);
+            $cron->addJob($_GET['filename'], intval($_GET['time']), $_GET['class'], $website, $_GET['hour']);
         }
 
         if (isset($_GET['deleteJob'])) {

@@ -12,16 +12,7 @@ class ParsersModule extends CWebModule {
             'parsers.components.*',
             'parsers.models.*',
             'catalog.models.CatItem',
-            'crontabs.components.CrontabBase'
-<<<<<<< HEAD
-=======
-            'begemot.commands.ParseBase'
->>>>>>> Парсер и мелкие правки
-=======
-            'crontabs.components.CrontabBase'
->>>>>>> Парсер и планировщик
-=======
->>>>>>> подчистил косяки с конфликтами
+            'jobs.components.*'
         ));
 
     }
