@@ -21,6 +21,7 @@ $('.search-form form').submit(function(){
 	'id'=>'faq-grid',
 	'dataProvider'=>$model->search($cid),
 	'filter'=>$model,
+   'afterAjaxUpdate' => "function() {  $('.ipopover').popover(); }",
 	'columns'=>array(
       'name',
 		array('name'=>'question','value'=>function($data) { $this->widget('begemot.extensions.contentKit.widgets.KitPopupPart', 

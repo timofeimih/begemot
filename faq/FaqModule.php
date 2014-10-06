@@ -19,20 +19,14 @@ class FaqModule extends CWebModule
 		));
 	}
 
-    public function beforeControllerAction($controller, $action) {
-        
-        if ($controller->id != 'site') {
+   public function beforeControllerAction($controller, $action) {
+     
+     if ($controller->id != 'site') {
 
-           Yii::app()->getComponent('bootstrap');
-        }
-        return true;
-    }
+        Yii::app()->getComponent('bootstrap');
+     }
+     return true;
+   }
    
-	public static function t($str='',$params=array(),$dic='user') {
-		if (Yii::t("FaqModule", $str)==$str)
-		    return Yii::t("FaqModule.".$dic, $str, $params);
-        else
-            return Yii::t("FaqModule", $str, $params);
-	}
    
 }

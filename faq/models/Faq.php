@@ -152,6 +152,13 @@ class Faq extends CActiveRecord
 			return isset($_items[$type]) ? $_items[$type] : false;
 	}
    
+   public function defaultScope()
+   {
+       return array(
+       'order'=>'`order` ASC'
+       );
+   }
+   
 	/**
 	 * Returns the static model of the specified AR class.
 	 * Please note that you should have this exact method in all your CActiveRecord descendants!
