@@ -35,6 +35,8 @@ return array(
         'migrations',
         'RolesImport',
         'faq',
+        'reviews',
+        'slider',
         'srbac' => array(
             'userclass'=>'User', //default: User
             'userid'=>'id', //default: userid

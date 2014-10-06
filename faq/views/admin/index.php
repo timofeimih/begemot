@@ -5,6 +5,15 @@ $this->breadcrumbs=array(
 
 require Yii::getPathOfAlias('webroot').'/protected/modules/faq/views/admin/_postsMenu.php';
 Yii::app()->clientScript->registerScript("", "$('.ipopover').popover();", CClientScript::POS_READY);
+Yii::app()->clientScript->registerScript('search', "
+
+$('.search-form form').submit(function(){
+	$.fn.yiiGridView.update('faq-grid', {
+		data: $(this).serialize()
+	});
+	return false;
+});
+");
 
 ?>
 <h1><? echo Yii::t('FaqModule.faq','Manage Faq'); ?></h1>
@@ -12,6 +21,7 @@ Yii::app()->clientScript->registerScript("", "$('.ipopover').popover();", CClien
 	'id'=>'faq-grid',
 	'dataProvider'=>$model->search($cid),
 	'filter'=>$model,
+   'afterAjaxUpdate' => "function() {  $('.ipopover').popover(); }",
 	'columns'=>array(
       'name',
 		array('name'=>'question','value'=>function($data) { $this->widget('begemot.extensions.contentKit.widgets.KitPopupPart', 
@@ -30,5 +40,9 @@ Yii::app()->clientScript->registerScript("", "$('.ipopover').popover();", CClien
 		array(
 			'class'=>'bootstrap.widgets.TbButtonColumn',
 		),
+       array(
+               'class' => 'begemot.extensions.order.gridView.CBOrderColumn',
+               "header"=>"порядок",
+       ),      
 	),
 )); ?>

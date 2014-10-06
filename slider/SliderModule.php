@@ -1,12 +1,12 @@
 <?php
 
-class FaqModule extends CWebModule
+class SliderModule extends CWebModule
 {
 
    static public $galleryLayout = 'application.views.layouts.galleryLayout';
 
    public $defaultController = 'site';
-   
+
 	public function init()
 	{
 		// this method is called when the module is being created
@@ -14,8 +14,8 @@ class FaqModule extends CWebModule
 
 		// import the module-level models and components
 		$this->setImport(array(
-			'faq.models.*',
-			'faq.components.*',
+			'slider.models.*',
+			'slider.components.*',
 		));
 	}
 
@@ -27,6 +27,4 @@ class FaqModule extends CWebModule
      }
      return true;
    }
-   
-   
 }

@@ -24,6 +24,14 @@ class Faq extends CActiveRecord
 		return 'faq';
 	}
 
+  public function behaviors(){
+          return array(
+                  'CBOrderModelBehavior' => array(
+                          'class' => 'begemot.extensions.order.BBehavior.CBOrderModelBehavior',
+                  )
+          );
+   }
+   
 	/**
 	 * @return array validation rules for model attributes.
 	 */
@@ -33,11 +41,11 @@ class Faq extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('name, question', 'required'),
-			array('answered, published, cid', 'numerical', 'integerOnly'=>true),
+			array('answered, published, cid, order', 'numerical', 'integerOnly'=>true),
 			array('answer, question, name, email, phone', 'type', 'type'=>'string'),
          array('create_at', 'default', 'value' => date('Y-m-d H:i:s'), 'setOnEmpty' => true, 'on' => 'insert'),
          array('cid', 'default', 'value' => '0', 'setOnEmpty' => true, 'on' => 'insert'),
-			array('name, question, answer, answered, published, phone', 'safe', 'on'=>'search'),
+			array('name, question, answer, answered, published, phone, order', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -67,6 +75,7 @@ class Faq extends CActiveRecord
 			'published' => 'Опубликовано',
 			'create_at' => 'Создано',
 			'cid' => 'Раздел',
+			'order' => 'Порядок',
 		);
 	}
 
@@ -98,16 +107,13 @@ class Faq extends CActiveRecord
 		$criteria->compare('answered',$this->answered);
 		$criteria->compare('published',$this->published);
 		$criteria->compare('create_at',$this->create_at,true);
-
+      if (!isset($_REQUEST[__CLASS__.'_sort']))
+         $criteria->order = '`order`';
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
          'pagination'=>array(
             'pageSize'=>10,
          ),
-         'sort'=>array(
-             'defaultOrder'=>array(
-              'create_at'=>"DESC"
-         ))
 		));
 	}
 
@@ -118,6 +124,7 @@ class Faq extends CActiveRecord
             $this->answered = 1;
          else
             $this->answered = 0;
+         $this->orderBeforeSave();
          return True;
       } else {
          return False;
@@ -144,6 +151,13 @@ class Faq extends CActiveRecord
 		else
 			return isset($_items[$type]) ? $_items[$type] : false;
 	}
+   
+   public function defaultScope()
+   {
+       return array(
+       'order'=>'`order` ASC'
+       );
+   }
    
 	/**
 	 * Returns the static model of the specified AR class.

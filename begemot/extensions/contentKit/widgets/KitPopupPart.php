@@ -25,6 +25,7 @@ class KitPopupPart extends CWidget {
              'data-trigger' => 'hover',
              'data-title' => $header,
              'data-content' => $text,
+             'html' => true
       ));
 
     }
