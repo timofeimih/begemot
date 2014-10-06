@@ -84,8 +84,8 @@ class AdminController extends Controller
          $this->checkDir();
          $model->image=CUploadedFile::getInstance($model,'image');
 			if($model->save()){
-            $model->image->saveAs("files/slider/".$model->image);
-            $model->image = "/files/slider/{$model->image}";
+            $model->image->saveAs($this->imageDir.$model->image);
+            $model->image = "/{$this->imageDir}{$model->image}";
             $model->update();
 				$this->redirect(array('view','id'=>$model->id));
          }
@@ -115,8 +115,9 @@ class AdminController extends Controller
          $model->image=CUploadedFile::getInstance($model,'image');
 			if($model->save()){
             if(!empty($model->image)){
-               $model->image->saveAs("files/slider/".$model->image);
-               $model->image = "/files/slider/{$model->image}";
+               unlink(ltrim($prevImage, "/"));
+               $model->image->saveAs($this->imageDir.$model->image);
+               $model->image = "/{$this->imageDir}/{$model->image}";
             } else {
                $model->image = $prevImage;
             }
@@ -137,7 +138,9 @@ class AdminController extends Controller
 	 */
 	public function actionDelete($id)
 	{
-		$this->loadModel($id)->delete();
+		$model = $this->loadModel($id);
+      unlink(ltrim($model->image, "/"));
+      $model->delete();
 
 		// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
 		if(!isset($_GET['ajax']))
