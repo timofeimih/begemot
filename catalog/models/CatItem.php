@@ -183,6 +183,7 @@ class CatItem extends ContentKitModel
         $images = array();
         if (file_exists($favFilePath)) {
             $images = require($favFilePath);
+
         };
 
         return $images;

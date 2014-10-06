@@ -72,10 +72,6 @@ class SiteController extends Controller {
 
     }
 
-    public function actionTestMaximum()
-    {
-        echo CatItem::model()->getItemWithMaximalPrice(74);
-    }
 
     public function actionCategoryView($catId = 0) {
         $this->layout = CatalogModule::$catalogCategoryViewLayout;
@@ -107,7 +103,7 @@ class SiteController extends Controller {
 
        // $dataProvider=CatItemsToCat::model()->published()->with('item')->findAll();top
 
-        $this->render('categoryView', array('categoryItems' => $dataProvider->getData(), 'category' => $category, 'maximalPriceValue' => $maximalPriceValue));
+        $this->render('rCategoryView', array('categoryItems' => $dataProvider->getData(), 'category' => $category, 'maximalPriceValue' => $maximalPriceValue));
     }
 
     public function actionRCategoryView($catId = 0) {
