@@ -19,7 +19,7 @@ class CrontabBase extends CApplicationComponent{
 		}
 	}
 
-	public function addJob($filename, $period = 86400, $className, $website)
+	public function addJob($filename, $period = 86400, $className, $website, $hour)
 	{
 
         //every day = 86 400 sec
@@ -32,6 +32,7 @@ class CrontabBase extends CApplicationComponent{
 	        	'class' => $className,
 	        	'executable' => true,
 	        	'website' => $website,
+			'time' => $hour
         	)
         );
 
@@ -197,14 +198,14 @@ class CrontabBase extends CApplicationComponent{
 
 				if ($item['executable'] == true) {
 						
-					if (($item['lastExecuted'] + $item['period'] + $item['time']) < time()) {
+					if (($item['lastExecuted'] + $item['period'] + $item['time'] - 60) < time()) {
 						
 						$classItem = new $item['class'];
 						//$classItem->runJob($filename);
 						$this->runJob($filename);
 						$this->changeTimeOfLastExecuted($filename, time());
 
-						$item['lastExecuted'] = mktime(0, 0, 0, date('n'), date('j')) + $item['period'] + $item['time'];
+						$item['lastExecuted'] = (int)mktime(0, 0, 0, date('n'), date('j'));
 						
 						echo "run" . time() .  " - " . $filename .  " - " . $item['lastExecuted'];
 					}

@@ -31,7 +31,7 @@ $this->menu = array(
             <option value='64800'>18</option>
             <option value='82800'>23</option>
         </select> час<br/>
-        <input type="hidden" name='class' value='CatItemCron'/>
+        <input type="hidden" name='class' value='CatItem'/>
         <input type="submit" class='btn btn-primary' value='Сохранить' name='createNew'>
     </form>
 
