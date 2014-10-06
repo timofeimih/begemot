@@ -19,6 +19,7 @@ class m141002_083850_create_faq extends Migrations
            `published` tinyint(1) NOT NULL,
            `create_at` datetime NOT NULL,
            `cid` int(11) NOT NULL,
+           `order` int(11) NOT NULL,
            PRIMARY KEY (`id`)
          ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
          CREATE TABLE IF NOT EXISTS `faq_cats` (

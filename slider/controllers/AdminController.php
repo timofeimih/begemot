@@ -6,8 +6,11 @@ class AdminController extends Controller
 	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
 	 * using two-column layout. See 'protected/views/layouts/column2.php'.
 	 */
+   public $defaultAction = 'admin';
 	public $layout='begemot.views.layouts.column2';
-
+   private $imageDir = "files/slider/";
+   
+   
 	/**
 	 * @return array action filters
 	 */
@@ -22,8 +25,7 @@ class AdminController extends Controller
   public function behaviors(){
           return array(
                   'CBOrderControllerBehavior' => array(
-                          'class' => 'begemot.extensions.order.BBehavior.CBOrderControllerBehavior',
-                          'groupName' => 'cid'
+                          'class' => 'begemot.extensions.order.BBehavior.CBOrderControllerBehavior'
                   )
           );
    }
@@ -57,24 +59,40 @@ class AdminController extends Controller
 		));
 	}
 
+   
+	/**
+	 * Check if imageDir is exists.
+	 */
+   private function checkDir()
+   {
+      if (!file_exists($this->imageDir)) {
+         mkdir($this->imageDir, 0777, true);
+      }
+   }
+   
 	/**
 	 * Creates a new model.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
 	public function actionCreate()
 	{
-		$model=new Faq;
-      $cats = FaqCats::model()->findAll();
-		if(isset($_POST['Faq']))
+		$model=new Slider;
+
+		if(isset($_POST['Slider']))
 		{
-			$model->attributes=$_POST['Faq'];
-			if($model->save())
+			$model->attributes=$_POST['Slider'];
+         $this->checkDir();
+         $model->image=CUploadedFile::getInstance($model,'image');
+			if($model->save()){
+            $model->image->saveAs("files/slider/".$model->image);
+            $model->image = "/files/slider/{$model->image}";
+            $model->update();
 				$this->redirect(array('view','id'=>$model->id));
+         }
 		}
 
 		$this->render('create',array(
 			'model'=>$model,
-         'cats' => $cats,
 		));
 	}
 
@@ -86,57 +104,83 @@ class AdminController extends Controller
 	public function actionUpdate($id)
 	{
 		$model=$this->loadModel($id);
-      $cats = FaqCats::model()->findAll();
-		if(isset($_POST['Faq']))
+      $prevImage = $model->image;
+		// Uncomment the following line if AJAX validation is needed
+		// $this->performAjaxValidation($model);
+
+		if(isset($_POST['Slider']))
 		{
-			$model->attributes=$_POST['Faq'];
-			if($model->save())
+			$model->attributes=$_POST['Slider'];
+         $this->checkDir();
+         $model->image=CUploadedFile::getInstance($model,'image');
+			if($model->save()){
+            if(!empty($model->image)){
+               $model->image->saveAs("files/slider/".$model->image);
+               $model->image = "/files/slider/{$model->image}";
+            } else {
+               $model->image = $prevImage;
+            }
+            $model->update();
 				$this->redirect(array('view','id'=>$model->id));
+         }
 		}
 
 		$this->render('update',array(
 			'model'=>$model,
-         'cats' => $cats,
 		));
 	}
 
-
+	/**
+	 * Deletes a particular model.
+	 * If deletion is successful, the browser will be redirected to the 'admin' page.
+	 * @param integer $id the ID of the model to be deleted
+	 */
 	public function actionDelete($id)
 	{
-      $result = array('deletedID' => $id);
-      if($this->loadModel($id)->delete())
-         $result['code'] = 'success';
-      else 
-         $result['code'] = 'fail';
-      echo CJSON::encode($result);
+		$this->loadModel($id)->delete();
+
+		// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
+		if(!isset($_GET['ajax']))
+			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
 	}
 
-	public function actionIndex($cid = 0)
+	/**
+	 * Manages all models.
+	 */
+	public function actionAdmin()
 	{
-		$model=new Faq('search');
-		$model->unsetAttributes();  
-		if(isset($_GET['Faq']))
-			$model->attributes=$_GET['Faq'];
+		$model=new Slider('search');
+		$model->unsetAttributes();  // clear any default values
+		if(isset($_GET['Slider']))
+			$model->attributes=$_GET['Slider'];
 
-		$this->render('index',array(
+		$this->render('admin',array(
 			'model'=>$model,
-         'cid' => $cid,
 		));
-	}	
+	}
 
-
-
+	/**
+	 * Returns the data model based on the primary key given in the GET variable.
+	 * If the data model is not found, an HTTP exception will be raised.
+	 * @param integer $id the ID of the model to be loaded
+	 * @return Slider the loaded model
+	 * @throws CHttpException
+	 */
 	public function loadModel($id)
 	{
-		$model=Faq::model()->findByPk($id);
+		$model=Slider::model()->findByPk($id);
 		if($model===null)
 			throw new CHttpException(404,'The requested page does not exist.');
 		return $model;
 	}
 
+	/**
+	 * Performs the AJAX validation.
+	 * @param Slider $model the model to be validated
+	 */
 	protected function performAjaxValidation($model)
 	{
-		if(isset($_POST['ajax']) && $_POST['ajax']==='faq-form')
+		if(isset($_POST['ajax']) && $_POST['ajax']==='slider-form')
 		{
 			echo CActiveForm::validate($model);
 			Yii::app()->end();
@@ -145,14 +189,11 @@ class AdminController extends Controller
    
    public function actionOrderUp($id){
       $model = $this->loadModel($id);  
-      $this->groupId = $model->cid;
       $this->orderUp($id);
    }
 
    public function actionOrderDown($id){
       $model = $this->loadModel($id);
-      $this->groupId = $model->cid;
       $this->orderDown($id);
    }  
-   
 }
