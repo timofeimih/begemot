@@ -260,6 +260,42 @@ $this->menu = require dirname(__FILE__).'/commonMenu.php';
 
     <input type="submit" name='saveItemsToItems' class='btn btn-primary' value='сохранить'/>
 </form>
+<?php 
+if (!$model->isNewRecord):
+?>
+<h2>Сопутствующие</h2>
+<?php 
+   $related = CatItemsToItems::model()->findAll(array('select'=>'itemId', 'condition' => 'toItemId='.$model->id));
+   $arrayOfItems = array();
+   foreach ($related as $item) {
+       array_push($arrayOfItems, $item->itemId);
+   }
+      $arrayOfItems = array_filter($arrayOfItems);
+   foreach ($items as $item): ?>
+      <?php if(in_array($item->id, $arrayOfItems)): ?>
+         <div id="<?php echo $item->id;?>" style="float: left; width: 100%;">
+         <a href="/catalog/catItem/update/id/<?php echo $item->id;?>"><?php echo $item->name; ?> </a><a onClick="removeOption('<?php echo $item->id;?>', '<?php echo $model->id;?>');" href="#">Убрать</a>
+         </div>
+      <?php endif; ?>
+   <?php
+   endforeach; 
+?>
+ <div style="float: left; width: 100%;">
+ <br />
+ </div>
+<script>
+   function removeOption(id, subid){
+      $.ajax({
+        url: '/catalog/catItem/options/id/'+id+'/subid/'+subid,
+        success: function(){
+          $('#'+id).remove();
+        }
+      });
+   }
+</script>
+<?php
+endif; 
+?>
 <?php }?>
 
  <?php if (!$model->isNewRecord): ?>
