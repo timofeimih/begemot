@@ -1,8 +1,7 @@
 <?php
-abstract class BaseParser extends BaseJob{
-	private $items = array();
-    private $name = '';
-    private $time = 0;
+class BaseParser extends BaseJob{
+	protected $items = array();
+    protected $time = 0;
 
 
 	public function addItem($id, $price, $name, $text, $quantity)
@@ -26,20 +25,26 @@ abstract class BaseParser extends BaseJob{
         return true;
     }
 
+    public function getLastParsedData()
+    {   
+        $file = file_get_contents(Yii::app()->basePath . "/../files/parsersData/" . $this->name . '.data');
+        return json_decode($file);
+    }
+
 
     // Передалать в save to file.
     public function saveToFile()
     {  
         $this->saveTime();
 
-        $arr = array_merge(array('time' => $this->getTime()), array('items' => $this->items));
+        $arr = array_merge(array('name' => $this->name), array('items' => $this->items));
     	
         $this->saveParserData($arr);
     }
 
-    public function saveParserData((array) $arrayToWrite)
+    public function saveParserData($arrayToWrite)
     {
-        $tempFile = fopen(Yii::app()->basePath . "../files/parsersData/" . $this->name . '.data', 'w');
+        $tempFile = fopen(Yii::app()->basePath . "/../files/parsersData/" . $this->name . '.data', 'w');
 
         fwrite($tempFile, json_encode($arrayToWrite)); 
 
@@ -49,35 +54,32 @@ abstract class BaseParser extends BaseJob{
     public function saveTime()
     {   
 
+        $this->time = time();
+        $dir    = Yii::app()->basePath . "/../files/parsersData/";
 
-        if (isset($_GET['newDate'])) {
-            $this->time = time();
-            $dir    = Yii::app()->basePath . "../files/parsersData/";
+        $files  = scandir($dir);
 
-            $files  = scandir($dir);
+        $arr = array($this->name => $this->time);
 
-            $arr = array($this->name => $this->time);
+        $tempFile = fopen($dir . 'time.txt', 'w');
 
-            $tempFile = fopen($dir . 'time.txt', 'w');
-
-            if (array_search('time.txt', $files)) {
-                $json = json_decode(file_get_contents($dir . 'time.txt'));
-                if (is_array($json)) {
-                    $arr = array_merge($json, $arr);
-                }
-                
+        if (array_search('time.txt', $files)) {
+            $json = json_decode(file_get_contents($dir . 'time.txt'));
+            if (is_array($json)) {
+                $arr = array_merge($json, $arr);
             }
-
-            fwrite($tempFile, json_encode($arr)); 
-
-            fclose($tempFile); 
+            
         }
-        
+
+        fwrite($tempFile, json_encode($arr)); 
+
+        fclose($tempFile); 
+
 
     }
 
     public function getTime(){
-        if($this->time != undefined){
+        if($this->time != 0){
             return $this->time;
         } else return "Нету времени";
     }

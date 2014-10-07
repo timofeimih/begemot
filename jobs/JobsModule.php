@@ -7,7 +7,7 @@ class JobsModule extends CWebModule {
         // you may place code here to customize the module or the application
         // import the module-level models and components
 
-         $imports;
+        $imports;
         foreach(glob(Yii::app()->basePath . "/modules/*", GLOB_ONLYDIR) as $path) {    
 
             if(file_exists($path)){

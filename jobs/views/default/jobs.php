@@ -19,7 +19,8 @@ $this->menu = array(
 		<?php $number = 0; ?>
 		<?php foreach($itemList as $item): ?>
 			<tr class='item-<?php echo $number ?>'>
-				<td><?php echo $item?></td>
+				<?php $itemName = new $item; ?>
+				<td><?php  echo $itemName->getName();?></td>
 				<td>
 					<input type="button" 
 						class='btn btn-info run' 

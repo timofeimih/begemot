@@ -1,10 +1,10 @@
 <?php
 class BaseJob extends JobManager{
 
-	private $name = '';
-	private $description = '';
-	private $title = '';
-	private $parameters = array();
+	protected $name = null;
+	protected $description = null;
+	protected $title = null;
+	protected $parameters = array();
 
 	public function getName() { return $this->name;}
 	public function getTitle() { return $this->title;}

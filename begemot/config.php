@@ -19,6 +19,7 @@ return array(
         'application.modules.user.models.*',
         'application.modules.user.components.*',
         'application.modules.vars.*',
+        'application.modules.jobs.components.*', // components for jobs
         'application.jobs.*',
     ), 
     'language' => 'ru',

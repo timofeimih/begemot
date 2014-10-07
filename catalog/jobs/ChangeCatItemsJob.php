@@ -1,9 +1,8 @@
 <?php
-
 class ChangeCatItemsJob extends BaseJob implements ConcreteJobInterface{
 
-	private $name = "change CatItem job for ";
-	private $description = "description";
+	protected $name = "ChangeCatItemJob";
+	protected $description = "description";
 
 	public function getParameters()
 	{
@@ -19,21 +18,28 @@ class ChangeCatItemsJob extends BaseJob implements ConcreteJobInterface{
 	public function runJob()
 	{
 
+		if ( ! isset(Yii::app()->modules['parsers'])){ return false;};
+
+		Yii::import('parsers.models.*');
+
 		$arrayOfJobs = array();
+
 		foreach(glob(Yii::app()->basePath . "/../files/parsersData/*.data") as $file) {	
 			$websiteName = Yii::app()->params['adminEmail'];
 
 		    $json = file_get_contents($file); 
 		    $json = json_decode($json);
 
-		    ParsersStock::model()->deleteAll(array('condition' => "`filename`='" . $json->name . "'"));
+		    $filename = $json->name;
+
+		    ParsersStock::model()->deleteAll(array('condition' => "`filename`='" . $filename . "'"));
 
 		    $length = count($json->items);
 
 		    foreach ($json->items as $itemParsed) {
 		      $new = new ParsersStock;
 		      $itemParsed = (array)$itemParsed;
-		      $itemParsed['filename'] = $json->name;
+		      $itemParsed['filename'] = $filename;
 		      $itemParsed['name'] = substr($itemParsed['name'], 0, 99);
 
 		      if (ParsersLinking::model()->find(array(
@@ -48,13 +54,13 @@ class ChangeCatItemsJob extends BaseJob implements ConcreteJobInterface{
 		      $new->save();
 		    }
 
-		    $items = ParsersLinking::model()->findAllByAttributes(array('filename' => $this->filename), array('order' => 'id ASC'));
+		    $items = ParsersLinking::model()->findAllByAttributes(array('filename' => $filename), array('order' => 'id ASC'));
 
 		    if (!$items) {
 
 		      $to = Yii::app()->params['adminEmail'];
 
-		      $subject = "Задание не удалось выполнить($this->filename)";
+		      $subject = "Задание не удалось выполнить($filename)";
 
 		      $headers = "From: susan@example.com\r\n";
 		      $headers .= "Reply-To: susan@example.com\r\n";
@@ -62,7 +68,7 @@ class ChangeCatItemsJob extends BaseJob implements ConcreteJobInterface{
 		      $headers .= "MIME-Version: 1.0\r\n";
 		      $headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
 
-		      $message = "Не удалось найти карточек для парсера $this->filename";
+		      $message = "Не удалось найти карточек для парсера $filename";
 
 		      mail($to, $subject, $message, $headers);
 
