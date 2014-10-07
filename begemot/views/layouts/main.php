@@ -40,6 +40,7 @@
                                 array('label'=>'Статьи', 'url'=>array('/post/default/admin'),'visible'=>Yii::app()->hasModule('post')),
                                 array('label'=>'HTML', 'url'=>array('/pages'),'visible'=>Yii::app()->hasModule('pages')),
                                 array('label'=>'Переменные', 'url'=>array('/vars'),'visible'=>Yii::app()->hasModule('vars')),
+                                array('label'=>'Слайдер', 'url'=>array('/slider/admin'),'visible'=>Yii::app()->hasModule('slider')),
                             ),
                         ),
 
@@ -56,6 +57,8 @@
                             'items'=>array(
                                 array('label'=>'CallBack', 'url'=>array('/callback/callback/index'),'visible'=>Yii::app()->hasModule('callback')),
                                 array('label'=>'Коменты', 'url'=>array('/comments'),'visible'=>Yii::app()->hasModule('comments')),
+                                array('label'=>'FAQ', 'url'=>array('/faq/admin'),'visible'=>Yii::app()->hasModule('faq')),
+                                array('label'=>'Отзывы', 'url'=>array('/reviews/admin'),'visible'=>Yii::app()->hasModule('reviews')),
                             ),
                         ),
                         array('label'=>'Галлерея',

@@ -71,6 +71,7 @@ class SiteController extends Controller {
         $this->render('itemView', array('item' => $item, 'category' => $category));
 
     }
+
     public function actionCategoryView($catId = 0) {
         $this->layout = CatalogModule::$catalogCategoryViewLayout;
         $category = CatCategory::model()->findByPk($catId);
@@ -102,6 +103,7 @@ class SiteController extends Controller {
        // $dataProvider=CatItemsToCat::model()->published()->with('item')->findAll();top
 
         $this->render('categoryView', array('categoryItems' => $dataProvider->getData(), 'category' => $category, 'maximalPriceValue' => $maximalPriceValue));
+
     }
 
     public function actionRCategoryView($catId = 0) {
