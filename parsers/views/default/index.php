@@ -2,7 +2,6 @@
 $this->menu = array(
     array('label' => 'Все парсеры', 'url' => array('/parsers/default/index')),
     array('label' => 'Все связи', 'url' => array('/parsers/default/linking')),
-    array('label' => 'Задания по расписанию', 'url' => array('/parsers/default/cron')),
 );
  ?>
 <h1>Парсеры</h1>
@@ -24,8 +23,8 @@ $this->menu = array(
 				<td class='date'><?php echo date("d.m.Y H:i", $item['time']) ?></td>
 				<td><input type="checkbox" value='<?php echo $item['name']?>' name='parse[]'/></td>
 				
-				<td><input type='button' class='parseNew' data-file='<?php echo $item['name']?>' value='Спарсить новые данные'></td>
-				<td><a href='<?php echo $this->createUrl("/parsers/default/do", array('file' => $item['name'])) ?>' class="btn btn-info btn-mini">Работать с текущими данными</a></td>
+				<td><input type='button' class='parseNew' data-file='<?php echo $item['className']?>' value='Спарсить новые данные'></td>
+				<td><a href='<?php echo $this->createUrl("/parsers/default/do", array('className' => $item['name'])) ?>' class="btn btn-info btn-mini">Работать с текущими данными</a></td>
 				
 			</tr>
 				
@@ -44,7 +43,7 @@ $this->menu = array(
 		var params = {'CatItem': {'name': $(this).attr("name"), 'price': $(this).attr("price"), 'text': $(this).attr("text")}, 'returnId': true};
 
 
-		$.get('/parsers/default/parseNew/file/' + $(this).attr("data-file") + '/', function(data){
+		$.get('/parsers/default/parseNew/className/' + $(this).attr("data-file") + '/', function(data){
 			if (data != "") {
 				button.val("Спарсенно");
 				button.parents("TR").find(".date").html(data);

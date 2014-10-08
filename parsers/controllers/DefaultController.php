@@ -115,31 +115,6 @@ class DefaultController extends Controller
         }
     }
 
-    public function actionCron()
-    {
-        $cron = new CrontabBase();
-
-        if (isset($_GET['createNew'])) {
-
-            $website = $_SERVER['HTTP_HOST'];
-            $cron->addJob($_GET['filename'], intval($_GET['time']), $_GET['class'], $website, $_GET['hour']);
-        }
-
-        if (isset($_GET['deleteJob'])) {
-            $cron->removeJob($_GET['deleteJob']);
-
-        }
-
-
-
-
-        $this->render('cron',array(
-            'jobs_obj' => $cron->getListJob(),
-            'files' => $this->getFiles(),
-            'cron' => $cron,
-        ));
-    }
-
     public function actionDoChecked()
     {
 
@@ -157,12 +132,15 @@ class DefaultController extends Controller
         $this->redirect($_POST['url']);
     }
 
-    public function actionParseNew()
+    public function actionParseNew($className)
     {
-        $json = file_get_contents('http://'.$_SERVER['HTTP_HOST'] . "/parsers/" . $_GET['file'] . "?newDate");
-        $json = json_decode($json);
 
-        ParsersStock::model()->deleteAll(array('condition' => "`filename`='" . $json->name . "'"));
+        $class = new $className;
+        $class->runJob();
+        $json = $class->getLastParsedData();
+
+
+        ParsersStock::model()->deleteAll(array('condition' => "`filename`='" . $className . "'"));
 
         $length = count($json->items);
 
@@ -184,7 +162,13 @@ class DefaultController extends Controller
             $new->save();
         }
         ob_clean();
-        echo date("d.m.Y H:i", $json->time);
+
+        $tempfile = file_get_contents(Yii::app()->basePath.'/../files/parsersData/time.txt');
+        $timeArray = json_decode($tempfile);
+        $timeArray = (array)$timeArray;
+
+        echo date("d.m.Y H:i", $timeArray[$class->getName()]);
+
 
     }
 
@@ -243,38 +227,25 @@ class DefaultController extends Controller
 
     public function getFiles()
     {
-        $fileListOfDirectory = array ();
-        $pathTofileListDirectory = Yii::app()->basePath.'/../parsers' ;
-
-        $tempfile = file_get_contents($pathTofileListDirectory . '/history/time.txt');
+        $fileListOfDirectory = array();
+        $tempfile = file_get_contents(Yii::app()->basePath.'/../files/parsersData/time.txt');
         $timeArray = json_decode($tempfile);
         $timeArray = (array)$timeArray;
 
+        foreach(glob(Yii::app()->basePath.'/jobs/*ParserJob.php') as $path) {  
 
-        if(!is_dir($pathTofileListDirectory ))
-        {
-            //die(" Invalid Directory");
-        }
+            $time = 0;
 
-        if(!is_readable($pathTofileListDirectory ))
-        {
-            //die("You don't have permission to read Directory");
-        }
+            $className = basename($path);
+            $className = str_replace('.php', '', $className);
+            $class = new $className;
 
-        foreach ( new DirectoryIterator ( $pathTofileListDirectory ) as $file ) {
-            if ($file->isFile () === TRUE && $file->getBasename () !== '.DS_Store') {
-
-                if ($file->getExtension () == "php") {
-
-                    $time = 0;
-
-                    if (array_key_exists($file->getBasename(), $timeArray)) {
-                        $time = $timeArray[$file->getBasename()];
-                    }
-                    array_push ( $fileListOfDirectory, array('name' => $file->getBasename(), 'time' => $time) );
-                }
+            if (array_key_exists($class->getName(), $timeArray)) {
+                $time = $timeArray[$class->getName()];
             }
+            array_push ( $fileListOfDirectory, array('name' => $class->getName(), 'time' => $time, 'className' => $className) );
         }
+
 
         return $fileListOfDirectory;
     }

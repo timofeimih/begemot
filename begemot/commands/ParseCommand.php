@@ -5,7 +5,7 @@ class ParseCommand extends CConsoleCommand
     public function run()
     {
 
-        $n = new CrontabBase();
+        $n = new JobManager();
 
         $n->runAll();
 

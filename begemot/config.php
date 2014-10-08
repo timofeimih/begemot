@@ -19,13 +19,15 @@ return array(
         'application.modules.user.models.*',
         'application.modules.user.components.*',
         'application.modules.vars.*',
+        'application.modules.jobs.components.*', // components for jobs
+        'application.jobs.*',
     ), 
     'language' => 'ru',
     'modules' => array(
         'pictureBox',
         'begemot',
         'catalog',
-        'crontabs',
+        'jobs',
         'pages',
         'parsers',
         'elfinder',
@@ -165,27 +167,27 @@ return array(
             'rules' => array(
                 
                 
-  //               '/admin' => '/begemot',
-  //               //модуль gallery
-  //               '/photo' => array('gallery/siteGallery/index'),
-  //               '/photo/<title:[\w-]+>_<id:[\w-]+>' => array('gallery/siteGallery/viewGallery'),
-		// '/contact' => '/site/contact/',
-  //               //модуль pages
-  //               array('class' => 'application.modules.pages.components.PageUrlRule'),
-  //               //модуль catalog
-		//         '/catalog' => '/catalog/site/',
-  //               'catalog/<title:[\w-]+>_<catId:\d+>' => 'catalog/site/categoryView',
-  //               'catalog/<catName:[\w-]+>_<catId:\d+>' => 'catalog/site/RCategoryView',
-  //               'catalog/<title:[\w-]+>_<catId:\d+>/<itemName:[\w-\"\']+>_<item:\d+>' => 'catalog/site/itemView',
-  //               //модуль post
-  //               'posts' => 'post/site/tagIndex',
-  //               'posts/<title:\w+>_<id:\d+>' => 'post/site/tagIndex',
-  //               'postsView/<title:[\w-]+>_<id:\d+>' => 'post/site/view',
-  //               'index' => '/',
-  //               'contacts' => '/site/contact',
-  //               'katalog' => '/site/ModelsAndPrices',
-  //               'moto' => '/catalog/site/RCategoryView/catId/72/V_nalichii',
-  //               'video' => '/site/video'
+                '/admin' => '/begemot',
+                //модуль gallery
+                '/photo' => array('gallery/siteGallery/index'),
+                '/photo/<title:[\w-]+>_<id:[\w-]+>' => array('gallery/siteGallery/viewGallery'),
+		'/contact' => '/site/contact/',
+                //модуль pages
+                array('class' => 'application.modules.pages.components.PageUrlRule'),
+                //модуль catalog
+		        '/catalog' => '/catalog/site/',
+                'catalog/<title:[\w-]+>_<catId:\d+>' => 'catalog/site/categoryView',
+                'catalog/<catName:[\w-]+>_<catId:\d+>' => 'catalog/site/RCategoryView',
+                'catalog/<title:[\w-]+>_<catId:\d+>/<itemName:[\w-\"\']+>_<item:\d+>' => 'catalog/site/itemView',
+                //модуль post
+                'posts' => 'post/site/tagIndex',
+                'posts/<title:\w+>_<id:\d+>' => 'post/site/tagIndex',
+                'postsView/<title:[\w-]+>_<id:\d+>' => 'post/site/view',
+                'index' => '/',
+                'contacts' => '/site/contact',
+                'katalog' => '/site/ModelsAndPrices',
+                'moto' => '/catalog/site/RCategoryView/catId/72/V_nalichii',
+                'video' => '/site/video'
             )
 
         ), 

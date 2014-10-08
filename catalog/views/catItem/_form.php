@@ -66,10 +66,10 @@
                 foreach($itemAdditionalRows as $itemRow){
                     echo '<div class="row">';
                     if ($itemRow->type=='text'){
-                        echo $form->labelEx($model,$itemRow->name);
+                        echo CHtml::label($itemRow->name, $itemRow->name_t);
                         $this->widget('begemot.extensions.ckeditor.CKEditor',array('model' => $model, 'attribute' => $itemRow->name_t, 'language' => 'ru', 'editorTemplate' => 'full',));
                     } else{
-                    echo $form->labelEx($model,$itemRow->name);
+                    echo CHtml::label($itemRow->name, $itemRow->name_t);
                     echo $form->textArea($model,$itemRow->name_t);
 
                     }

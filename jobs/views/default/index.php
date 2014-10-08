@@ -1,6 +1,7 @@
 <?php 
 $this->menu = array(
-    array('label' => 'Все задания', 'url' => array('/crontabs/default/index')),
+    array('label' => 'Все задания', 'url' => array('/jobs/default/index')),
+    array('label' => 'Все работы', 'url' => array('/jobs/default/jobs')),
 );
  ?>
 <h1>Парсеры</h1>
@@ -23,8 +24,8 @@ $this->menu = array(
 			<tr class='item-<?php echo $number ?>'>
 				<td><?php echo $key?></td>
 				<td><?php echo ($item->executable == true) ? "Да" : "Нет"?></td>
-				<td class='period'><?php echo CrontabBase::timeToString($item->period);?></td>
-				<td class='time'><?php if(property_exists($item, 'time')) echo CrontabBase::timeToString($item->time) . ":00";?></td>
+				<td class='period'><?php echo JobManager::timeToString($item->period);?></td>
+				<td class='time'><?php if(property_exists($item, 'time')) echo JobManager::timeToString($item->time) . ":00";?></td>
 				<td>
 					<input type="button" 
 						class='btn btn-primary turnOnOff' 
@@ -38,6 +39,10 @@ $this->menu = array(
 						data-turn='0' 
 						value='Отключить'
 						style='display: <?php echo ($item->executable == true) ? 'inline' : 'none'?>'>
+					<input type="button" 
+						class='btn btn-danger removeTask' 
+						data-name='<?php echo $key?>' 
+						value='Удалить задачу'>
 					<input type="button" name='<?php echo $key?>' class='btn btn-info changeTime' value='Поменять период'>
 				</td>
 			</tr>
@@ -107,6 +112,20 @@ $this->menu = array(
 				button.parents("TD").find('input').css("display", 'inline');
 				button.css("display", 'none');
 			};
+			
+		})
+
+	})
+
+	$(document).on("click", ".removeTask", function(){
+		var button = $(this);
+		var params = {'name': $(this).attr("data-name")};
+
+
+		$.post('/jobs/default/removeTask/', params,  function(data){
+			if(data != ""){
+				$(button).parents("TR").remove();
+			}
 			
 		})
 

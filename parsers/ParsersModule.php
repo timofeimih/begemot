@@ -12,7 +12,6 @@ class ParsersModule extends CWebModule {
             'parsers.components.*',
             'parsers.models.*',
             'catalog.models.CatItem',
-            'crontabs.components.CrontabBase'
         ));
 
     }

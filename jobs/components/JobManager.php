@@ -1,7 +1,7 @@
 <?php 
-class CrontabBase extends CApplicationComponent{
+class JobManager extends CApplicationComponent{
 
-	public $dir = '';
+	private $dir = '';
 
 
 	public function __construct()
@@ -11,7 +11,7 @@ class CrontabBase extends CApplicationComponent{
 
 	public function getPeriodOfItem($jobIndex)
 	{
-		$all = (array) $this->getListJob();
+		$all = (array) $this->getListCronJob();
 
 		if (array_key_exists($jobIndex, $all)) {
 
@@ -19,41 +19,78 @@ class CrontabBase extends CApplicationComponent{
 		}
 	}
 
-	public function addJob($filename, $period = 86400, $className, $website, $hour)
+	public function getAllJobs()
+	{
+		$itemClassesList = array();
+
+		if($this->getListOfAllJobs()){
+			foreach ($this->getListOfAllJobs() as $item) {
+				$itemName = basename($item);
+
+				$name = str_replace('.php', '', $itemName);
+				$itemClassesList[] = $name;
+			}
+		}
+		
+
+		return $itemClassesList;
+	}
+
+	public static function getListOfAllJobs()
+	{	
+		$arrayOfJobs = array();
+		if (glob(Yii::app()->basePath . "/jobs/*.php")) {
+			foreach(glob(Yii::app()->basePath . "/jobs/*.php") as $path) {	
+				$arrayOfJobs[] = $path;
+			}
+		}
+
+		if (glob(Yii::app()->basePath . "/modules/*/jobs/*.php")) {
+			foreach(glob(Yii::app()->basePath . "/modules/*/jobs/*.php") as $path) {	
+				$arrayOfJobs[] = $path;
+			}
+		}
+		
+		return $arrayOfJobs;
+	}
+
+	public function newTask($parameters)
 	{
 
         //every day = 86 400 sec
         //every week = 604 800 sec
         //2 days in a week = 302 400 sec
+
+		$filename = $parameters['filename'];
+        $parameters['lastExecuted'] = 0;
+        $parameters['executable'] = true;
+
+        unset($parameters['filename']);
+
         $arr = array(
-	        $filename => array(
-	        	'period' => $period,
-	        	'lastExecuted' => '0',
-	        	'class' => $className,
-	        	'executable' => true,
-	        	'website' => $website,
-			'time' => $hour
-        	)
+	        $filename => $parameters
         );
 
-        $all = (array) $this->getListJob();
+        $all = (array) $this->getListCronJob();
 
         $arr = array_merge($all, $arr);
 
-        $this->writeFile($arr);
+        $this->saveConfigFile($arr);
+
+        return 1;
         
 	}
 
 	public function changeTime($jobIndex, $period = 86400, $time = '1')
 	{
-		$all = (array) $this->getListJob();
+		$all = (array) $this->getListCronJob();
 
 		if (array_key_exists($jobIndex, $all)) {
 
 			$all[$jobIndex]->period = $period;
 			$all[$jobIndex]->time = $time;
 
-			$this->writeFile((array) $all);
+			$this->saveConfigFile((array) $all);
 
 			return $this::timeToString($period);
 		} else{
@@ -63,12 +100,12 @@ class CrontabBase extends CApplicationComponent{
 
 	public function turnOff($jobIndex)
 	{
-		$all = (array) $this->getListJob();
+		$all = (array) $this->getListCronJob();
 
 		if (array_key_exists($jobIndex, $all)) {
 			$all[$jobIndex]->executable = false;
 
-			$this->writeFile($all);
+			$this->saveConfigFile($all);
 
 			return "Сохранено";
 		} else{
@@ -78,12 +115,12 @@ class CrontabBase extends CApplicationComponent{
 
 	public function turnOn($jobIndex)
 	{
-		$all = (array) $this->getListJob();
+		$all = (array) $this->getListCronJob();
 
 		if (array_key_exists($jobIndex, $all)) {
 			$all[$jobIndex]->executable = true;
 
-			$this->writeFile($all);
+			$this->saveConfigFile($all);
 
 			return "Сохранено";
 		} else{
@@ -93,14 +130,14 @@ class CrontabBase extends CApplicationComponent{
 
 	
 
-	public function removeJob($filename)
+	public function removeTask($filename)
 	{
-		$all = (array) $this->getListJob();
+		$all = (array) $this->getListCronJob();
 
 		if ($all[$filename]) {
 			unset($all[$filename]);
 
-	        $this->writeFile($all);
+	        $this->saveConfigFile($all);
 		}
 
     }
@@ -126,7 +163,7 @@ class CrontabBase extends CApplicationComponent{
 		return $string;
 	}
 
-	private function writeFile($arrayToWrite)
+	private function saveConfigFile($arrayToWrite)
 	{
 		$tempFile = fopen($this->dir . 'cronConfig.php', 'w');
 
@@ -135,7 +172,7 @@ class CrontabBase extends CApplicationComponent{
         fclose($tempFile); 
 	}
 
-	public function getListJob()
+	public function getListCronJob()
 	{
 
 		$array = array();
@@ -186,9 +223,14 @@ class CrontabBase extends CApplicationComponent{
 		return true;
 	}
 
+	public function isTaskSettedUp($name)
+	{	
+		return array_key_exists($name, $this->getListCronJob());
+	}
+
 	public function runAll()
 	{
-		$all = $this->getListJob();
+		$all = $this->getListCronJob();
 		$save = array();
 
 		if ($all) {
@@ -219,13 +261,13 @@ class CrontabBase extends CApplicationComponent{
 			print_r($save);
 
 
-			$this->writeFile($save);
+			$this->saveConfigFile($save);
 		}
 		
 
 	}
 
-	private function runJob($filename)
+	private function runJob()
 	{
 		return true;
 	}
