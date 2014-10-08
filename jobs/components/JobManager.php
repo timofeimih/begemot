@@ -23,12 +23,15 @@ class JobManager extends CApplicationComponent{
 	{
 		$itemClassesList = array();
 
-		foreach ($this->getListOfAllJobs() as $item) {
-			$itemName = basename($item);
+		if($this->getListOfAllJobs()){
+			foreach ($this->getListOfAllJobs() as $item) {
+				$itemName = basename($item);
 
-			$name = str_replace('.php', '', $itemName);
-			$itemClassesList[] = $name;
+				$name = str_replace('.php', '', $itemName);
+				$itemClassesList[] = $name;
+			}
 		}
+		
 
 		return $itemClassesList;
 	}
