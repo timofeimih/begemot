@@ -277,11 +277,18 @@ class CatItem extends ContentKitModel
 
   public function combinedWithParser()
   {
-      $model = ParsersLinking::model()->find("`toId`='" . $this->id . "'");
 
-      if ($model) {
-          return '<span class="icon icon-big icon-random"></span>';
-      } else return "Нет";
+      if (isset(Yii::app()->modules['parsers'])) {
+        Yii::import('parsers.models.ParsersLinking');
+        $model = ParsersLinking::model()->find("`toId`='" . $this->id . "'");
+
+        if ($model) {
+            return '<span class="icon icon-big icon-random"></span>';
+        } else return "Нет";
+
+      }
+
+      return null;
   }
 
 

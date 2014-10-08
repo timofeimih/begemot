@@ -39,14 +39,18 @@ class JobManager extends CApplicationComponent{
 	public static function getListOfAllJobs()
 	{	
 		$arrayOfJobs = array();
-		foreach(glob(Yii::app()->basePath . "/jobs/*.php") as $path) {	
-			$arrayOfJobs[] = $path;
+		if (glob(Yii::app()->basePath . "/jobs/*.php")) {
+			foreach(glob(Yii::app()->basePath . "/jobs/*.php") as $path) {	
+				$arrayOfJobs[] = $path;
+			}
 		}
 
-		foreach(glob(Yii::app()->basePath . "/modules/*/jobs/*.php") as $path) {	
-			$arrayOfJobs[] = $path;
+		if (glob(Yii::app()->basePath . "/modules/*/jobs/*.php")) {
+			foreach(glob(Yii::app()->basePath . "/modules/*/jobs/*.php") as $path) {	
+				$arrayOfJobs[] = $path;
+			}
 		}
-
+		
 		return $arrayOfJobs;
 	}
 
