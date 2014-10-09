@@ -3,7 +3,9 @@
 class CatItemsToCatController extends Controller
 {
     	public $layout='begemot.views.layouts.column2';
-        
+     
+      
+     
     	public function filters()
 	{
 		return array(
@@ -65,7 +67,9 @@ class CatItemsToCatController extends Controller
 	
         public function actionAdmin($id)
 	{
-            $dataProvider = new CActiveDataProvider('CatItemsToCat',array('criteria'=>array('condition'=>'`t`.`catId`='.$id.'','with'=>'item','order'=>'t.order')));
+            $model = new CatItemsToCat;
+            
+            $dataProvider = $model->search($id);
 
             $this->render('admin',array(
                 'dataProvider'=>$dataProvider,
