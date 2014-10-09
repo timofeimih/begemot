@@ -16,6 +16,7 @@
 Yii::import('begemot.extensions.contentKit.ContentKitModel');
 class CatItem extends ContentKitModel
 {
+
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @param string $className active record class name.
@@ -34,16 +35,16 @@ class CatItem extends ContentKitModel
 		return 'catItems';
 	}
         
-        public function behaviors(){
-            $behaviors = array(
-                'slug'=>array(
-                    'class' => 'begemot.extensions.SlugBehavior',
-                ),                
+   public function behaviors(){
+      $behaviors = array(
+          'slug'=>array(
+              'class' => 'begemot.extensions.SlugBehavior',
+          ),                
 
-            );
+      );
 
-            return array_merge($behaviors,parent::behaviors());
-        }
+      return array_merge($behaviors,parent::behaviors());
+   }
         
 	/**
 	 * @return array validation rules for model attributes.
@@ -315,7 +316,7 @@ class CatItem extends ContentKitModel
       return false;
     }
 
-        $changed = array();
+    $changed = array();
     foreach ($items as $item) {
       if ($item->linking->price != $item->item->price || $item->linking->quantity != $item->item->quantity) {
 
