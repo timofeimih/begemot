@@ -242,9 +242,9 @@ class JobManager extends CApplicationComponent{
 						
 					if (($item['lastExecuted'] + $item['period'] + $item['time'] - 60) < time()) {
 						
-						$classItem = new $item['class'];
+						$classItem = new $filename;
 						//$classItem->runJob($filename);
-						$this->runJob($filename);
+						$classItem->runJob();
 						$this->changeTimeOfLastExecuted($filename, time());
 
 						$item['lastExecuted'] = (int)mktime(0, 0, 0, date('n'), date('j'));
