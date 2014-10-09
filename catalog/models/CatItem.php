@@ -1,401 +1,377 @@
 <?php
-ini_set('display_errors',1);
-error_reporting(E_ALL);
 
-class CatItemController extends Controller
+/**
+ * This is the model class for table "catItems".
+ *
+ * The followings are the available columns in table 'catItems':
+ * @property integer $id
+ * @property string $name
+ * @property string $name_t
+ * @property integer $status
+ * @property string $data
+ * @property integer $quantity
+ * @property integer $delivery_date
+ * @property string $article
+ */
+Yii::import('begemot.extensions.contentKit.ContentKitModel');
+class CatItem extends ContentKitModel
 {
-    /**
-     * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
-     * using two-column layout. See 'protected/views/layouts/column2.php'.
-     */
-    public $layout='begemot.views.layouts.column2';
 
     /**
-     * @return array action filters
+     * Returns the static model of the specified AR class.
+     * @param string $className active record class name.
+     * @return CatItem the static model class
      */
-    public function filters()
+    public static function model($className=__CLASS__)
+    {
+        return parent::model($className);
+    }
+
+    /**
+     * @return string the associated database table name
+     */
+    public function tableName()
+    {
+        return 'catItems';
+    }
+
+    public function behaviors(){
+        $behaviors = array(
+            'slug'=>array(
+                'class' => 'begemot.extensions.SlugBehavior',
+            ),
+
+        );
+
+        return array_merge($behaviors,parent::behaviors());
+    }
+
+    /**
+     * @return array validation rules for model attributes.
+     */
+    public function rules()
+    {
+        // NOTE: you should only define rules for those attributes that
+        // will receive user inputs.
+        $rules = array(
+            array('name', 'required'),
+            array('status, quantity', 'numerical', 'integerOnly'=>true),
+            array('name, name_t, article', 'length', 'max'=>100),
+            array('seo_title', 'length', 'max'=>255),
+            // The following rule is used by search().
+            array('id, name, name_t, status, data, price, text, name, delivery_date, quantity', 'safe'),
+            // Please remove those attributes that should not be searched.
+            array('id, name, name_t, status, data', 'safe', 'on'=>'search'),
+        );
+        return array_merge(parent::rules(),$rules);
+    }
+
+    /**
+     * @return array relational rules.
+     */
+    public function relations()
     {
         return array(
-            'accessControl', // perform access control for CRUD operations
-            'postOnly + delete', // we only allow deletion via POST request
+            'name'=>array(self::BELONGS_TO, 'CatItemsToCat', 'itemId'),
+            'category' => array(self::BELONGS_TO,'CatCategory','catId'),
+            'reviews' => array(self::HAS_MANY, 'Reviews', 'pid', 'condition'=>'status=1')
         );
     }
 
+    public function getOption(){
+        $ids = CatItemsToItems::model()->findAll(array("condition"=> 'itemId='.$this->id, 'order' => 'id ASC'));
+        $arrayOfIds = array();
+        foreach ($ids as $id) {
+            array_push($arrayOfIds, $id->toItemId);
+        }
+        $arrayOfIds = array_filter($arrayOfIds);
+        return CatItem::model()->findAllByPk($arrayOfIds);
+    }
     /**
-     * Specifies the access control rules.
-     * This method is used by the 'accessControl' filter.
-     * @return array access control rules
+     * @return array customized attribute labels (name=>label)
      */
-    public function accessRules()
+    public function attributeLabels()
     {
         return array(
-
-            array('allow', // allow admin user to perform 'admin' and 'delete' actions
-                'actions'=>array('delete','create','update','index','view','deleteItemToCat','tidyItemText', 'getItemsFromCategory', 'options'),
-                'expression' => 'Yii::app()->user->canDo("catalogEditor")'
-            ),
-            array('deny',  // deny all users
-                'users'=>array('*'),
-            ),
+            'id' => 'ID',
+            'name' => 'Name',
+            'name_t' => 'Name T',
+            'status' => 'Status',
+            'data' => 'Data',
+            'delivery_date' => 'Дата поставки:',
+            'quantity' => 'Количество',
         );
     }
 
-    /**
-     * Displays a particular model.
-     * @param integer $id the ID of the model to be displayed
-     */
-    public function actionView($id)
+    public function itemTableName(){
+        return 'catItems_'.$this->id;
+    }
+
+    public function beforeSave(){
+        parent::beforeSave();
+
+        $this->name_t = $this->mb_transliterate($this->name);
+        //$this->Video = $_REQUEST['CatItem']['Video'];
+        $this->delivery_date = strtotime($this->delivery_date);
+        $itemAdditionalRows = CatItemsRow::model()->findAll();
+        if (is_array($itemAdditionalRows)){
+
+            foreach($itemAdditionalRows as $itemRow){
+
+                $paramName =  $itemRow->name_t;
+                if (isset($_REQUEST['CatItem'][$itemRow->name_t]))
+                    $this->$paramName =$_REQUEST['CatItem'][$itemRow->name_t];
+
+            }
+        }
+        return true;
+    }
+
+    protected function afterFind()
     {
-        $this->render('view',array(
-            'model'=>$this->loadModel($id),
+        $this->delivery_date = date('m/d/Y', $this->delivery_date);
+
+        return parent::afterFind ();
+    }
+
+
+    protected function afterSave()
+    {
+        parent::afterSave ();
+        $this->delivery_date = date('m/d/Y', $this->delivery_date);
+
+        return true;
+    }
+
+
+
+    /**
+     * Retrieves a list of models based on the current search/filter conditions.
+     * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+     */
+    public function search($id=null)
+    {
+        // Warning: Please modify the following code to remove attributes that
+        // should not be searched.
+
+        $criteria=new CDbCriteria;
+        if ($id===null)
+            $criteria->compare('id',$this->id);
+        else
+            $criteria->compare('id',$id);
+
+        $criteria->compare('name',$this->name,true);
+        $criteria->compare('name_t',$this->name_t,true);
+        $criteria->compare('status',$this->status);
+        $criteria->compare('data',$this->data,true);
+        $criteria->order = '`id` desc';
+        return new CActiveDataProvider($this, array(
+            'criteria'=>$criteria,
         ));
     }
 
-    /**
-     * Creates a new model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     */
-    public function actionCreate()
+    //get picture fav list array
+    public function getItemFavPictures(){
+
+        $imagesDataPath = Yii::getPathOfAlias('webroot').'/files/pictureBox/catalogItem/'.$this->id;
+
+        $favFilePath = $imagesDataPath.'/favData.php';
+        $images = array();
+        if (file_exists($favFilePath)){
+            $images = require($favFilePath);
+        };
+
+        return $images;
+
+    }
+
+    //get picture list array
+    public function getItemPictures(){
+
+        $imagesDataPath = Yii::getPathOfAlias('webroot').'/files/pictureBox/catalogItem/'.$this->id;
+        $favFilePath = $imagesDataPath.'/data.php';
+        $images = array();
+
+        if (file_exists($favFilePath)){
+
+            $images = require($favFilePath);
+            if (isset($images['images']))
+                return $images['images'];
+            else
+                return array();
+        } else {
+
+
+            return array();
+        }
+
+    }
+
+    //get path of one main picture, wich take from fav or common images list
+    public function getItemMainPicture($tag=null){
+
+
+        $imagesDataPath = Yii::getPathOfAlias('webroot').'/files/pictureBox/catalogItem/'.$this->id;
+        $favFilePath = $imagesDataPath.'/favData.php';
+
+        $images = array ();
+        $itemImage = '';
+
+        $images = $this->getItemFavPictures();
+        if (count($images)!=0){
+            $imagesArray = array_values($images);
+            $itemImage = $imagesArray[0];
+        }
+        if (count($images)==0){
+
+            $images = $this->getItemPictures();
+            if (count($images)>0){
+                $imagesArray = array_values($images);
+                $itemImage = $imagesArray[0];
+            } else{
+                return '#';
+            }
+
+        }
+
+        if (is_null($tag)){
+            return array_shift($itemImage);
+        }
+        else{
+            if (isset($itemImage[$tag]))
+                return $itemImage[$tag];
+            else
+                return '#';
+        }
+    }
+
+    public function combinedWithParser()
     {
-        $model=new CatItem;
+        $model = ParsersLinking::model()->find("`toId`='" . $this->id . "'");
 
-        // Uncomment the following line if AJAX validation is needed
-        // $this->performAjaxValidation($model);
-
-        if(isset($_POST['CatItem']))
-        {
-            $model->attributes=$_POST['CatItem'];
-            if($model->save()){
-                if (isset($_POST['returnId'])) {
-                    echo $model->id;
-
-                } else $this->redirect(array('view','id'=>$model->id));
-
-            }
-
-        }
-
-        if (!isset($_POST['returnId'])) {
-            $this->render('create',array(
-                'model'=>$model,
-            ));
-        }
-
+        if ($model) {
+            return '<span class="icon icon-big icon-random"></span>';
+        } else return "Нет";
     }
 
-    public function actionGetItemsFromCategory($catId, $curCatId)
+    public function getItemWithMaximalPrice($catId)
     {
-        $model = CatItemsToCat::model()->with('item')->findAll(array('condition'=>'t.catId='.$catId, 'order' => 't.order ASC'));
-
-        $currentPosition = 1;
-        $flag = true;
-        $array = array('html' => '', 'ids' => array(), 'currentPos' => '');
-        foreach ($model as $cat) {
-            if ($curCatId != $cat->item->id) {
-                $array['html'] .= "<option value='" . $cat->item->id . "'>" . $cat->item->name . "- (" . $cat->item->id . ")</option>";
-                $array['ids'][] = $cat->item->id;
-
-                if ($flag) {
-                    $currentPosition++;
-                }
-
-            }
-            else{
-                $flag = false;
-            }
-
-
-        }
-
-        $array['currentPos'] = $currentPosition;
-
-        if (ob_get_contents())
-            ob_end_clean();
-
-        echo json_encode($array);
+        return $this->find(array(
+            'select' => 'MAX(price) as price',
+            'condition' => 'published = 1 AND catId = :catId',
+            'params' => array(
+                ':catId' => $catId
+            ),
+        ))->price;
     }
 
-    /**
-     * Updates a particular model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id the ID of the model to be updated
-     */
-    public function actionUpdate($id,$tab='data')
+    public function runJob($filename)
     {
-        $model=$this->loadModel($id);
-        $message = '';
+        $websiteName = Yii::app()->params['website'];
 
-        if (isset($_GET['setMainCat'])){
-            $model->catId=$_GET['setMainCat'];
-            $model->save();
+        $json = file_get_contents($websiteName . "/parsers/" . $filename . "?newDate");
+        $json = json_decode($json);
+
+        ParsersStock::model()->deleteAll(array('condition' => "`filename`='" . $json->name . "'"));
+
+        $length = count($json->items);
+
+        foreach ($json->items as $itemParsed) {
+            $new = new ParsersStock;
+            $itemParsed = (array)$itemParsed;
+            $itemParsed['filename'] = $json->name;
+            $itemParsed['name'] = substr($itemParsed['name'], 0, 99);
+
+            if (ParsersLinking::model()->find(array(
+                'condition'=>'fromId=:fromId',
+                'params'=>array(':fromId'=>$itemParsed['id'])))
+            ) {
+                $itemParsed['linked'] = 1;
+            }
+
+            $new->attributes = $itemParsed;
+
+            $new->save();
         }
 
+        $items = ParsersLinking::model()->findAllByAttributes(array('filename' => $filename), array('order' => 'id ASC'));
 
-        // change positions
-        if (isset($_POST['changePosition'])) {
+        if (!$items) {
 
+            $to = Yii::app()->params['adminEmail'];
 
-            $category = $_POST['categoryId'];
-            $item = $_POST['item'];
-            $currentItem = $_POST['currentItem'];
+            $subject = "Задание не удалось выполнить($filename)";
 
-            if (!empty($_POST['itemId'])) {
-                $item = $_POST['itemId'];
-            }
+            $headers = "From: susan@example.com\r\n";
+            $headers .= "Reply-To: susan@example.com\r\n";
+            $headers .= "CC: susan@example.com\r\n";
+            $headers .= "MIME-Version: 1.0\r\n";
+            $headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
 
+            $message = "Не удалось найти карточек для парсера $filename";
 
-            if (isset($_POST['pasteOnFirstPosition'])) {
-                $itemModel = $itemModel = CatItemsToCat::model()->with('item')->find(array('condition'=>'t.catId='.$category, 'order' => 't.order ASC'));
-            }
-            else if(isset($_POST['pasteOnLastPosition'])){
-                $itemModel = $itemModel = CatItemsToCat::model()->with('item')->find(array('condition'=>'t.catId='.$category, 'order' => 't.order DESC'));
-            }
-            else{
-                $itemModel = CatItemsToCat::model()->with('item')->find(array('condition'=>'t.catId='.$category . " AND t.itemId=" . $item));
-            }
+            mail($to, $subject, $message, $headers);
 
-
-            $currentItemModel = CatItemsToCat::model()->with('item')->find(array('condition'=>'t.catId='.$category . " AND t.itemId=" . $currentItem));
-
-            if ($currentItemModel->catId != 0 && $itemModel->catId != 0) {
-
-                $itemsToChange = CatItemsToCat::model()->with('item')->findAll(array('condition'=>'t.order >=' . $itemModel->order, 'order' => 't.order ASC'));
-
-
-                if(isset($_POST['pasteOnLastPosition'])){
-                    $order = $itemModel->order - 1;
-                }
-                else{
-                    $order = $itemModel->order + 1;
-                }
-
-
-                foreach ($itemsToChange as $item) {
-                    $item->order = $order;
-                    $item->save();
-
-                    if(isset($_POST['pasteOnLastPosition'])){
-                        $order--;
-                    }
-                    else{
-                        $order++;
-                    }
-
-                }
-
-                $currentItemModel->order = $itemModel->order;
-                $currentItemModel->save();
-
-                $message = "Сохранено";
-            }
-        }
-        // --change positions
-
-        if(isset($_POST['saveItemsToItems']) && isset($_POST['options'])){
-            CatItemsToItems::model()->deleteAll(array("condition"=> 'itemId='.$id));
-
-
-            if (count($_POST['options'])) {
-                foreach ($_POST['options'] as $itemId) {
-                    $item = new CatItemsToItems();
-
-                    $item->itemId = $id;
-                    $item->toItemId = $itemId;
-
-                    $item->save();
-                }
-
-            }
-
-        }
-        else if(isset($_POST['saveItemsToItems']) && !isset($_POST['options'])){
-            CatItemsToItems::model()->deleteAll(array("condition"=> 'itemId='.$id));
+            echo 'no changes';
+            return false;
         }
 
+        $changed = array();
+        foreach ($items as $item) {
+            if ($item->linking->price != $item->item->price || $item->linking->quantity != $item->item->quantity) {
 
-//        if (false && isset(Yii::app()->modules['parsers'])) {
-//
-//        	$synched = ParsersLinking::model()->with('item')->find(array('condition' => "t.toId='". $model->id . "'"));
-//
-//        	$fileListOfDirectory = array ();
-//        	if (!$synched) {
-//
-//				$pathTofileListDirectory = Yii::app()->basePath.'/../parsers' ;
-//
-//				if(!is_dir($pathTofileListDirectory ))
-//				{
-//				   // die(" Invalid Directory");
-//				}
-//
-//				if(!is_readable($pathTofileListDirectory ))
-//				{
-//				   // die("You don't have permission to read Directory");
-//				}
-//
-//				foreach ( new DirectoryIterator ( $pathTofileListDirectory ) as $file ) {
-//				    if ($file->isFile () === TRUE && $file->getBasename () !== '.DS_Store') {
-//
-//				        if ($file->getExtension () == "php") {
-//				            array_push ( $fileListOfDirectory, $file->getBasename () );
-//				        }
-//				    }
-//				}
-//        	}
-//
-//        }
-
-        if(isset($_POST['CatItem']))
-        {
-            $model->attributes=$_POST['CatItem'];
-            $model->save();
-            //	$this->redirect(array('view','id'=>$model->id));
+                $changed[] = array(
+                    'name' => $item->item->name,
+                    'oldPrice' => $item->item->price,
+                    'newPrice' => $item->linking->price,
+                    'oldQuantity' => $item->item->quantity,
+                    'newQuantity' => $item->linking->quantity,
+                );
+                $item->item->price = $item->linking->price;
+                $item->item->quantity = $item->linking->quantity;
+                $item->item->save();
+            }
         }
 
-        $itemToCat = new CatItemsToCat;
-        $testForm = new CForm('catalog.models.forms.catToItemForm',$itemToCat);
+        $to = Yii::app()->params['adminEmail'];
 
 
-        if ($testForm->submitted('catToItemSubmit') && $testForm->validate()){
-            $itemToCat->attributes = $_POST['CatItemsToCat'];
-            $itemToCat->save();
 
-            if ($itemToCat->item->catId==0){
-                $itemToCat->item->catId= $itemToCat->catId;
-                $itemToCat->item->save();
+        $headers = "From: susan@example.com\r\n";
+        $headers .= "Reply-To: susan@example.com\r\n";
+        $headers .= "CC: susan@example.com\r\n";
+        $headers .= "MIME-Version: 1.0\r\n";
+        $headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
+
+        $message = '<html><body>';
+        $message .= '<h1>test</h1>';
+        if ($changed) {
+            $message .= '<table>';
+            $message .= '<thead><tr><td>Название</td><td>Старая цена</td><td>Новая цена</td><td>Старое наличие</td><td>Новое наличие</td></tr></thead>';
+
+            foreach ($changed as $item) {
+                $message .= "<tr>
+          <td>{$item['name']}</td>
+          <td>{$item['oldPrice']}</td>
+          <td>{$item['newPrice']}</td>
+          <td>{$item['oldQuantity']}</td>
+          <td>{$item['newQuantity']}</td>
+        </tr>";
             }
 
+            $message .= '</table>';
+        } else{
+            $message .= 'Нечего не поменялось';
         }
+        $message .= '</body></html>';
 
-        $this->render('update',array(
-            'model'=>$model,
-            'tab'=>$tab,
-            'message' => $message,
-            // 'fileListOfDirectory' => $fileListOfDirectory,
-            // 'synched' => $synched
-        ));
-    }
+        $subject = "Изменилось " . count($changed) . " карточек";
 
-    /**
-     * Deletes a particular model.
-     * If deletion is successful, the browser will be redirected to the 'admin' page.
-     * @param integer $id the ID of the model to be deleted
-     */
-    public function actionDelete($id)
-    {
-        $this->loadModel($id)->delete();
-
-        // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-        if(!isset($_GET['ajax']))
-            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
-    }
-
-    public function actionOptions($id, $subid)
-    {
-        CatItemsToItems::model()->find("itemId = '$id' AND toItemId = '$subid'")->delete();
-    }
-
-    /**
-     * Lists all models.
-     */
-    public function actionIndex()
-    {
-
-        $dataProvider = new CActiveDataProvider('CatItem',array('criteria'=>array('order'=>'`id` desc')));
-
-        $dataProvider = new CatItem('search');
-        if (isset($_GET['CatItem']))
-            $dataProvider->Attributes = $_GET['CatItem'];
-        $this->render('index',array(
-            'dataProvider'=>$dataProvider,
-
-        ));
-
-    }
-
-
-
-
-    public function actionDeleteItemToCat($catId,$itemId){
-
-        if(Yii::app()->request->isAjaxRequest){
-
-            CatItemsToCat::model()->deleteAll(array('condition'=>'`catId`='.$catId.' and `itemId`='.$itemId));
-
-            $catItem = CatItem::model()->findByPk($itemId);
-            if ($catItem->catId==$catId){
-
-                $catItem->catId=0;
-
-                $models = CatItemsToCat::model()->findAll(array('condition'=>'`itemId`='.$itemId));
-
-                if (count($models)>0){
-
-                    $model = $models[0];
-
-                    $catItem->catId =  $model->catId;
-
-                }
-
-
-                $catItem->save();
-
-            }
-
+        if (mail($to, $subject, $message, $headers)) {
+            echo Yii::app()->params['adminEmail'];
+        } else{
+            echo "no message";
         }
     }
 
-    /**
-     * Returns the data model based on the primary key given in the GET variable.
-     * If the data model is not found, an HTTP exception will be raised.
-     * @param integer $id the ID of the model to be loaded
-     * @return CatItem the loaded model
-     * @throws CHttpException
-     */
-    public function loadModel($id)
-    {
-        $model=CatItem::model()->findByPk($id);
-        if($model===null)
-            throw new CHttpException(404,'The requested page does not exist.');
-        return $model;
-    }
-
-    /**
-     * Performs the AJAX validation.
-     * @param CatItem $model the model to be validated
-     */
-    protected function performAjaxValidation($model)
-    {
-        if(isset($_POST['ajax']) && $_POST['ajax']==='cat-item-form')
-        {
-            echo CActiveForm::validate($model);
-            Yii::app()->end();
-        }
-    }
-
-    public function actionTidyItemText($id)
-    {
-
-        $model = $this->loadModel($id);
-
-        Yii::import('application.modules.pictureBox.components.PBox');
-
-        $pbox = new PBox('catalogItem',$id);
-
-        $images = $pbox->pictures;
-        //print_r($pbox->pictures);
-        //return;
-        $text = $model->text;
-
-        Yii::import('application.modules.begemot.components.tidy.TidyBuilder');
-
-        $this->module->tidyleadImage!=0?$leadImage=1:$leadImage=0;
-
-        $tidy = new TidyBuilder ( $model->text, $this->module->tidyConfig, $images,$leadImage);
-
-        $model->text = $tidy->renderText();
-
-        $model->save();
-
-        $this->redirect(array('/catalog/catItem/update', 'id' => $model->id,));
-    }
 }
