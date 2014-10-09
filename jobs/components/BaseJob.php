@@ -1,5 +1,5 @@
 <?php
-class BaseJob extends JobManager{
+class BaseJob {
 
 	protected $name = null;
 	protected $description = null;
