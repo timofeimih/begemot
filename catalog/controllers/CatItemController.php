@@ -31,7 +31,7 @@ class CatItemController extends Controller
 		return array(
 
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('delete','create','update','index','view','deleteItemToCat','tidyItemText', 'getItemsFromCategory'),
+				'actions'=>array('delete','create','update','index','view','deleteItemToCat','tidyItemText', 'getItemsFromCategory', 'options'),
                 'expression' => 'Yii::app()->user->canDo("catalogEditor")'
 			),
 			array('deny',  // deny all users
@@ -288,7 +288,12 @@ class CatItemController extends Controller
                     if(!isset($_GET['ajax']))
                             $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
 	}
-
+   
+   public function actionOptions($id, $subid)
+   {
+      CatItemsToItems::model()->find("itemId = '$id' AND toItemId = '$subid'")->delete();
+   }
+   
 	/**
 	 * Lists all models.
 	 */

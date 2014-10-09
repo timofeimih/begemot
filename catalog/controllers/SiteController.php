@@ -63,8 +63,7 @@ class SiteController extends Controller {
         $itemHref =  Yii::app()->urlManager->createUrl('catalog/site/itemView',$hrefParams);
 
         if ($itemHref!==$uri)
-        {
-
+        {   
             $this->redirect($itemHref, true, 301);
         }
 
