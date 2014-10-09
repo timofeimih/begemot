@@ -261,11 +261,13 @@ $this->menu = require dirname(__FILE__).'/commonMenu.php';
     <input type="submit" name='saveItemsToItems' class='btn btn-primary' value='сохранить'/>
 </form>
 <?php 
-if (!$model->isNewRecord):
+$related = CatItemsToItems::model()->findAll(array('select'=>'itemId', 'condition' => 'toItemId='.$model->id));
+if ((!$model->isNewRecord) && (count($related) > 0)):
 ?>
-<h2>Сопутствующие</h2>
+<h2>Сопутствует</h2>
+<p>Список других товаров, у которых текущий товар указан как сопутствующий товар или в виде опции.</p>
 <?php 
-   $related = CatItemsToItems::model()->findAll(array('select'=>'itemId', 'condition' => 'toItemId='.$model->id));
+   
    $arrayOfItems = array();
    foreach ($related as $item) {
        array_push($arrayOfItems, $item->itemId);

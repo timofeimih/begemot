@@ -16,11 +16,9 @@ $this->menu = require dirname(__FILE__).'/../catItem/commonMenu.php';
 <?php
  Yii::import('begemot.extensions.grid.EImageColumn');
 
-$model = new CatItemsToCat();
-
  $this->widget('bootstrap.widgets.TbGridView',array(
 	'id'=>'test-grid',
-	'dataProvider'=>$dataProvider,//$model->search($id),
+	'dataProvider'=>$model->search($id),//$model->search($id),
    'filter'=>$model,
 	//'filter'=>CatItemsToCat::model(),
     'type'=>'striped bordered condensed',
