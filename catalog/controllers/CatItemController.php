@@ -31,7 +31,7 @@ class CatItemController extends Controller
 		return array(
 
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('delete','create','update','index','view','deleteItemToCat','tidyItemText', 'getItemsFromCategory', 'options'),
+				'actions'=>array('delete','create','update','index','view','deleteItemToCat','tidyItemText', 'getItemsFromCategory', 'options','test'),
                 'expression' => 'Yii::app()->user->canDo("catalogEditor")'
 			),
 			array('deny',  // deny all users
@@ -275,6 +275,20 @@ class CatItemController extends Controller
 		));
 	}
 
+   private function delete_files($target) {
+      if(is_dir($target)){
+         $files = glob( $target . '*', GLOB_MARK ); 
+         foreach( $files as $file )
+         {
+            $this->delete_files( $file );      
+         }
+         rmdir( $target );
+      } elseif(is_file($target)) {
+         unlink( $target );  
+      }
+   }
+   
+   
 	/**
 	 * Deletes a particular model.
 	 * If deletion is successful, the browser will be redirected to the 'admin' page.
@@ -282,8 +296,9 @@ class CatItemController extends Controller
 	 */
 	public function actionDelete($id)
 	{
-                    $this->loadModel($id)->delete();
-
+      $this->loadModel($id)->delete();
+      CatItemsToItems::model()->deleteAll("itemId = '$id' OR toItemId = '$id'");
+      $this->delete_files(Yii::getPathOfAlias('webroot').'/files/pictureBox/catalogItem/'.$id."/");
                     // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
                     if(!isset($_GET['ajax']))
                             $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
