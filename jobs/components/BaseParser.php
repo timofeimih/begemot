@@ -1,4 +1,5 @@
 <?php
+/* Для того чтобы экземпляр класса рассмативался как файл для парсинга данных, его название должно заканчиваться на ParserJob.php (Пример названия: ArgoParserJob.php) */
 class BaseParser extends BaseJob{
 	protected $items = array();
     protected $time = 0;
