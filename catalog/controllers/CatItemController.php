@@ -214,7 +214,7 @@ class CatItemController extends Controller
 
 
        if (isset(Yii::app()->modules['parsers'])) {
-
+        Yii::import('parsers.models.ParsersLinking');
        	$synched = ParsersLinking::model()->with('item')->find(array('condition' => "t.toId='". $model->id . "'"));
 
        	$fileListOfDirectory = array ();
