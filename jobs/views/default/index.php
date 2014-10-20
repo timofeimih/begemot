@@ -4,7 +4,7 @@ $this->menu = array(
     array('label' => 'Все работы', 'url' => array('/jobs/default/jobs')),
 );
  ?>
-<h1>Парсеры</h1>
+<h1>Установленные работы по рассписанию</h1>
 
 <form action="/parsers/default/parseChecked" method='get'>
 	<table>
@@ -24,8 +24,9 @@ $this->menu = array(
 			<tr class='item-<?php echo $number ?>'>
 				<td><?php echo $key?></td>
 				<td><?php echo ($item->executable == true) ? "Да" : "Нет"?></td>
-				<td class='period'><?php echo JobManager::timeToString($item->period);?></td>
-				<td class='time'><?php if(property_exists($item, 'time')) echo JobManager::timeToString($item->time) . ":00";?></td>
+				<td class='period'><?php if(property_exists($item, 'time')) echo JobManager::timeToString($item->time);?></td>
+				<td class='time'>
+					<?php if(property_exists($item, 'hour')) echo JobManager::timeToString($item->hour) . ":00";?></td>
 				<td>
 					<input type="button" 
 						class='btn btn-primary turnOnOff' 
@@ -62,7 +63,7 @@ $this->menu = array(
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         <h4 class="modal-title">Поменять период</h4>
       </div>
-      <form action="/crontabs/default/changeTime" method='post' class='ajaxSubmit' data-hideafter='.modal' data-removeafter=''>
+      <form action="/jobs/default/changeTime" method='post' class='ajaxSubmit' data-hideafter='.modal' data-removeafter=''>
 	      <div class="modal-body">
 	      	<div id="error"></div>
 	      	<div id="success" style='color: green'></div>
@@ -106,7 +107,7 @@ $this->menu = array(
 		var params = {'name': $(this).attr("data-name"), 'turn': $(this).attr("data-turn")};
 
 
-		$.post('/crontabs/default/turnOnOff/', params,  function(data){
+		$.post('/jobs/default/turnOnOff/', params,  function(data){
 			alert(data);
 			if (data != "") {
 				button.parents("TD").find('input').css("display", 'inline');

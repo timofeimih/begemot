@@ -304,7 +304,7 @@ endif;
     <?php if (isset(Yii::app()->modules['parsers'])): ?>
         <?php if ($tab=='parser'){ ?>
             <h1>Парсеры</h1>
-            <?php if ($synched): ?>
+            <?php if (isset($synched)): ?>
                 <div class="append redColored">Сохраненно</div>
                 <table>
                     <thead>
@@ -343,9 +343,9 @@ endif;
                     <tbody>
                     <?php foreach($fileListOfDirectory as $item): ?>
                         <tr>
-                            <td><?php echo $item?></td>
-                            <td><input type='button' class='parseNew' data-file='<?php echo $item?>' value='Спарсить новые данные'></td>
-                            <td><input type='button' class='getParsedForCatItem btn btn-small btn-info' data-file='<?php echo $item?>' data-id='<?php echo $model->id?>' value='Работать с текущими данными'></td>
+                            <td><?php echo $item['name']?></td>
+                            <td><input type='button' class='parseNew' data-file='<?php echo $item['className']?>' value='Спарсить новые данные'></td>
+                            <td><input type='button' class='getParsedForCatItem btn btn-small btn-info' data-file='<?php echo $item['name']?>' data-id='<?php echo $model->id?>' value='Работать с текущими данными'></td>
                             
                         </tr>
                             
@@ -363,10 +363,8 @@ endif;
             <script>
                 $(document).on("click", ".parseNew", function(){
                     var button = $(this);
-                    var params = {'CatItem': {'name': $(this).attr("name"), 'price': $(this).attr("price"), 'text': $(this).attr("text")}, 'returnId': true};
 
-
-                    $.get('/parsers/default/parseNew/file/' + $(this).attr("data-file") + '/', function(data){
+                    $.get('/parsers/default/parseNew/className/' + $(this).attr("data-file") + '/', function(data){
                         if (data == 1) {
                             button.val("Спарсенно");
                         };
