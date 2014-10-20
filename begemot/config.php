@@ -176,7 +176,7 @@ return array(
                 array('class' => 'application.modules.pages.components.PageUrlRule'),
                 //модуль catalog
 		        '/catalog' => '/catalog/site/',
-                'catalog/<title:[\w-]+>_<catId:\d+>' => 'catalog/site/categoryView',
+                'catalog/<title:[\w-]+>_<catId:\d+>' => 'catalog/site/RCategoryView',
                 'catalog/<catName:[\w-]+>_<catId:\d+>' => 'catalog/site/RCategoryView',
                 'catalog/<title:[\w-]+>_<catId:\d+>/<itemName:[\w-\"\']+>_<item:\d+>' => 'catalog/site/itemView',
                 //модуль post
