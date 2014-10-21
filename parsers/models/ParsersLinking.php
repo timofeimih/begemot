@@ -39,7 +39,7 @@ class ParsersLinking extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('fromId, toId, filename', 'required'),
-			array('fromId', 'unique')
+			array('fromId, toId', 'unique')
 		);
 	}
 
