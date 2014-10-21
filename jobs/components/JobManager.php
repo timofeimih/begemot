@@ -7,6 +7,16 @@ class JobManager extends CApplicationComponent{
 	public function __construct()
 	{
 		$this->dir = Yii::app()->basePath . '/config/';
+
+		foreach(glob(Yii::app()->basePath . "/modules/*", GLOB_ONLYDIR) as $path) {    
+
+            if(file_exists($path)){
+                if(file_exists($path . "/jobs")){
+                    Yii::import('application.modules.' . basename($path) . ".jobs.*");
+                }
+            }
+            
+        }
 	}
 
 	public function getPeriodOfItem($jobIndex)
@@ -81,18 +91,18 @@ class JobManager extends CApplicationComponent{
         
 	}
 
-	public function changeTime($jobIndex, $period = 86400, $time = '1')
+	public function changeTime($jobIndex, $time = 86400, $hour = '1')
 	{
 		$all = (array) $this->getListCronJob();
 
 		if (array_key_exists($jobIndex, $all)) {
 
-			$all[$jobIndex]->period = $period;
 			$all[$jobIndex]->time = $time;
+			$all[$jobIndex]->hour = $hour;
 
 			$this->saveConfigFile((array) $all);
 
-			return $this::timeToString($period);
+			return $this::timeToString($time);
 		} else{
 			return "error: нету такого индекса в заданиях";
 		}
@@ -230,6 +240,18 @@ class JobManager extends CApplicationComponent{
 
 	public function runAll()
 	{
+
+
+		foreach(glob(Yii::app()->basePath . "/modules/*", GLOB_ONLYDIR) as $path) {    
+
+            if(file_exists($path)){
+                if(file_exists($path . "/jobs")){
+                    Yii::import('application.modules.' . basename($path) . ".jobs.*");
+                }
+            }
+            
+        } 
+
 		$all = $this->getListCronJob();
 		$save = array();
 
@@ -240,11 +262,11 @@ class JobManager extends CApplicationComponent{
 
 				if ($item['executable'] == true) {
 						
-					if (($item['lastExecuted'] + $item['period'] + $item['time'] - 60) < time()) {
+					if (($item['lastExecuted'] + $item['time'] + $item['hour'] - 60) < time()) {
 						
-						$classItem = new $item['class'];
+						$classItem = new $filename;
 						//$classItem->runJob($filename);
-						$this->runJob($filename);
+						$classItem->runJob();
 						$this->changeTimeOfLastExecuted($filename, time());
 
 						$item['lastExecuted'] = (int)mktime(0, 0, 0, date('n'), date('j'));

@@ -24,7 +24,7 @@ $this->menu = array(
 				<td><input type="checkbox" value='<?php echo $item['name']?>' name='parse[]'/></td>
 				
 				<td><input type='button' class='parseNew' data-file='<?php echo $item['className']?>' value='Спарсить новые данные'></td>
-				<td><a href='<?php echo $this->createUrl("/parsers/default/do", array('className' => $item['name'])) ?>' class="btn btn-info btn-mini">Работать с текущими данными</a></td>
+				<td><a href='<?php echo $this->createUrl("/parsers/default/do", array('file' => $item['name'])) ?>' class="btn btn-info btn-mini">Работать с текущими данными</a></td>
 				
 			</tr>
 				

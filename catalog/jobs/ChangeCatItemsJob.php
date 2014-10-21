@@ -1,5 +1,5 @@
 <?php
-class ChangeCatItemsJob extends BaseJob implements ConcreteJobInterface{
+class ChangeCatItemsJob extends BaseJob{
 
 	protected $name = "ChangeCatItemJob";
 	protected $description = "description";

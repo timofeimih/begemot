@@ -67,13 +67,14 @@ class CatItemsToCatController extends Controller
 	
         public function actionAdmin($id)
 	{
-            $model = new CatItemsToCat;
-            
-            $dataProvider = $model->search($id);
-
+            $model = new CatItemsToCat('search');
+            $model->unsetAttributes(); 
+            if(isset($_GET['CatItemsToCat']))
+               $model->attributes=$_GET['CatItemsToCat'];
             $this->render('admin',array(
-                'dataProvider'=>$dataProvider,
                 'category'=> CatCategory::model()->findByPk($id),
+                'id'=> $id,
+                'model'=> $model,
             ));
 	}        
         
