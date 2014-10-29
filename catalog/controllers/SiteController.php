@@ -133,6 +133,7 @@ class SiteController extends Controller {
                 'condition'=>'published=1'
             )
         ); 
+        $criteria->group = 'item.id';
         $criteria->distinct = true;
         $criteria->order = 'item.top DESC, t.order ASC';
 

@@ -124,8 +124,13 @@ class CatItem extends ContentKitModel
             foreach ($itemAdditionalRows as $itemRow) {
 
                 $paramName = $itemRow->name_t;
-                if (isset($_REQUEST['CatItem'][$itemRow->name_t]))
-                    $this->$paramName = $_REQUEST['CatItem'][$itemRow->name_t];
+                if (isset($_REQUEST['CatItem'][$itemRow->name_t])){
+                  if (is_array($_REQUEST['CatItem'][$itemRow->name_t])) {
+                    $this->$paramName = implode(',', $_REQUEST['CatItem'][$itemRow->name_t]);
+
+                  } else $this->$paramName = $_REQUEST['CatItem'][$itemRow->name_t];
+                }
+                    
 
             }
         }

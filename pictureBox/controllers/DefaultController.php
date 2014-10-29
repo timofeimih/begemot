@@ -127,7 +127,9 @@ class DefaultController extends Controller
             if ($model->validate()) {
 
                 Yii::import('application.modules.pictureBox.components.picturebox');
-                $imageExt = end(explode('.', $model->uploadifyFile));
+                $file = $model->uploadifyFile;
+                $temp = explode('.', $file);
+                $imageExt = end($temp);
 
                 $newImageId = $this->addImage($dir, $model->uploadifyFile->name, $imageExt);
 
@@ -345,15 +347,14 @@ class DefaultController extends Controller
      */
     public function actionAjaxMakeFilteredImage($id, $elementId, $pictureId, $filterName,$x=null,$y=null,$width=null,$height=null)
     {
-
         if (Yii::app()->request->isAjaxRequest) {
-
             $data = require(Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/data.php');
             $dir = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId;
             $config = $this->getConfigFromSession($id, $elementId);
 
             $temp = explode('.', $data['images'][$pictureId]['original']);
             $imageExt = end($temp);
+
 
 
             if (isset($config['imageFilters'][$filterName])) {
@@ -366,7 +367,7 @@ class DefaultController extends Controller
                     copy($originalImagePath,$tmpOriginalImagePath);
 
                     $originalPicture->cropImage($width,$height,$x,$y);
-                    $originalPicture->writeImage();
+                    $originalPicture->writeImage($originalImagePath);
                     //$originalPicture->writeImage($originalImagePath.'111');
 
                 }
@@ -375,8 +376,6 @@ class DefaultController extends Controller
                 $filterManager = new FiltersManager($originalImagePath, $filter);
 
                 $filters = $filterManager->getFilteredImages();
-
-
 
                 foreach ($filters as $filterName => $filteredImageFile) {
                     $this->addFilteredImage($pictureId, $filterName, '/files/pictureBox/' . $id . '/' . $elementId . '/' . $filteredImageFile, $dir);

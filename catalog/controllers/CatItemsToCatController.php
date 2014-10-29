@@ -40,35 +40,36 @@ class CatItemsToCatController extends Controller
 
 	}
         
-        public function behaviors(){
-                return array(
-                        'CBOrderControllerBehavior' => array(
-                                'class' => 'begemot.extensions.order.BBehavior.CBOrderControllerBehavior',
-                                'groupName'=>'catId'
-                        )
-                );
-        }
-        
-        public function actionOrderUp($id){
-            $model = $this->loadModel($id);
-      
-            $this->groupId = $model->catId;
-            $this->orderUp($id);
+    public function behaviors(){
+            return array(
+                    'CBOrderControllerBehavior' => array(
+                            'class' => 'begemot.extensions.order.BBehavior.CBOrderControllerBehavior',
+                            'groupName'=>'catId'
+                    )
+            );
+    }
+    
+    public function actionOrderUp($id){
+        $model = $this->loadModel($id);
+  
+        $this->groupId = $model->catId;
+        $this->orderUp($id);
 
-        }
-        
-        public function actionOrderDown($id){
-            $model = $this->loadModel($id);
-      
+    }
+    
+    public function actionOrderDown($id){
+        $model = $this->loadModel($id);
+  
 
-            $this->groupId = $model->catId;
-            $this->orderDown($id);
-        } 
+        $this->groupId = $model->catId;
+        $this->orderDown($id);
+    } 
 	
-        public function actionAdmin($id)
+    public function actionAdmin($id)
 	{
             $model = new CatItemsToCat('search');
             $model->unsetAttributes(); 
+
             if(isset($_GET['CatItemsToCat']))
                $model->attributes=$_GET['CatItemsToCat'];
             $this->render('admin',array(
