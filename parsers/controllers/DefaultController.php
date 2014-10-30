@@ -175,7 +175,19 @@ class DefaultController extends Controller
     public function actionDo($file)
     {
 
-        $catItems = CatItem::model()->findAll(array('order' => 'name ASC'));
+        $parserLinkingIds = ParsersLinking::model()->findAll();
+
+        $iDsArray = array();
+        foreach ($parserLinkingIds as $parserData) {
+            $iDsArray[] = $parserData['toId'];
+        }
+
+        $criteria = new CDbCriteria();
+        $criteria->addNotInCondition("id", $iDsArray);
+        $criteria->order = 'name ASC';
+
+        $catItems = CatItem::model()->findAll($criteria);
+
 
         $itemList = array(
             'combined' => ParsersLinking::model()->findAllByAttributes(array('filename' => $file), array('order' => 'id ASC')),
