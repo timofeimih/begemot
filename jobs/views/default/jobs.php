@@ -4,51 +4,48 @@ $this->menu = array(
     array('label' => 'Все работы', 'url' => array('/jobs/default/jobs')),
 );
  ?>
-<h1>Парсеры</h1>
+<h1>Все работы</h1>
 
-<form action="/parsers/default/parseChecked" method='get'>
-	<table>
-		<thead>
-			<tr>
-				<td>Название файла</td>
-				<td>Действия</td>
-			</tr>
-		</thead>
-		<tbody>
-			
-		<?php $number = 0; ?>
-		<?php foreach($itemList as $item): ?>
-			<tr class='item-<?php echo $number ?>'>
-				<?php $itemName = new $item; ?>
-				<td><?php  echo $itemName->getName();?></td>
-				<td>
-					<input type="button" 
-						class='btn btn-info run' 
-						data-name='<?php echo $item?>' 
-						value='Запустить'>
-					<input type="button" 
-						class='btn btn-primary setTask' 
-						data-name='<?php echo $item?>' 
-						data-turn='0' 
-						value='Установить'
-						style='display: <?php echo ($jobManager->isTaskSettedUp($item) == false) ? 'inline' : 'none'?>'>
-					<input type="button" 
-						class='btn btn-danger removeTask' 
-						data-name='<?php echo $item?>' 
-						data-turn='0' 
-						value='Убрать задание'
-						style='display: <?php echo ($jobManager->isTaskSettedUp($item) == true) ? 'inline' : 'none'?>'>
-					
-					<div class='additionalFields' style='display: none;'><?php $item = new $item; echo $item->getHtmlOfParameters(); ?></div>
-				</td>
-			</tr>
-			<?php $number++; ?>
-		<?php endforeach ?>
+<table>
+	<thead>
+		<tr>
+			<td>Название файла</td>
+			<td>Действия</td>
+		</tr>
+	</thead>
+	<tbody>
+		
+	<?php $number = 0; ?>
+	<?php foreach($itemList as $item): ?>
+		<tr class='item-<?php echo $number ?>'>
+			<?php $itemName = new $item; ?>
+			<td><?php  echo $itemName->getName();?></td>
+			<td>
+				<input type="button" 
+					class='btn btn-info run' 
+					data-name='<?php echo $item?>' 
+					value='Запустить'>
+				<input type="button" 
+					class='btn btn-primary setTask' 
+					data-name='<?php echo $item?>' 
+					data-turn='0' 
+					value='Запланировать'>
 
-		</tbody>
-	</table>
+				<?php if ($jobManager->isTaskSettedUp($item) == true): ?>
+					(уже установлено хотя бы одно задание)
+				<?php endif ?>
 
-</form>
+
+				
+				<div class='additionalFields' style='display: none;'><?php $item = new $item; echo $item->getHtmlOfParameters(); ?></div>
+			</td>
+		</tr>
+		<?php $number++; ?>
+	<?php endforeach ?>
+
+	</tbody>
+</table>
+
 
 
 <div class="modal fade" style='display:none'>
@@ -101,12 +98,12 @@ $this->menu = array(
 
 
 		$.post('/jobs/default/removeTask/', params,  function(data){
-			if(data != ""){
-				$(button).parents("TR").find(".setTask").show();
-				$(button).parents("TR").find(".removeTask").hide();
-			}
+			$(button).parents("TR").find(".setTask").show();
+			$(button).parents("TR").find(".removeTask").hide();
 			
-		})
+		}).fail(function(){
+			alert("Не вышло");
+		});
 
 	})
 
@@ -116,15 +113,12 @@ $this->menu = array(
 
 
 		$.post('/jobs/default/runJob/', params,  function(data){
-			if(data != ""){
-				$(".success").html("Задача запустилась").fadeIn();
+			$(".success").html("Задача запустилась").fadeIn();
 
-				setTimeout(function(){$(".success").fadeOut()}, 1000);
-			}
-
-			alert(data);
-			
-		})
+			setTimeout(function(){$(".success").fadeOut()}, 1000);
+		}).fail(function(){
+			alert("Не вышло");
+		});
 
 	})
 
@@ -163,21 +157,20 @@ $this->menu = array(
 		if (!status) return false;
 
 		$.post(form.attr("action"), form.serialize(), function(data){
-			if (data != "") {
-				
-				$(removeAfter).fadeOut(1000);
-				setTimeout(function(){
-					$(removeAfter).remove();
-					$(hideAfter).removeClass('in').hide();
-				}, 1000)
 
-				$(form).find("#success").html("Сохранено");
+			$(removeAfter).fadeOut(1000);
+			setTimeout(function(){
+				$(removeAfter).remove();
+				$(hideAfter).removeClass('in').hide();
+			}, 1000)
 
-				$("." + $(form).find(".listname").val()).find(".setTask").hide();
+			$(form).find("#success").html("Сохранено");
 
-				$("." + $(form).find(".listname").val()).find(".removeTask").show();
+			$("." + $(form).find(".listname").val()).find(".setTask").hide();
 
-			} else alert("ERROR");
-		})
+			$("." + $(form).find(".listname").val()).find(".removeTask").show();
+		}).fail(function(){
+			alert("Не вышло");
+		});
 	})
 </script>

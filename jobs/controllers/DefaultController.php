@@ -48,13 +48,11 @@ class DefaultController extends Controller
 		if (isset($_POST['name'])) {
 
 			$class = new $_POST['name'];
-			if($class->runJob()) echo "1";
-
-
+			if(!$class->runJob())  throw new CHttpException(400,'Ошибка');
 			
+		} else{
+			throw new CHttpException(400,'Ошибка');
 		}
-
-		print_r($_POST);
 	}
 
 	public function actionIndex()
@@ -89,7 +87,8 @@ class DefaultController extends Controller
 				$JobManager->turnOff($_POST['name']);
 			}
 
-			echo "1";
+		} else{
+			throw new CHttpException(400,'Ошибка');
 		}
 
 
@@ -103,9 +102,9 @@ class DefaultController extends Controller
 
 			$JobManager->removeTask($_POST['name']);
 
-			echo "1";
+		} else{
+			throw new CHttpException(400,'Ошибка');
 		}
-
 	}
 
 	public function actionChangeTime()

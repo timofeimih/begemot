@@ -108,13 +108,13 @@ $this->menu = array(
 
 
 		$.post('/jobs/default/turnOnOff/', params,  function(data){
-			alert(data);
-			if (data != "") {
-				button.parents("TD").find('input').css("display", 'inline');
-				button.css("display", 'none');
-			};
+
+			button.parents("TD").find('input').css("display", 'inline');
+			button.css("display", 'none');
 			
-		})
+		}).fail(function(){
+			alert("Не вышло");
+		});
 
 	})
 
@@ -124,11 +124,10 @@ $this->menu = array(
 
 
 		$.post('/jobs/default/removeTask/', params,  function(data){
-			if(data != ""){
-				$(button).parents("TR").remove();
-			}
-			
-		})
+			$(button).parents("TR").remove();		
+		}).fail(function(){
+			alert("Не вышло");
+		});
 
 	})
 
@@ -166,21 +165,20 @@ $this->menu = array(
 		if (!status) return false;
 
 		$.post(form.attr("action"), form.serialize(), function(data){
-			if (data != "") {
 				
-				$(removeAfter).fadeOut(1000);
-				setTimeout(function(){
-					$(removeAfter).remove();
-					$(hideAfter).removeClass('in').hide();
-				}, 1000)
+			$(removeAfter).fadeOut(1000);
+			setTimeout(function(){
+				$(removeAfter).remove();
+				$(hideAfter).removeClass('in').hide();
+			}, 1000)
 
-				$(form).find("#success").html("Сохранено");
+			$(form).find("#success").html("Сохранено");
 
-				$("." + $(form).find(".item").val()).find(".period").html(data);
+			$("." + $(form).find(".item").val()).find(".period").html(data);
 
-				$("." + $(form).find(".item").val()).find(".time").html($(form).find("SELECT[name='hour'] OPTION:selected").html() + ":00");
-
-			} else alert("ERROR");
-		})
+			$("." + $(form).find(".item").val()).find(".time").html($(form).find("SELECT[name='hour'] OPTION:selected").html() + ":00");
+		}).fail(function(){
+			alert("Не вышло");
+		});
 	})
 </script>
