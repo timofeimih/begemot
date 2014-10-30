@@ -207,23 +207,31 @@ class CatItemController extends Controller
 
         if (isset(Yii::app()->modules['parsers'])) {
 
+
             Yii::import('parsers.models.ParsersLinking');
+
             $synched = ParsersLinking::model()->with('item')->find(array('condition' => "t.toId='" . $model->id . "'"));
+
 
             $fileListOfDirectory = array();
             if (!$synched) {
 
                 $fileListOfDirectory = array();
 
-                foreach (glob(Yii::app()->basePath . '/jobs/*ParserJob.php') as $path) {
 
-                    $className = basename($path);
-                    $className = str_replace('.php', '', $className);
-                    $class = new $className;
+                if (is_dir(Yii::app()->basePath . '/jobs')) {
+                    foreach (glob(Yii::app()->basePath . '/jobs/*ParserJob.php') as $path) {
 
-                    array_push($fileListOfDirectory, array('name' => $class->getName(), 'className' => $className));
+                        $className = basename($path);
+                        $className = str_replace('.php', '', $className);
+                        $class = new $className;
+
+                        array_push($fileListOfDirectory, array('name' => $class->getName(), 'className' => $className));
+                    }
                 }
+
             }
+
 
         }
 

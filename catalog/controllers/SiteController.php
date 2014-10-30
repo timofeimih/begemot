@@ -126,7 +126,7 @@ class SiteController extends Controller {
         $iDsStr = '(' . implode(',', $iDsArray) . ')';
         $criteria = new CDbCriteria;
 
-        $criteria->select = 't.itemId';
+        $criteria->select = 't.itemId, t.catId';
         $criteria->condition = '`t`.`catId` in ' . $iDsStr . '';
         $criteria->with = array(
             'item'=>array(
