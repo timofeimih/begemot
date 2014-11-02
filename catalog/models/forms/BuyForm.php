@@ -14,7 +14,7 @@ class BuyForm extends CFormModel{
         return array(
                        // array('name','required'),
                         array('phone','phoneOrMail'),
-                        array('phone, count, msg, model', 'safe'),
+                        array('phone,email, count, msg, model', 'safe'),
                     );
 
 
