@@ -14,7 +14,7 @@ class BuyForm extends CFormModel{
         $returnArray = array(
            // array('name','required'),
             array('phone','phoneOrMail'),
-            array('phone, count, msg, model', 'safe'),
+            array('phone,email, count, msg, model', 'safe'),
         );
 
         if (Yii::app()->controller->module->capcha) {
@@ -22,8 +22,7 @@ class BuyForm extends CFormModel{
         }
 
         return $returnArray;
-
-
+        
     }
 
     public function phoneOrMail($attribute,$params){
