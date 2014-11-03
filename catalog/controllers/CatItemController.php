@@ -31,7 +31,7 @@ class CatItemController extends Controller
 
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
                 'actions' => array('delete', 'create', 'update', 'index', 'view', 'deleteItemToCat', 'tidyItemText', 'getItemsFromCategory', 'options', 'test'),
-                'expression' => 'Yii::app()->user->canDo("catalogEditor")'
+                'expression' => 'Yii::app()->user->canDo("Catalog")'
             ),
             array('deny',  // deny all users
                 'users' => array('*'),
@@ -56,6 +56,9 @@ class CatItemController extends Controller
      */
     public function actionCreate()
     {
+
+        CatalogModule::checkEditAccess();
+
         $model = new CatItem;
 
         // Uncomment the following line if AJAX validation is needed
@@ -120,6 +123,9 @@ class CatItemController extends Controller
     public function actionUpdate($id, $tab = 'data')
     {
         $model = $this->loadModel($id);
+
+        CatalogModule::checkEditAccess($model->authorId);
+
         $message = '';
 
         if (isset($_GET['setMainCat'])) {
@@ -286,7 +292,12 @@ class CatItemController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->loadModel($id)->delete();
+        $model = $this->loadModel($id);
+
+        CatalogModule::checkEditAccess($model->authorId);
+
+        $model->delete();
+
         CatItemsToItems::model()->deleteAll("itemId = '$id' OR toItemId = '$id'");
         $this->delete_files(Yii::getPathOfAlias('webroot') . '/files/pictureBox/catalogItem/' . $id . "/");
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
@@ -320,6 +331,10 @@ class CatItemController extends Controller
 
     public function actionDeleteItemToCat($catId, $itemId)
     {
+
+        $model = $this->loadModel($itemId);
+
+        CatalogModule::checkEditAccess($model->authorId);
 
         if (Yii::app()->request->isAjaxRequest) {
 
