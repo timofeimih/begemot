@@ -126,7 +126,18 @@ return array(
 
                     'registeredOnly'=>false,
                     'useCaptcha'=>false,
-                    'allowSubcommenting'=>true,
+                    'allowSubcommenting'=>false,
+                    //config for create link to view model page(page with comments)
+                    'pageUrl'=>array(
+                        'route'=>'admin/citys/view',
+                        'data'=>array('id'=>'id'),
+                    ),
+                ),
+                'CatItem'=>array(
+
+                    'registeredOnly'=>false,
+                    'useCaptcha'=>false,
+                    'allowSubcommenting'=>false,
                     //config for create link to view model page(page with comments)
                     'pageUrl'=>array(
                         'route'=>'admin/citys/view',
@@ -135,9 +146,8 @@ return array(
                 ),
             ),
 
-            //config for user models, which is used in application
 //            'userConfig'=>array(
-//                'class'=>'User',
+//                'class' => 'User',
 //                'nameProperty'=>'username',
 //                'emailProperty'=>'email',
 //            ),
