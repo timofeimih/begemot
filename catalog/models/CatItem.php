@@ -236,6 +236,10 @@ class CatItem extends ContentKitModel
     foreach ($items as $item) {
       $itemModel =  $this->findByAttributes(array('id' => $item->itemId, 'published' => 1));
 
+      if (is_null($itemModel)) {
+          return 0;
+      }
+
       if($returnPrice < $itemModel->price) $returnPrice = $itemModel->price;
     }
 
