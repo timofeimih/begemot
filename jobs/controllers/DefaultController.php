@@ -43,19 +43,16 @@ class DefaultController extends Controller
 		}
 	}
 
-	public function actionRunJob()
-	{
-		if (isset($_POST['name'])) {
+    public function actionRunJob()
+    {
+        if (isset($_POST['name'])) {
+            $class = new $_POST['name'];
+            if(!$class->runJob())  throw new CHttpException(400,'Ошибка');
 
-			$class = new $_POST['name'];
-			if($class->runJob()) echo "1";
-
-
-			
-		}
-
-		print_r($_POST);
-	}
+        } else{
+            throw new CHttpException(400,'Ошибка');
+        }
+    }
 
 	public function actionIndex()
 	{
@@ -78,35 +75,29 @@ class DefaultController extends Controller
 		 ));
 	}
 
-	public function actionTurnOnOff()
-	{
-		if (isset($_POST['name']) AND isset($_POST['turn'])) {
+    public function actionTurnOnOff()
+    {
+        if (isset($_POST['name']) AND isset($_POST['turn'])) {
+            $JobManager = new JobManager;
+            if ($_POST['turn'] == 1) {
+                $JobManager->turnOn($_POST['name']);
+            } else{
+                $JobManager->turnOff($_POST['name']);
+            }
+        } else{
+            throw new CHttpException(400,'Ошибка');
+        }
+    }
 
-			$JobManager = new JobManager;
-			if ($_POST['turn'] == 1) {
-				$JobManager->turnOn($_POST['name']);
-			} else{
-				$JobManager->turnOff($_POST['name']);
-			}
-
-			echo "1";
-		}
-
-
-	}
-
-	public function actionRemoveTask()
-	{
-		if (isset($_POST['name'])) {
-
-			$JobManager = new JobManager;
-
-			$JobManager->removeTask($_POST['name']);
-
-			echo "1";
-		}
-
-	}
+    public function actionRemoveTask()
+    {
+        if (isset($_POST['name'])) {
+            $JobManager = new JobManager;
+            $JobManager->removeTask($_POST['name']);
+        } else{
+            throw new CHttpException(400,'Ошибка');
+        }
+    }
 
 	public function actionChangeTime()
 	{
