@@ -60,7 +60,7 @@ class CatItem extends ContentKitModel
             array('name, name_t, article', 'length', 'max' => 100),
             array('seo_title', 'length', 'max' => 255),
             // The following rule is used by search().
-            array('id, name, name_t, status, data, price, text, name, delivery_date, quantity', 'safe'),
+            array('id, name, name_t, status, data, price, text, name, delivery_date, quantity, authorId', 'safe'),
             // Please remove those attributes that should not be searched.
             array('id, name, name_t, status, data', 'safe', 'on' => 'search'),
         );
@@ -97,12 +97,13 @@ class CatItem extends ContentKitModel
     {
         return array(
             'id' => 'ID',
-            'name' => 'Name',
-            'name_t' => 'Name T',
-            'status' => 'Status',
-            'data' => 'Data',
+            'name' => 'Наименование',
+            'name_t' => 'Наименование транслитом',
+            'status' => 'Статус',
+            'data' => 'Дата',
             'delivery_date' => 'Дата поставки:',
             'quantity' => 'Количество',
+            'authorId'=>'Автор'
         );
     }
 

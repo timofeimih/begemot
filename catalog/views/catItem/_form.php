@@ -13,11 +13,31 @@
 
 	<p class="note">Поля со знаком <span class="required">*</span> обязательны для заполнения.</p>
         
-        <div  class="container-fluid">  
+    <div  class="container-fluid">
 	
-        <?php echo $form->errorSummary($model); ?>
-        
-	<div class="row">
+    <?php echo $form->errorSummary($model); ?>
+    <?php  if (Yii::app()->controller->action->id=='update' && Yii::app()->user->isAdmin()){ ?>
+    <div class="row">
+            <?php echo $form->labelEx($model,'authorId'); ?>
+
+
+            <?php
+
+                // Yii::import('user.models.User');
+                $models = User::model()->findAll();
+                $list = CHtml::listData($models,
+                    'id', 'username');
+                echo CHtml::dropDownList('CatItem[authorId]', $model->authorId,
+                    $list,
+                    array('empty' => '(Выберите пользователя'));
+
+            ?>
+
+            <?php echo $form->error($model,'authorId'); ?>
+    </div>
+    <?php  } ?>
+
+    <div class="row">
 		<?php echo $form->labelEx($model,'name'); ?>
 		<?php echo $form->textField($model,'name',array('size'=>60,'maxlength'=>100)); ?>
 		<?php echo $form->error($model,'name'); ?>
