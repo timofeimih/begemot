@@ -2,7 +2,9 @@
 
 class WebUser extends CWebUser
 {
-
+    public function getTableAlias(){
+        return Yii::app()->getModule->tableUsers;
+    }
     public function getRole()
     {
         return $this->getState('__role');
