@@ -68,6 +68,8 @@ class CatItemsRow extends CActiveRecord
 	}
         
         public function beforeSave(){
+            $nameTemp = explode("|", $this->name);
+            $nameTemp = $nameTemp[0];
             $this->name_t = $this->mb_transliterate($this->name);
             return true;
         }
@@ -87,10 +89,10 @@ class CatItemsRow extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'name' => 'Name',
-			'name_t' => 'Name T',
-			'type' => 'Type',
-			'data' => 'Data',
+            'name' => 'Значение поля',
+            'name_t' => 'Транслит названия',
+			'type' => 'Тип',
+			'data' => 'Информация',
 		);
 	}
 

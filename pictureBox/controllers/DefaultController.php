@@ -33,7 +33,7 @@ class DefaultController extends Controller
     {
 
 
-       $dataFilename = Yii::getPathOfAlias('webroot') . '/' . 'files/pictureBox/' . $id . '/' . $elementId . '/data.php';
+        $dataFilename = Yii::getPathOfAlias('webroot') . '/' . 'files/pictureBox/' . $id . '/' . $elementId . '/data.php';
 
         $data = require $dataFilename;
         $images = $data['images'];
@@ -49,15 +49,14 @@ class DefaultController extends Controller
         $this->flipFiles($file1, $file2);
 
         //Перекидываем title и alt
-        $title1 = (isset($images[$pictureid1]['title'])?$images[$pictureid1]['title']:'');
-        $alt1 = (isset($images[$pictureid1]['alt'])?$images[$pictureid1]['alt']:'');
+        $title1 = (isset($images[$pictureid1]['title']) ? $images[$pictureid1]['title'] : '');
+        $alt1 = (isset($images[$pictureid1]['alt']) ? $images[$pictureid1]['alt'] : '');
 
-        $images[$pictureid1]['title'] = isset($images[$pictureid2]['title'])?$images[$pictureid2]['title']:'';
-        $images[$pictureid1]['alt'] = isset($images[$pictureid2]['alt'])?$images[$pictureid2]['alt']:'';
+        $images[$pictureid1]['title'] = isset($images[$pictureid2]['title']) ? $images[$pictureid2]['title'] : '';
+        $images[$pictureid1]['alt'] = isset($images[$pictureid2]['alt']) ? $images[$pictureid2]['alt'] : '';
 
-        $images[$pictureid2]['title'] =$title1;
+        $images[$pictureid2]['title'] = $title1;
         $images[$pictureid2]['alt'] = $alt1;
-
 
 
         foreach ($filters as $filterName => $filterUselessData) {
@@ -127,7 +126,10 @@ class DefaultController extends Controller
             if ($model->validate()) {
 
                 Yii::import('application.modules.pictureBox.components.picturebox');
-                $imageExt = end(explode('.', $model->uploadifyFile));
+
+                $file = $model->uploadifyFile;
+                $temp = explode('.', $file);
+                $imageExt = end($temp);
 
                 $newImageId = $this->addImage($dir, $model->uploadifyFile->name, $imageExt);
 
@@ -302,7 +304,7 @@ class DefaultController extends Controller
             $dataFile = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/data.php';
             $data = require($dataFile);
 
-            $this->actionAjaxDelFav($id,$elementId,$pictureId);
+            $this->actionAjaxDelFav($id, $elementId, $pictureId);
 
             $this->deleteImageFiles($id, $elementId, $pictureId, $data);
 
@@ -317,7 +319,6 @@ class DefaultController extends Controller
     {
         if (Yii::app()->request->isAjaxRequest) {
             $data = require(Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/data.php');
-
 
 
             if (isset($data['images'][$pictureId][$filterName])) {
@@ -343,7 +344,7 @@ class DefaultController extends Controller
      * @param type $pictureId Идентификатор изображения
      * @param type $filterName Имя фильтра. Изначально устанавливается в конфиге
      */
-    public function actionAjaxMakeFilteredImage($id, $elementId, $pictureId, $filterName,$x=null,$y=null,$width=null,$height=null)
+    public function actionAjaxMakeFilteredImage($id, $elementId, $pictureId, $filterName, $x = null, $y = null, $width = null, $height = null)
     {
 
         if (Yii::app()->request->isAjaxRequest) {
@@ -359,14 +360,14 @@ class DefaultController extends Controller
             if (isset($config['imageFilters'][$filterName])) {
 
                 $originalImagePath = $dir . "/" . $pictureId . '.' . $imageExt;
-                $tmpOriginalImagePath = $originalImagePath.'.tmp';
+                $tmpOriginalImagePath = $originalImagePath . '.tmp';
 
-                if ($x!==null && $width!==null){
+                if ($x !== null && $width !== null) {
                     $originalPicture = new Imagick($originalImagePath);
-                    copy($originalImagePath,$tmpOriginalImagePath);
+                    copy($originalImagePath, $tmpOriginalImagePath);
 
-                    $originalPicture->cropImage($width,$height,$x,$y);
-                    $originalPicture->writeImage();
+                    $originalPicture->cropImage($width, $height, $x, $y);
+                    $originalPicture->writeImage($originalImagePath);
                     //$originalPicture->writeImage($originalImagePath.'111');
 
                 }
@@ -377,13 +378,12 @@ class DefaultController extends Controller
                 $filters = $filterManager->getFilteredImages();
 
 
-
                 foreach ($filters as $filterName => $filteredImageFile) {
                     $this->addFilteredImage($pictureId, $filterName, '/files/pictureBox/' . $id . '/' . $elementId . '/' . $filteredImageFile, $dir);
                 }
 
-                if ($x!==null && $width!==null){
-                    copy($tmpOriginalImagePath,$originalImagePath);
+                if ($x !== null && $width !== null) {
+                    copy($tmpOriginalImagePath, $originalImagePath);
                     unlink($tmpOriginalImagePath);
                 }
 
@@ -544,7 +544,7 @@ class DefaultController extends Controller
             rename($file1, $file1 . '_tmp');
         } else {
 
-        return;
+            return;
             throw new Exception(__FILE__ . ' функция flipFiles. Отсутствует первый файл для переименования.');
         }
 
