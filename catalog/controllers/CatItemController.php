@@ -212,30 +212,31 @@ class CatItemController extends Controller
         	CatItemsToItems::model()->deleteAll(array("condition"=> 'itemId='.$id));
         }
 
+        $fileListOfDirectory = array ();
+        $synched = false;
+       	if (isset(Yii::app()->modules['parsers'])) {
+	        Yii::import('parsers.models.ParsersLinking');
+	       	$synched = ParsersLinking::model()->with('item')->find(array('condition' => "t.toId='". $model->id . "'"));
 
-       if (isset(Yii::app()->modules['parsers'])) {
-        Yii::import('parsers.models.ParsersLinking');
-       	$synched = ParsersLinking::model()->with('item')->find(array('condition' => "t.toId='". $model->id . "'"));
+	       	
+	       	if (!$synched) {
 
-       	$fileListOfDirectory = array ();
-       	if (!$synched) {
+				$fileListOfDirectory = array();
 
-			$fileListOfDirectory = array();
+				if (is_dir(Yii::app()->basePath.'/jobs')) {
+					foreach(glob(Yii::app()->basePath.'/jobs/*ParserJob.php') as $path) {  
 
-			if (is_dir(Yii::app()->basePath.'/jobs')) {
-				foreach(glob(Yii::app()->basePath.'/jobs/*ParserJob.php') as $path) {  
+			            $className = basename($path);
+			            $className = str_replace('.php', '', $className);
+			            $class = new $className;
 
-		            $className = basename($path);
-		            $className = str_replace('.php', '', $className);
-		            $class = new $className;
+			            array_push ( $fileListOfDirectory, array('name' => $class->getName(), 'className' => $className) );
+			        }
+				}
+		        
+	       	}
 
-		            array_push ( $fileListOfDirectory, array('name' => $class->getName(), 'className' => $className) );
-		        }
-			}
-	        
        	}
-
-       }
 
 		if(isset($_POST['CatItem']))
 		{
