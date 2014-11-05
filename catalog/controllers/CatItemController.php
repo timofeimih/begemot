@@ -210,7 +210,8 @@ class CatItemController extends Controller
             CatItemsToItems::model()->deleteAll(array("condition" => 'itemId=' . $id));
         }
 
-
+        $fileListOfDirectory = array();
+        $synched = false;
         if (isset(Yii::app()->modules['parsers'])) {
 
 
