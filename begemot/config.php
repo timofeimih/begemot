@@ -70,13 +70,7 @@ return array(
             // must be an existing alias
         ),
         'videoGallery',
-        'callback'=>array(
-            'mails'=>array(
-                'sales@buggy-motor.ru',
-                'scott2to@gmail.com',
-                'sladkovsp@yandex.ru'
-            )
-        ),
+        
         'user' => array(
             # encrypting method (php hash function)
             'hash' => 'md5',
@@ -202,14 +196,7 @@ return array(
 
         ), 
         
-        'db' => array(
-            'connectionString' => 'mysql:host=localhost;dbname=timofeimih-gmail_rosvesdehod',
-            'emulatePrepare' => true,
-            'username' => 'rosves',
-            'password' => 'iZSZ2w$-]sUk',
-
-            'charset' => 'utf8',
-        ),
+        
         'errorHandler' => array(
             // use 'site/error' action to display errors
             'errorAction' => 'site/error',
