@@ -113,6 +113,23 @@ class DefaultController extends Controller {
                     PictureBox::crPhpArr($data, $fullDir . '/data.php');
                 }
 
+                $favDataFile = $fullDir.'/favData.php';
+
+                if (file_exists($favDataFile)){
+                    $favData = require($favDataFile);
+                    if (is_array($favData)) {
+
+                        $favKeys = array_keys($favData);
+
+                        $newFavData = array();
+
+                        foreach ($favKeys as $favKey){
+                            $newFavData[$favKey] = $data['images'][$favKey];
+                        }
+                        PictureBox::crPhpArr($newFavData, $favDataFile);
+                    }
+                }
+
                 if ($queue->activeTaskCompleted()){
                     $progress = $queue->getProgress();
                 } else{
