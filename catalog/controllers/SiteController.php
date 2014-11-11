@@ -132,8 +132,7 @@ class SiteController extends Controller {
             'item'=>array(
                 'condition'=>'published=1'
             )
-        );
-
+        ); 
         $criteria->group = 'item.id';
         $criteria->distinct = true;
         $criteria->order = 'item.top DESC, t.order ASC';
@@ -141,6 +140,11 @@ class SiteController extends Controller {
         if (isset($_GET['sort'])) {
            $sort = ($_GET['sort'] == 'asc') ? 'asc' : 'desc';
            $criteria->order = 'item.price '.$sort;
+        }
+
+        if (isset($_GET['sortByCustomField'])) {
+            $sort = ($_GET['sort'] == 'asc') ? 'asc' : 'desc';
+           $criteria->order = 'item.' . $_GET['sortByCustomField'] . ' '.$sort;
         }
             
         if ( isset($_GET['priceMin']) && isset($_GET['priceMax']) ) {

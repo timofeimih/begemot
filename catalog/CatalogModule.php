@@ -21,6 +21,7 @@ class CatalogModule extends CWebModule
 
     public function init()
     {
+
         // this method is called when the module is being created
         // you may place code here to customize the module or the application
 
@@ -31,7 +32,30 @@ class CatalogModule extends CWebModule
             'reviews.models.*'
         ));
 
+        $this->registerScripts();
+    
+    }
 
+    /**
+     * Registers the necessary CSS files.
+     */
+    private function registerScripts()
+    {
+            $assetsURL=$this->getAssetsURL();
+            Yii::app()->clientScript->registerCssFile($assetsURL.'/css/styles.css');
+    }
+
+    /**
+    * Publishes the module assets path.
+    * @return string the base URL that contains all published asset files.
+    */
+    private function getAssetsURL()
+    {
+            $assetsPath=Yii::getPathOfAlias('catalog.assets');
+
+            // Republish the assets if debug mode is enabled.
+
+            return Yii::app()->assetManager->publish($assetsPath);
     }
 
     public function beforeControllerAction($controller, $action)

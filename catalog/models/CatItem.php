@@ -60,7 +60,7 @@ class CatItem extends ContentKitModel
             array('name, name_t, article', 'length', 'max' => 100),
             array('seo_title', 'length', 'max' => 255),
             // The following rule is used by search().
-            array('id, name, name_t, status, data, price, text, name, delivery_date, quantity, authorId', 'safe'),
+            array('id, name, name_t, status, data, price, text, name, delivery_date, quantity', 'safe'),
             // Please remove those attributes that should not be searched.
             array('id, name, name_t, status, data', 'safe', 'on' => 'search'),
         );
@@ -77,6 +77,13 @@ class CatItem extends ContentKitModel
             'category' => array(self::BELONGS_TO, 'CatCategory', 'catId'),
             'reviews' => array(self::HAS_MANY, 'Reviews', 'pid', 'condition'=>'status=1')
         );
+    }
+
+    public function getCategoriesItemIn()
+    {
+        $categories = CatItemsToCat::model()->with('cat')->findAll(array("condition" => '`t`.`itemId`=' . $this->id .''));
+
+        return $categories;
     }
 
     public function getOption()
@@ -97,13 +104,12 @@ class CatItem extends ContentKitModel
     {
         return array(
             'id' => 'ID',
-            'name' => 'Наименование',
-            'name_t' => 'Наименование транслитом',
-            'status' => 'Статус',
-            'data' => 'Дата',
+            'name' => 'Name',
+            'name_t' => 'Name T',
+            'status' => 'Status',
+            'data' => 'Data',
             'delivery_date' => 'Дата поставки:',
             'quantity' => 'Количество',
-            'authorId'=>'Автор'
         );
     }
 
@@ -126,11 +132,12 @@ class CatItem extends ContentKitModel
 
                 $paramName = $itemRow->name_t;
                 if (isset($_REQUEST['CatItem'][$itemRow->name_t])){
-                    if (is_array($_REQUEST['CatItem'][$itemRow->name_t])) {
-                        $this->$paramName = implode(',', $_REQUEST['CatItem'][$itemRow->name_t]);
-                    } else $this->$paramName = $_REQUEST['CatItem'][$itemRow->name_t];
-                }
+                  if (is_array($_REQUEST['CatItem'][$itemRow->name_t])) {
+                    $this->$paramName = implode(',', $_REQUEST['CatItem'][$itemRow->name_t]);
 
+                  } else $this->$paramName = $_REQUEST['CatItem'][$itemRow->name_t];
+                }
+                    
 
             }
         }
@@ -235,10 +242,6 @@ class CatItem extends ContentKitModel
 
     foreach ($items as $item) {
       $itemModel =  $this->findByAttributes(array('id' => $item->itemId, 'published' => 1));
-
-      if (is_null($itemModel)) {
-          return 0;
-      }
 
       if($returnPrice < $itemModel->price) $returnPrice = $itemModel->price;
     }

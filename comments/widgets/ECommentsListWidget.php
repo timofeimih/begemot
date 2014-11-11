@@ -44,11 +44,11 @@ class ECommentsListWidget extends ECommentsBaseWidget
             }
         }
         
-	public function run()
-	{
+    public function run()
+    {
         $newComment = $this->createNewComment();
         $comments = $newComment->getCommentsTree();
-        $this->render('ECommentsListWidget', array(
+        $this->render('webroot.themes.' . Yii::app()->theme->name . '.ECommentsListWidget', array(
             'comments' => $comments,
             'newComment' => $newComment,
         ));
@@ -62,6 +62,6 @@ class ECommentsListWidget extends ECommentsBaseWidget
             ));
             $js = "jQuery('#{$this->id}').commentsList($options);";
             Yii::app()->getClientScript()->registerScript(__CLASS__.'#'.$this->id, $js,3);
-	}
+    }
 }
 ?>

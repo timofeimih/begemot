@@ -1,15 +1,13 @@
 <?php
-
+include_once Yii::app()->basePath . '/modules/user/models/User.php';
 class WebUser extends CWebUser
 {
-    public function getTableAlias(){
-        return Yii::app()->getModule->tableUsers;
-    }
+
     public function getRole()
     {
         return $this->getState('__role');
     }
-
+    
     public function getId()
     {
         return $this->getState('__id') ? $this->getState('__id') : 0;
@@ -37,66 +35,49 @@ class WebUser extends CWebUser
 
     }
 
-
     public function updateSession() {
-        $user = $this->user($this->id);
-
+        $user = Yii::app()->getModule('user')->user($this->id);
         $userAttributes = CMap::mergeArray(array(
-            'email' => $user->email,
-            'username' => $user->username,
-            'create_at' => $user->create_at,
-            'lastvisit_at' => $user->lastvisit_at,
-        ), $user->profile->getAttributes());
-        foreach ($userAttributes as $attrName => $attrValue) {
-            $this->setState($attrName, $attrValue);
+                                                'email'=>$user->email,
+                                                'username'=>$user->username,
+                                                'create_at'=>$user->create_at,
+                                                'lastvisit_at'=>$user->lastvisit_at,
+                                           ),$user->profile->getAttributes());
+        foreach ($userAttributes as $attrName=>$attrValue) {
+            $this->setState($attrName,$attrValue);
         }
     }
 
-
     public function model($id=0) {
-        return User::findByPk($id);
-
+        return Yii::app()->getModule('user')->user($id);
     }
 
-    public function user($id = 0)
-    {
+    public function user($id=0) {
         return $this->model($id);
     }
 
-    public function getUserByName($username)
-    {
+    public function getUserByName($username) {
         return Yii::app()->getModule('user')->getUserByName($username);
     }
 
-    public function getAdmins()
-    {
+    public function getAdmins() {
         return Yii::app()->getModule('user')->getAdmins();
     }
 
-    public function isAdmin()
-    {
+    public function isAdmin() {
         return Yii::app()->getModule('user')->isAdmin();
     }
 
-    public function canDo($authItems = '',$params=null)
-    {
+    public function canDo($authItem=''){
+        if (!Yii::app()->user->isAdmin()){
 
-        if (!is_array($authItems)) {
-            $authItems = array($authItems);
-        }
-
-
-        if (!Yii::app()->user->isAdmin()) {
-
-            foreach ($authItems as $authItem) {
-                if (Yii::app()->authManager->checkAccess($authItem, Yii::app()->user->id,$params)) {
-                    return true;
-                }
+            if (Yii::app()->authManager->checkAccess($authItem,Yii::app()->user->id)){
+                return true;
+            } else {
+                return false;
             }
 
-            return false;
-
-        } else {
+        } else{
 
             return true;
 
