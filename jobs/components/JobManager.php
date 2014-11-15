@@ -1,4 +1,6 @@
 <?php 
+
+
 class JobManager extends CApplicationComponent{
 
 	private $dir = '';
@@ -142,13 +144,15 @@ class JobManager extends CApplicationComponent{
 
 	public function removeTask($filename)
 	{
-		$all = (array) $this->getListCronJob();
+		$all = $this->getListCronJob();
 
-		if ($all[$filename]) {
+		if (isset($all[$filename])) {
 			unset($all[$filename]);
 
 	        $this->saveConfigFile($all);
 		}
+
+		print_r($all);
 
     }
 
@@ -175,11 +179,8 @@ class JobManager extends CApplicationComponent{
 
 	private function saveConfigFile($arrayToWrite)
 	{
-		$tempFile = fopen($this->dir . 'cronConfig.php', 'w');
 
-        fwrite($tempFile, json_encode($arrayToWrite)); 
-
-        fclose($tempFile); 
+		PictureBox::crPhpArr($arrayToWrite, $this->dir . 'cronConfig.php');
 	}
 
 	public function getListCronJob()
@@ -189,16 +190,14 @@ class JobManager extends CApplicationComponent{
 
 		$files  = scandir($this->dir);
 
-		if (array_search('cronConfig.php', $files)) {
-		    $json = json_decode(file_get_contents($this->dir . 'cronConfig.php'));
-		    
-		    $array = $json;
 
-		    
-		}
+		if (array_search('cronConfig.php', $files)) {
+
+		    $array = require($this->dir . 'cronConfig.php');	    
+		} 
 		
 
-		return (array) $array;
+		return $array;
 	}
 
 	public function changeTimeOfLastExecuted($name, $time = 0)
@@ -212,9 +211,8 @@ class JobManager extends CApplicationComponent{
 		
 
 		if (array_search('time.txt', $files)) {
-			$tempFile = fopen($directory . 'time.txt', 'c');
 
-		    $json = json_decode(file_get_contents($directory . 'time.txt'));
+		    $json = require($directory . 'time.txt');
 		    //print_r($files);
 		    $array = (array) $json;
 
@@ -223,11 +221,10 @@ class JobManager extends CApplicationComponent{
 			    	$array[$name] = $time;
 			    }
 
-			    fwrite($tempFile, json_encode($array)); 
+
+			    PictureBox::crPhpArr($array, $tempFile);
 		    }
 		    
-
-		    fclose($tempFile); 
 		}
 		
 		return true;

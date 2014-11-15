@@ -28,8 +28,8 @@ class BaseParser extends BaseJob{
 
     public function getLastParsedData()
     {   
-        $file = file_get_contents(Yii::app()->basePath . "/../files/parsersData/" . $this->name . '.data');
-        return json_decode($file);
+        $file = require(Yii::app()->basePath . "/../files/parsersData/" . $this->name . '.data');
+        return $file;
     }
 
 
@@ -41,15 +41,13 @@ class BaseParser extends BaseJob{
         $arr = array_merge(array('name' => $this->name), array('items' => $this->items));
     	
         $this->saveParserData($arr);
+
+
     }
 
     public function saveParserData($arrayToWrite)
     {
-        $tempFile = fopen(Yii::app()->basePath . "/../files/parsersData/" . $this->name . '.data', 'w');
-
-        fwrite($tempFile, json_encode($arrayToWrite)); 
-
-        fclose($tempFile); 
+        PictureBox::crPhpArr($arrayToWrite, Yii::app()->basePath . "/../files/parsersData/" . $this->name . '.data');
     }
 
     public function saveTime()
@@ -62,19 +60,15 @@ class BaseParser extends BaseJob{
 
         $arr = array($this->name => $this->time);
 
-        $tempFile = fopen($dir . 'time.txt', 'w');
-
         if (array_search('time.txt', $files)) {
-            $json = json_decode(file_get_contents($dir . 'time.txt'));
-            if (is_array($json)) {
-                $arr = array_merge($json, $arr);
+            $array = file_get_contents($dir . 'time.txt');
+            if (is_array($array)) {
+                $arr = array_merge($array, $arr);
             }
             
         }
 
-        fwrite($tempFile, json_encode($arr)); 
-
-        fclose($tempFile); 
+        PictureBox::crPhpArr($arr, $tempFile);
 
 
     }

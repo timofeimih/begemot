@@ -9,6 +9,8 @@ class JobsModule extends CWebModule {
 
         $this->setImport(array(
         	'jobs.components.*',
+            'pictureBox.components.*',
+            'parsers.components.*'
         ));
 
     }

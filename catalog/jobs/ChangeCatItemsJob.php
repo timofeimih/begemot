@@ -27,16 +27,15 @@ class ChangeCatItemsJob extends BaseJob{
 		foreach(glob(Yii::app()->basePath . "/../files/parsersData/*.data") as $file) {	
 			$websiteName = Yii::app()->params['adminEmail'];
 
-		    $json = file_get_contents($file); 
-		    $json = json_decode($json);
+		    $file = require($file);
 
-		    $filename = $json->name;
+		    $filename = $file['name'];
 
 		    ParsersStock::model()->deleteAll(array('condition' => "`filename`='" . $filename . "'"));
 
-		    $length = count($json->items);
+		    $length = count($file['items']);
 
-		    foreach ($json->items as $itemParsed) {
+		    foreach ($file['items'] as $itemParsed) {
 		      $new = new ParsersStock;
 		      $itemParsed = (array)$itemParsed;
 		      $itemParsed['filename'] = $filename;
