@@ -12,6 +12,7 @@ class CatItemsToCat extends CActiveRecord
 {
 
    public $item_name;
+   public $maxprice;
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @param string $className active record class name.
