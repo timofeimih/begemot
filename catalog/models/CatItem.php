@@ -79,6 +79,13 @@ class CatItem extends ContentKitModel
         );
     }
 
+    public function getCategoriesItemIn()
+    {
+        $categories = CatItemsToCat::model()->with('cat')->findAll(array("condition" => '`t`.`itemId`=' . $this->id .''));
+
+        return $categories;
+    }
+
     public function getOption()
     {
         $ids = CatItemsToItems::model()->findAll(array("condition" => 'itemId=' . $this->id, 'order' => 'id ASC'));
@@ -218,6 +225,28 @@ class CatItem extends ContentKitModel
       }
 
   }       
+
+  //get videos array
+  public function getVideos(){
+    
+      $imagesDataPath = Yii::getPathOfAlias('webroot').'/files/pictureBox/catalogItemVideo/'.$this->id;
+      $favFilePath = $imagesDataPath.'/data.php'; 
+      $images = array();
+     
+      if (file_exists($favFilePath)){
+          
+           $images = require($favFilePath);
+           if (isset($images['images']))
+              return $images['images'];      
+           else
+               return array();
+      } else {
+  
+          
+           return array();
+      }
+
+  }       
   
   public function getItemWithMaximalPrice($catId)
   {
@@ -279,6 +308,19 @@ class CatItem extends ContentKitModel
           else
               return '#';
       }
+  }
+
+  public function searchInModel($queryWord)
+  {
+    $queryWord = addcslashes($queryWord, '%_'); // escape LIKE's special characters
+    $criteria = new CDbCriteria( array(
+        'condition' => "name LIKE :match",
+        'params'    => array(':match' => "%$queryWord%") 
+    ) );
+
+    $items = CatItem::model()->findAll( $criteria ); 
+
+    return $items;
   }
 
   
