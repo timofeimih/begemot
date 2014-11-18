@@ -90,6 +90,12 @@ class CatItem extends ContentKitModel
         return CatItem::model()->findAllByPk($arrayOfIds);
     }
 
+    public function isPublished()
+    {
+      $checked = ($this->published) ? "checked" : "";
+      echo "<input type='checkbox' {$checked} class='togglePublished' data-id= '{$this->id}'>";
+    }
+
     /**
      * @return array customized attribute labels (name=>label)
      */

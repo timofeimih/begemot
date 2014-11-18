@@ -30,7 +30,7 @@ class CatItemController extends Controller
         return array(
 
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
-                'actions' => array('delete', 'create', 'update', 'index', 'view', 'deleteItemToCat', 'tidyItemText', 'getItemsFromCategory', 'options', 'test'),
+                'actions' => array('delete', 'create', 'update', 'togglePublished','index', 'view', 'deleteItemToCat', 'tidyItemText', 'getItemsFromCategory', 'options', 'test'),
                 'expression' => 'Yii::app()->user->canDo("Catalog")'
             ),
             array('deny',  // deny all users
@@ -326,6 +326,19 @@ class CatItemController extends Controller
 
         ));
 
+    }
+
+    public function actionTogglePublished($id)
+    {
+        $model = CatItem::model()->findByPk($id);
+
+        $model->published = ($model->published) ? 0 : 1;
+
+        if($model->save()){
+          echo "saved";
+        } else{
+          throw new Exception("Error Processing Request", 1);
+        }
     }
 
 
