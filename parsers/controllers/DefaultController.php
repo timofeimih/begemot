@@ -140,9 +140,11 @@ class DefaultController extends Controller
         $json = $class->getLastParsedData();
 
 
-        ParsersStock::model()->deleteAll(array('condition' => "`filename`='" . $className . "'"));
+        ParsersStock::model()->deleteAll(array('condition' => "`filename`='" . $class->getName() . "'"));
 
         $length = count($json->items);
+
+        
 
         foreach ($json->items as $item) {
             $new = new ParsersStock;
@@ -166,6 +168,7 @@ class DefaultController extends Controller
         $tempfile = file_get_contents(Yii::app()->basePath.'/../files/parsersData/time.txt');
         $timeArray = json_decode($tempfile);
         $timeArray = (array)$timeArray;
+
 
         echo date("d.m.Y H:i", $timeArray[$class->getName()]);
 
