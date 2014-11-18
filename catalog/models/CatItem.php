@@ -314,7 +314,7 @@ class CatItem extends ContentKitModel
   {
     $queryWord = addcslashes($queryWord, '%_'); // escape LIKE's special characters
     $criteria = new CDbCriteria( array(
-        'condition' => "name LIKE :match",
+        'condition' => "name LIKE :match AND published = 1",
         'params'    => array(':match' => "%$queryWord%") 
     ) );
 
