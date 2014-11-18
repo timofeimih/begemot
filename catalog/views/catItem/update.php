@@ -480,7 +480,7 @@ endif;
 
 Алгоритм работы таков. После добавления изображения, надо указывать в парамметрах "video_url" урл для видео и нажимать на сохранить зоголовок каждый раз. Парамметр видео урл находится на месте "alt", то есть если сохранил заголовок, то там и должно быть урл видео.
 <br/>
-Сама ссылка на видео должна быть такого содержания http://www.youtube.com/embed/Ghnz9pLsAcA?enablejsapi=1&wmode=opaque (если требуется что бы видео было на весь экран)
+Сама ссылка lолжна содержать только сам код ролика(Например: Ghnz9pLsAcA)
 <?php 
         
     $picturesConfig = array();
@@ -494,7 +494,7 @@ endif;
             'id' => 'catalogItemVideo',
             'elementId' => $model->id,
             'config' => $picturesConfig,
-                )
+          )
         );
     } else{
         Yii::app()->user->setFlash('error','Отсутствует конфигурационный файл:'.$configFile);
@@ -505,8 +505,13 @@ endif;
 
 <script>
   $(function(){
-    var html = $("#video").find("FORM").html().replace('alt:', 'video_url:');
-    $("#video").find("FORM").html(html);
+    var html = $("#video").find("FORM").html();
+
+    if(html != undefined){
+      html = html.replace('alt:', 'video_url:');
+      $("#video").find("FORM").html(html);
+    }
+    
   })
 </script>
 <?php } ?>

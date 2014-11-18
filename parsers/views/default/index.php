@@ -42,7 +42,6 @@ $this->menu = array(
 		var button = $(this);
 		var params = {'CatItem': {'name': $(this).attr("name"), 'price': $(this).attr("price"), 'text': $(this).attr("text")}, 'returnId': true};
 
-
 		$.get('/parsers/default/parseNew/className/' + $(this).attr("data-file") + '/', function(data){
 			if (data != "") {
 				button.val("Спарсенно");
