@@ -51,7 +51,7 @@ class SiteController extends Controller
             'tag_id'=>null,
         ));
     }
-
+    
     public function actionTagIndex($id=null) {
 
         $this->layout = PostModule::$postLayout;
@@ -84,7 +84,10 @@ class SiteController extends Controller
 
         $pages = new CPagination($count);
         // элементов на страницу
-        $pages->pageSize = 10;
+        if ($this->module->postPerPage;) {
+            $pages->pageSize = 10;
+        }
+        
         $pages->applyLimit($criteria);
 
         $models = Posts::model()->published()->findAll($criteria);
