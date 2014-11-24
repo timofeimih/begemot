@@ -75,8 +75,30 @@ class CatItem extends ContentKitModel
         return array(
             'name' => array(self::BELONGS_TO, 'CatItemsToCat', 'itemId'),
             'category' => array(self::BELONGS_TO, 'CatCategory', 'catId'),
-            'reviews' => array(self::HAS_MANY, 'Reviews', 'pid', 'condition'=>'status=1')
+            'reviews' => array(self::HAS_MANY, 'Reviews', 'pid', 'condition' => 'status=1')
         );
+    }
+
+    public function getVideos()
+    {
+
+        $imagesDataPath = Yii::getPathOfAlias('webroot') . '/files/pictureBox/catalogItemVideo/' . $this->id;
+        $favFilePath = $imagesDataPath . '/data.php';
+        $images = array();
+
+        if (file_exists($favFilePath)) {
+
+            $images = require($favFilePath);
+            if (isset($images['images']))
+                return $images['images'];
+            else
+                return array();
+        } else {
+
+
+            return array();
+        }
+
     }
 
     public function getOption()
@@ -92,8 +114,8 @@ class CatItem extends ContentKitModel
 
     public function isPublished()
     {
-      $checked = ($this->published) ? "checked" : "";
-      echo "<input type='checkbox' {$checked} class='togglePublished' data-id= '{$this->id}'>";
+        $checked = ($this->published) ? "checked" : "";
+        echo "<input type='checkbox' {$checked} class='togglePublished' data-id= '{$this->id}'>";
     }
 
     /**
@@ -109,7 +131,7 @@ class CatItem extends ContentKitModel
             'data' => 'Дата',
             'delivery_date' => 'Дата поставки:',
             'quantity' => 'Количество',
-            'authorId'=>'Автор'
+            'authorId' => 'Автор'
         );
     }
 
@@ -131,7 +153,7 @@ class CatItem extends ContentKitModel
             foreach ($itemAdditionalRows as $itemRow) {
 
                 $paramName = $itemRow->name_t;
-                if (isset($_REQUEST['CatItem'][$itemRow->name_t])){
+                if (isset($_REQUEST['CatItem'][$itemRow->name_t])) {
                     if (is_array($_REQUEST['CatItem'][$itemRow->name_t])) {
                         $this->$paramName = implode(',', $_REQUEST['CatItem'][$itemRow->name_t]);
                     } else $this->$paramName = $_REQUEST['CatItem'][$itemRow->name_t];
@@ -203,97 +225,98 @@ class CatItem extends ContentKitModel
     }
 
 
-  //get picture list array
-  public function getItemPictures(){
-    
-      $imagesDataPath = Yii::getPathOfAlias('webroot').'/files/pictureBox/catalogItem/'.$this->id;
-      $favFilePath = $imagesDataPath.'/data.php'; 
-      $images = array();
-     
-      if (file_exists($favFilePath)){
-          
-           $images = require($favFilePath);
-           if (isset($images['images']))
-              return $images['images'];      
-           else
-               return array();
-      } else {
-  
-          
-           return array();
-      }
+    //get picture list array
+    public function getItemPictures()
+    {
 
-  }       
-  
-  public function getItemWithMaximalPrice($catId)
-  {
+        $imagesDataPath = Yii::getPathOfAlias('webroot') . '/files/pictureBox/catalogItem/' . $this->id;
+        $favFilePath = $imagesDataPath . '/data.php';
+        $images = array();
 
-    $criteria = new CDbCriteria;
-    $criteria->select='max(i.price) as maxprice';
-    $criteria->with = array('item' => array('alias' => 'i'));
-    $criteria->condition = 't.catId = :catId AND i.published = :published';
-    $criteria->params = array(':catId' => $catId, ':published' => 1);
-    $price = CatItemsToCat::model()->find($criteria);
+        if (file_exists($favFilePath)) {
 
-    if(isset($price->maxprice)) $returnPrice = $price->maxprice;
-
-    return (int) $returnPrice;
-  }
-
-  //get path of one main picture, wich take from fav or common images list
-  public function getItemMainPicture($tag = null)
-  {
+            $images = require($favFilePath);
+            if (isset($images['images']))
+                return $images['images'];
+            else
+                return array();
+        } else {
 
 
-      $imagesDataPath = Yii::getPathOfAlias('webroot') . '/files/pictureBox/catalogItem/' . $this->id;
-      $favFilePath = $imagesDataPath . '/favData.php';
+            return array();
+        }
 
-      $images = array();
-      $itemImage = '';
+    }
 
-      $images = $this->getItemFavPictures();
-      if (count($images) != 0) {
-          $imagesArray = array_values($images);
-          $itemImage = $imagesArray[0];
-      }
-      if (count($images) == 0) {
+    public function getItemWithMaximalPrice($catId)
+    {
 
-          $images = $this->getItemPictures();
-          if (count($images) > 0) {
-              $imagesArray = array_values($images);
-              $itemImage = $imagesArray[0];
-          } else {
-              return '#';
-          }
+        $criteria = new CDbCriteria;
+        $criteria->select = 'max(i.price) as maxprice';
+        $criteria->with = array('item' => array('alias' => 'i'));
+        $criteria->condition = 't.catId = :catId AND i.published = :published';
+        $criteria->params = array(':catId' => $catId, ':published' => 1);
+        $price = CatItemsToCat::model()->find($criteria);
 
-      }
+        if (isset($price->maxprice)) $returnPrice = $price->maxprice;
 
-      if (is_null($tag)) {
-          return array_shift($itemImage);
-      } else {
-          if (isset($itemImage[$tag]))
-              return $itemImage[$tag];
-          else
-              return '#';
-      }
-  }
+        return (int)$returnPrice;
+    }
 
-  
-  public function combinedWithParser()
-  {
+    //get path of one main picture, wich take from fav or common images list
+    public function getItemMainPicture($tag = null)
+    {
 
-      if (isset(Yii::app()->modules['parsers'])) {
-        Yii::import('parsers.models.ParsersLinking');
-        $model = ParsersLinking::model()->find("`toId`='" . $this->id . "'");
 
-        if ($model) {
-            return '<span class="icon icon-big icon-random"></span>';
-        } else return "Нет";
+        $imagesDataPath = Yii::getPathOfAlias('webroot') . '/files/pictureBox/catalogItem/' . $this->id;
+        $favFilePath = $imagesDataPath . '/favData.php';
 
-      }
+        $images = array();
+        $itemImage = '';
 
-      return null;
-  }
+        $images = $this->getItemFavPictures();
+        if (count($images) != 0) {
+            $imagesArray = array_values($images);
+            $itemImage = $imagesArray[0];
+        }
+        if (count($images) == 0) {
+
+            $images = $this->getItemPictures();
+            if (count($images) > 0) {
+                $imagesArray = array_values($images);
+                $itemImage = $imagesArray[0];
+            } else {
+                return '#';
+            }
+
+        }
+
+        if (is_null($tag)) {
+            return array_shift($itemImage);
+        } else {
+            if (isset($itemImage[$tag]))
+                return $itemImage[$tag];
+            else
+                return '#';
+        }
+    }
+
+
+    public function combinedWithParser()
+    {
+
+        if (isset(Yii::app()->modules['parsers'])) {
+            Yii::import('parsers.models.ParsersLinking');
+            $model = ParsersLinking::model()->find("`toId`='" . $this->id . "'");
+
+            if ($model) {
+                return '<span class="icon icon-big icon-random"></span>';
+            } else return "Нет";
+
+        }
+
+        return null;
+    }
 
 }
 
