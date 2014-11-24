@@ -52,6 +52,12 @@ $this->menu = $menu;
         ),
 		'name',    
 
+        array(
+            'header' => 'Переключатель публикации',
+            'type'=>'raw',
+            'value'=>'$data->isPublished()',
+        ),
+
 		array(
 			'class'=>'bootstrap.widgets.TbButtonColumn',
             'viewButtonUrl'=>'Yii::app()->urlManager->createUrl(\'catalog/site/itemView\',array(\'title\'=>\'tmp_name\',\'catId\'=>$data->catId,\'itemName\'=>$data->name_t,\'item\'=>$data->id,))',
@@ -64,3 +70,17 @@ $this->menu = $menu;
 
 
 ?>
+
+<script>
+    $(function(){
+        $(document).on("click", ".togglePublished", function(){
+            var button = $(this);
+            $.get('/catalog/catItem/togglePublished/id/' + $(this).attr('data-id'), function(data){
+                button.before("<span class='toDelete'>Сохранено<br/></span>");
+                setTimeout(function() { button.parent().find(".toDelete").remove() }, 500);
+                
+            })
+        })
+    })
+</script>
+
