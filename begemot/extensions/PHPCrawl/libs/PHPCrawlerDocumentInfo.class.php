@@ -140,6 +140,14 @@ class PHPCrawlerDocumentInfo
    */
   public $bytes_received = 0;  
   
+   /**
+   * The number of bytes the crawler received of the header of the document.
+   *
+   * @var int Received bytes
+   * @section 2 Content-related information
+   */
+  public $header_bytes_received = 0; 
+  
   /**
    * The content-type of the page or file, e.g. "text/html" or "image/gif".
    *
@@ -293,23 +301,61 @@ class PHPCrawlerDocumentInfo
   public $traffic_limit_reached = false;
   
   /**
-   * The time it took to receive the document.
+   * The approximated data-transferrate for this document.
    *
-   * @var float The time seconds
-   * @section 10 Benchmarks
-   */
-  public $data_transfer_time = null;
-  
-  /**
-   * The average data-transferrate for this document.
+   * The data transfer rate is calulated by the data-transfer-time and the number of bytes that were received
+   * alltogether. The server-connect-time and response-time are NOT included, so this is an indicator for the
+   * server (or local) bandwidth.
    *
-   * @var float The rate in bytes per seconds.
+   * This is an calculated value and gets more accurate with larger received documents.
+   * It may not be avaliable for very small documents.
+   *
+   * @var float The rate in bytes per seconds or NULL if the rate couldn't be determinated
    * @section 10 Benchmarks
    */
   public $data_transfer_rate = null;
   
   /**
-   * Some internal benchmak-results as array.
+   * The time it took to connect to the server
+   *
+   * @var float  The time in seconds and milliseconds or NULL if connection could not be established
+   * @section 10 Benchmarks
+   */
+  public $server_connect_time = null;
+  
+  /**
+   * The server response time
+   *
+   * The response-time is the time the server needs to respond to a HTTP-request-header.
+   *
+   * @var float Time in seconds and milliseconds or NULL if the server didn't respond
+   * @section 10 Benchmarks
+   */
+  public $server_response_time = null;
+  
+  /**
+   * The approximated time it took to receive the data of the document.
+   *
+   * The server-connect-time and response-time are NOT included.
+   * It may not be avaliable for very small documents.
+   *
+   * @var float The time in seconds and milliseconds or NULL if not avaliable
+   * @section 10 Benchmarks
+   */
+  public $data_transfer_time = null;
+  
+  /**
+   * Number of unbuffered bytes received
+   *
+   * It may not be avaliable for very small documents.
+   *
+   * @var int The time in seconds and milliseconds or NULL if not avaliable
+   * @section 10 Benchmarks
+   */
+  public $unbuffered_bytes_read = null;
+  
+  /**
+   * Some internal benchmak-results as array (debugging).
    *
    * @var array Array containing some interlnal benchmark-results for receiving and processing this document.
    *            The keys are the identifiers, the values are the benchmark-times.

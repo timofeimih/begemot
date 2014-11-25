@@ -156,5 +156,14 @@ class PHPCrawlerSQLiteCookieCache extends PHPCrawlerCookieCacheBase
     
     //PHPCrawlerBenchmark::stop("Connecting to SQLite-cache-db");
   }
+  
+  /**
+   * Cleans up the cache after it is not needed anymore.
+   */
+  public function cleanup()
+  {
+    $this->PDO = null; // Has to be done, otherwise sqlite-file is locked on Windows-OS
+    unlink($this->sqlite_db_file);
+  }
 }
 ?>

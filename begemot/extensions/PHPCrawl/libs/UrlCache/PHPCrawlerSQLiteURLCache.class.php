@@ -41,6 +41,7 @@ class PHPCrawlerSQLiteURLCache extends PHPCrawlerURLCacheBase
   {
     $Result = $this->PDO->query("SELECT count(id) AS sum FROM urls WHERE processed = 0;");
     $row = $Result->fetch(PDO::FETCH_ASSOC);
+    $Result->closeCursor();
     return $row["sum"];
   }
   
@@ -143,6 +144,13 @@ class PHPCrawlerSQLiteURLCache extends PHPCrawlerURLCacheBase
       if ($urls[$x] != null)
       {
         $this->addURL($urls[$x]);
+      }
+      
+      // Commit after 1000 URLs (reduces memory-usage)
+      if ($x%1000 == 0 && $x > 0)
+      {
+        $this->PDO->exec("COMMIT;");
+        $this->PDO->exec("BEGIN EXCLUSIVE TRANSACTION;");
       }
     }
     
@@ -280,6 +288,10 @@ class PHPCrawlerSQLiteURLCache extends PHPCrawlerURLCacheBase
    */
   public function cleanup()
   {
+    // Has to be done, otherwise sqlite-file is locked on Windows-OS
+    $this->PDO = null;
+    $this->PreparedInsertStatement = null;
+    
     unlink($this->sqlite_db_file);
   }
 }

@@ -50,6 +50,7 @@ class PHPCrawlerBenchmark
    * Stops the benchmark-clock for the given benchmark.
    *
    * @param string  The benchmark name/identifier.
+   * @return int The time elapsed since the last start() for this identifier
    */
   public static function stop($identifier)
   {
@@ -59,7 +60,11 @@ class PHPCrawlerBenchmark
 
       if (isset(self::$benchmark_results[$identifier])) self::$benchmark_results[$identifier] += $elapsed_time;
       else self::$benchmark_results[$identifier] = $elapsed_time;
+      
+      return $elapsed_time;
     }
+    
+    return null;
   }
   
   /**
@@ -146,7 +151,6 @@ class PHPCrawlerBenchmark
    */
   public static function getmicrotime()
   { 
-    list($usec, $sec) = explode(" ",microtime());
-    return ((float)$usec + (float)$sec); 
+    return microtime(true);
   }
 }

@@ -13,9 +13,19 @@ class PHPCrawlerDocumentInfoQueue
   
   protected $prepared_statements_created = false;
   
+  /**
+   * Prepared statement for inserting PHPCrawlerDocumentInfo-objects
+   */
+  protected $preparedInsertStatement;
+  
+  /**
+   * Prepared statement for selecting/fetching PHPCrawlerDocumentInfo-objects
+   */
+  protected $preparedSelectStatement;
+  
   protected $working_directory = null;
   
-  protected $queue_max_size = 20;
+  protected $queue_max_size = 50;
   
   /**
    * Initiates a PHPCrawlerDocumentInfoQueue
@@ -50,7 +60,7 @@ class PHPCrawlerDocumentInfoQueue
     // If queue is full -> wait a little
     while ($this->getDocumentInfoCount() >= $this->queue_max_size)
     {
-      sleep(0.5);
+      usleep(500000);
     }
     
     $this->createPreparedStatements();
@@ -58,9 +68,9 @@ class PHPCrawlerDocumentInfoQueue
     $ser = serialize($DocInfo);
     
     $this->PDO->exec("BEGIN EXCLUSIVE TRANSACTION");
-    $this->prepared_insert_statement->bindParam(1, $ser, PDO::PARAM_LOB);
-    $this->prepared_insert_statement->execute();
-    $this->prepared_select_statement->closeCursor();
+    $this->preparedInsertStatement->bindParam(1, $ser, PDO::PARAM_LOB);
+    $this->preparedInsertStatement->execute();
+    $this->preparedSelectStatement->closeCursor();
     $this->PDO->exec("COMMIT");
   }
   
@@ -71,11 +81,11 @@ class PHPCrawlerDocumentInfoQueue
   { 
     $this->createPreparedStatements();
     
-    $this->prepared_select_statement->execute();
-    $this->prepared_select_statement->bindColumn("document_info", $doc_info, PDO::PARAM_LOB);
-    $this->prepared_select_statement->bindColumn("id", $id);
-    $row = $this->prepared_select_statement->fetch(PDO::FETCH_BOUND);
-    $this->prepared_select_statement->closeCursor();
+    $this->preparedSelectStatement->execute();
+    $this->preparedSelectStatement->bindColumn("document_info", $doc_info, PDO::PARAM_LOB);
+    $this->preparedSelectStatement->bindColumn("id", $id);
+    $row = $this->preparedSelectStatement->fetch(PDO::FETCH_BOUND);
+    $this->preparedSelectStatement->closeCursor();
     
     if ($id == null) 
     {
@@ -89,12 +99,15 @@ class PHPCrawlerDocumentInfoQueue
     return $DocInfo;
   }
   
+  /**
+   * Creates all prepared statemenst
+   */
   protected function createPreparedStatements()
   {
     if ($this->prepared_statements_created == false)
     {
-      $this->prepared_insert_statement = $this->PDO->prepare("INSERT INTO document_infos (document_info) VALUES (?);");
-      $this->prepared_select_statement = $this->PDO->prepare("SELECT * FROM document_infos limit 1;");
+      $this->preparedInsertStatement = $this->PDO->prepare("INSERT INTO document_infos (document_info) VALUES (?);");
+      $this->preparedSelectStatement = $this->PDO->prepare("SELECT * FROM document_infos limit 1;");
       
       $this->prepared_statements_created = true;
     }

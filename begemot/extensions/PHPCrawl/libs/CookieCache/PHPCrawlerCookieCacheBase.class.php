@@ -28,5 +28,10 @@ abstract class PHPCrawlerCookieCacheBase
    * @return array  Numeric array conatining all matching cookies as PHPCrawlerCookieDescriptor-objects
    */
   abstract public function getCookiesForUrl($target_url);
+  
+  /**
+   * Do cleanups after the cache is not needed anymore
+   */
+  abstract public function cleanup();
 }
 ?>

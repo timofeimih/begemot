@@ -101,6 +101,7 @@ class PHPCrawlerLinkFinder
   {
     $this->LinkCache->clear();
     $this->top_lines_processed = false;
+    $this->meta_attributes = array();
   }
   
   /**
@@ -149,7 +150,7 @@ class PHPCrawlerLinkFinder
       $this->meta_attributes = PHPCrawlerUtils::getMetaTagAttributes($html_source);
       
       // Set flag that top-lines of source were processed
-      $this->top_lines_processed == true;
+      $this->top_lines_processed = true;
     }
     
     // Build the RegEx-part for html-tags to search links in

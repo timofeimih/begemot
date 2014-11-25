@@ -11,8 +11,6 @@ class MyCrawler extends PHPCrawler
 {
   function handleDocumentInfo($DocInfo) 
   {
-      
-    //$this->UrlFilter->filterUrls($DocInfo);  
     // Just detect linebreak for output ("\n" in CLI-mode, otherwise "<br>").
     if (PHP_SAPI == "cli") $lb = "\n";
     else $lb = "<br />";
@@ -21,26 +19,13 @@ class MyCrawler extends PHPCrawler
     echo "Page requested: ".$DocInfo->url." (".$DocInfo->http_status_code.")".$lb;
     
     // Print the refering URL
-    
     echo "Referer-page: ".$DocInfo->referer_url.$lb;
-    echo '<pre>';
-   print_r($DocInfo->links_found_url_descriptors);
-    echo '</pre>';
-    
-    foreach ($DocInfo->links_found_url_descriptors as $link){
-//        if ($this->UrlFilter->urlMatchesRules($link['url_rebuild'])){
-//        }
-            //echo $link['url_rebuild'].'<br/>';
-        
-    }
     
     // Print if the content of the document was be recieved or not
     if ($DocInfo->received == true)
       echo "Content received: ".$DocInfo->bytes_received." bytes".$lb;
     else
       echo "Content not received".$lb; 
-    
-    
     
     // Now you should do something with the content of the actual
     // received page or file ($DocInfo->source), we skip it in this example 
@@ -53,18 +38,18 @@ class MyCrawler extends PHPCrawler
 
 // Now, create a instance of your class, define the behaviour
 // of the crawler (see class-reference for more options and details)
-// and start the crawling-process. 
+// and start the crawling-process.
 
 $crawler = new MyCrawler();
 
 // URL to crawl
-$crawler->setURL("www.atvbtr.ru");
+$crawler->setURL("www.php.net");
 
 // Only receive content of files with content-type "text/html"
 $crawler->addContentTypeReceiveRule("#text/html#");
 
 // Ignore links to pictures, dont even request pictures
-$crawler->addURLFilterRule("#\.(jpg|jpeg|gif|png|js|css)$# i");
+$crawler->addURLFilterRule("#\.(jpg|jpeg|gif|png)$# i");
 
 // Store and send cookie-data like a browser does
 $crawler->enableCookieHandling(true);

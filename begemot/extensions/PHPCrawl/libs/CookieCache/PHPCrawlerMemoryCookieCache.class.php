@@ -7,7 +7,7 @@
  */
 class PHPCrawlerMemoryCookieCache extends PHPCrawlerCookieCacheBase
 {
-  protected $cookies;
+  protected $cookies = array();
   
   /**
    * Adds a cookie to the cookie-cache.
@@ -62,6 +62,10 @@ class PHPCrawlerMemoryCookieCache extends PHPCrawlerCookieCacheBase
       // Does the cookie-domain match?
       // Tail-matching, see http://curl.haxx.se/rfc/cookie_spec.html:
       // A domain attribute of "acme.com" would match host names "anvil.acme.com" as well as "shipping.crate.acme.com"
+      // Seems like ".acme.com" should also match "anvil.acme.com", so just remove the dot
+      
+      $Cookie->domain = preg_replace("#^.#", "", $Cookie->domain);
+        
       if ($Cookie->domain == $url_parts["host"] || preg_match("#".preg_quote($Cookie->domain)."$#", $url_parts["host"]))
       {
         // Does the path match?
@@ -76,6 +80,14 @@ class PHPCrawlerMemoryCookieCache extends PHPCrawlerCookieCacheBase
     $return_cookies = array_values($return_cookies);
     
     return $return_cookies;
+  }
+  
+  /**
+   * Cleans up the cache after is it not needed anymore.
+   */
+  public function cleanup()
+  {
+    $this->cookies = array();
   }
 }
 ?>

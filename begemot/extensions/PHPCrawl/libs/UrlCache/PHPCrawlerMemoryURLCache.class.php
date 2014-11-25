@@ -128,10 +128,12 @@ class PHPCrawlerMemoryURLCache extends PHPCrawlerURLCacheBase
   }
   
   /**
-   * Has no function in this class.
+   * Cleans up the cache after is it not needed anymore.
    */
   public function cleanup()
   {
+    $this->urls = array();
+    $this->url_map = array();
   }
   
   /**

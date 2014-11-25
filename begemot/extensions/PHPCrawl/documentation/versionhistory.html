@@ -24,6 +24,63 @@
         <div id="content">
         <h3>Version-History / Changelog</h3><br />
         
+        <b>Version 0.82</b><br>
+        2014/01/16<br>
+        
+        <ul class="changelog">
+        
+        <li>Feature Request #6: Added the possibility to delay HTTP-requests the crawler executes, method setRequestDelay() added.</li>
+        
+        <li>Fixed bug #39: Process resumption failed on Windows machines due to an unnecessary sem_get() call ("Call to undefined function sem_get()").</li>
+        
+        <li>Fixed bug #58: If using the sqlite-URL-cache (setUrlCacheType(PHPCrawlerUrlCacheTypes::URLCACHE_SQLITE) on Windows, the cleanup-method failed after the crawling-process was finished and
+            threw an "unlink() permission denied" error on two db3-files.</li>
+        
+        <li>Feature Request #9: Added support for gzip-encoded content, method requestGzipContent() added. By default the crawler is not requesting gzip-encoded content 
+        for compatibility reasons.</li>
+        
+        <li>Fixex bug #57: Internal detection for the systems temp-directory sometimes failed/threw an error.</li>
+        
+        <li>Added new summarizing benchmarks for a crawling-porocess, added PHPCrawlerProcessReport properties "avg_proc_data_transfer_rate", "avg_server_connect_time" and "avg_server_response_time"</li>
+        
+        <li>Added new benchmarks for single page-requests, added properties PHPCrawlerDocumentInfo::server_connect_time and PHPCrawlerDocumentInfo::server_response_time</li>
+        
+        <li>Adjusted/corrected some page benchmark results to give some "more correct" results (PHPCrawlerDocumentInfo::data_transfer_rate and PHPCrawlerDocumentInfo::data_transfer_time)</li>
+        
+        <li>Fixed bug #56: Requests for SSL/https-sites sometimes didn't return (hung up) due to failed detection of socket-EOF</li>
+        
+        <li>Fixed bug #54: The crawler didn't recognize newlines in server-responses correctly in some rare cases and returned an "Host doesn't respond with a HTTP-header"-error.</li>
+        
+        <li>Overridable and deprecated method handlePageData() removed because it used a lot of memory. For compatibility reasons this function will sill
+            be called if defined by the user though (data gets internally prepared for it only in this case).</li>
+        
+        <li>Adjusted some internal timing and buffer settings for some better performance in multiprocessing-mode</li>
+        
+        <li>Implemented HTTP 1.1 protocol including chunked transfer encoding (because some servers don't support other than http 1.1 and chunked encoding anymore).
+            HTTP 1.1 is now the default protocol. Method setHTTPProtocolVersion() added for optionally switch back to HTTP 1.0.</li>
+        
+        <li>Fixed bug #49: Some servers didn't accept request-headers from phpcrawl because of HTTP 1.0 protocol and uppercase "HOST"-word in request-headers.
+            Changed to HTTP 1.1 and "HOST" to "Host"</li>
+        
+        <li>Fixed undocumented bug: If there are no cookies to send, an empty header-line in request-headers was send to the server (didn't seem to cause any problems though)</li>
+        
+        <li>Fixed undocumented bug: If a cookie had the domain-attribute ".domainname.com" (with a leading dot), the cookie was NOT send with any requests for
+            the host "daimanname.com" (withoud leading www. or similar subdomains)</li>
+        
+        <li>Unnecessary slashes get removed now generally at the end of URLs if the URL has no path ("www.site.com/" -> "www.site.com")</li>
+        
+        <li>Fixed bug #33: Missing "Accept"-directive in request-headers caused problems with some websites/webservers (no response/no delivered content)</li>
+        
+        <li>Increased the default stream- and connection-timeout settings (a lot of people reported of "slow" websites that don't respond within the given timeouts)</li>
+        
+        <li>Fixed bug #29: Fixed a memory-leak caused by the stream_client_connect()-function (together with stream_context_create()) that suffers
+            from a memory leak in PHP version 5.3.X and maybe other versions (see https://bugs.php.net/bug.php?id=61371).</li>
+            
+        <li>Applied some other minor memory tweaks (for some reduced memory usage)</li>
+        
+        <li>Fixed "bug" #37: Fixed/removed some "code style errors" detected by PhpStorms copdeinspector</li>
+        </ul>
+        
         <b>Version 0.81</b><br>
         2012/10/14<br>
         
@@ -472,7 +529,7 @@
         
       </div>
   
-      <div id="footer">Copyright © 2003 - 2012 Uwe Hunfeld phpcrawl@cuab.de</div>
+      <div id="footer">Copyright © 2003 - 2014 Uwe Hunfeld phpcrawl@cuab.de</div>
   </div>
   
 </div>

@@ -22,6 +22,8 @@ class PHPCrawlerResponseHeader
     $this->content_type = strtolower(PHPCrawlerUtils::getHeaderValue($header_string, "content-type"));
     $this->content_length = strtolower(PHPCrawlerUtils::getHeaderValue($header_string, "content-length"));
     $this->cookies = PHPCrawlerUtils::getCookiesFromHeader($header_string, $source_url);
+    $this->transfer_encoding = strtolower(PHPCrawlerUtils::getHeaderValue($header_string, "transfer-encoding"));
+    $this->content_encoding = strtolower(PHPCrawlerUtils::getHeaderValue($header_string, "content-encoding"));
   }
   
   /**
@@ -51,6 +53,20 @@ class PHPCrawlerResponseHeader
    * @var int
    */
   public $content_length;
+  
+  /**
+   * The content-encoding as stated in the header.
+   *
+   * @var string
+   */
+  public $content_encoding;
+  
+  /**
+   * The transfer-encoding as stated in the header.
+   *
+   * @var string
+   */
+  public $transfer_encoding;
   
   /**
    * All cookies found in the header

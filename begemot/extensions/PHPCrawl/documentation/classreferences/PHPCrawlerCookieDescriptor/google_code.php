@@ -1,5 +1,5 @@
 <?php
-if ($_SERVER["SERVER_NAME"] == "phpcrawl.cuab.de")
+if ($_SERVER["SERVER_NAME"] == "phpcrawl.cuab.de" || $_SERVER["SERVER_NAME"] == "cuab.de")
 {
 ?>
 -->

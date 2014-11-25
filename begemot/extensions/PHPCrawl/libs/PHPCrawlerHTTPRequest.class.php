@@ -13,14 +13,19 @@ class PHPCrawlerHTTPRequest
   public $userAgentString = "PHPCrawl";
   
   /**
+   * The HTTP protocol version to use.
+   */
+  public $http_protocol_version = 2;
+  
+  /**
    * Timeout-value for socket-connection
    */
-  public $socketConnectTimeout = 5;
+  public $socketConnectTimeout = 10;
   
   /**
    * Socket-read-timeout
    */
-  public $socketReadTimeout = 2;
+  public $socketReadTimeout = 5;
   
   /**
    * Limit for content-size to receive
@@ -32,16 +37,44 @@ class PHPCrawlerHTTPRequest
   /**
    * Global counter for traffic this instance of the HTTPRequest-class caused.
    *
-   * @vat int Traffic in bytes
+   * @var int Traffic in bytes
    */
   protected $global_traffic_count = 0;
   
   /**
-   * The time it took te receive data-packets for the request.
+   * Numer of bytes received from the header
    *
-   * @vat float time in seconds and milliseconds.
+   * @var float Number of bytes
    */
-  protected $data_transfer_time = 0;
+  protected $header_bytes_received = null;
+  
+  /**
+   * Number of bytes received from the content
+   *
+   * @var float Number of bytes
+   */
+  protected $content_bytes_received = null;
+  
+  /**
+   * The time it took to tranfer the data of this document
+   *
+   * @var float Time in seconds and milliseconds
+   */
+  protected $data_transfer_time = null;
+  
+  /**
+   * The time it took to connect to the server
+   *
+   * @var float Time in seconds and milliseconds or NULL if connection could not be established
+   */
+  protected $server_connect_time = null;
+  
+  /**
+   * The server resonse time
+   *
+   * @var float time in seconds and milliseconds or NULL if the server didn't respond
+   */
+  protected $server_response_time = null;
   
   /**
    * Contains all rules defining the content-types that should be received
@@ -131,6 +164,16 @@ class PHPCrawlerHTTPRequest
    */
   protected $socket;
   
+  /**
+   * The bytes contained in the socket-buffer directly after the server responded
+   */
+  protected $socket_prefill_size;
+  
+  /**
+   * Enalbe/disable request for gzip encoded content.
+   */
+  protected $request_gzip_content = false;
+  
   protected $header_check_callback_function = null;
   
   public function __construct()
@@ -148,6 +191,9 @@ class PHPCrawlerHTTPRequest
     
     // ResponseHeader-class
     if (!class_exists("PHPCrawlerResponseHeader")) include_once(dirname(__FILE__)."/PHPCrawlerResponseHeader.class.php");
+    
+    // PHPCrawlerHTTPProtocols-class
+    if (!class_exists("PHPCrawlerHTTPProtocols")) include_once(dirname(__FILE__)."/Enums/PHPCrawlerHTTPProtocols.class.php");
   }
   
   /**
@@ -181,7 +227,6 @@ class PHPCrawlerHTTPRequest
    */
   public function addCookieDescriptor(PHPCrawlerCookieDescriptor $Cookie)
   {
-    //var_dump($Cookie);
     $this->addCookie($Cookie->name, $Cookie->value);
   }
   
@@ -309,7 +354,6 @@ class PHPCrawlerHTTPRequest
     $PageInfo->query = $this->url_parts["query"];
     $PageInfo->port = $this->url_parts["port"];
     
-    
     // Create header to send
     $request_header_lines = $this->buildRequestHeader();
     $header_string = trim(implode("", $request_header_lines));
@@ -317,12 +361,13 @@ class PHPCrawlerHTTPRequest
     
     // Open socket
     $this->openSocket($PageInfo->error_code, $PageInfo->error_string);
+    $PageInfo->server_connect_time = $this->server_connect_time;
     
     // If error occured
     if ($PageInfo->error_code != null)
     {
       // If proxy-error -> throw exception
-      if ($PageInfo->error_code ==  PHPCrawlerRequestErrors::ERROR_PROXY_UNREACHABLE)
+      if ($PageInfo->error_code == PHPCrawlerRequestErrors::ERROR_PROXY_UNREACHABLE)
       {
         throw new Exception("Unable to connect to proxy '".$this->proxy["proxy_host"]."' on port '".$this->proxy["proxy_port"]."'");
       }
@@ -336,6 +381,7 @@ class PHPCrawlerHTTPRequest
     
     // Read response-header
     $response_header = $this->readResponseHeader($PageInfo->error_code, $PageInfo->error_string);
+    $PageInfo->server_response_time = $this->server_response_time;
     
     // If error occured
     if ($PageInfo->error_code != null)
@@ -386,8 +432,8 @@ class PHPCrawlerHTTPRequest
     $stream_to_file = $this->decideStreamToFile($response_header);
                     
     // Read content
-    $response_content = $this->readResponseContent($stream_to_file, $PageInfo->error_code, $PageInfo->error_string, $PageInfo->received_completely, $PageInfo->bytes_received);
-
+    $response_content = $this->readResponseContent($stream_to_file, $PageInfo->error_code, $PageInfo->error_string, $PageInfo->received_completely);
+     
     // If error occured
     if ($PageInfo->error_code != null)
     {
@@ -397,10 +443,9 @@ class PHPCrawlerHTTPRequest
     @fclose($this->socket);
     
     // Complete ResponseObject
-    $PageInfo->content = $PageInfo->source = $response_content;
+    $PageInfo->content = $response_content;
+    $PageInfo->source = &$PageInfo->content;
     $PageInfo->received_completly = $PageInfo->received_completely;
-    $PageInfo->data_transfer_time = $this->data_transfer_time;
-    $PageInfo->data_transfer_rate = $PageInfo->bytes_received / $this->data_transfer_time;
     
     if ($stream_to_file == true)
     {
@@ -411,22 +456,68 @@ class PHPCrawlerHTTPRequest
     
     $PageInfo->links_found_url_descriptors = $this->LinkFinder->getAllURLs();
     $PageInfo->meta_attributes = $this->LinkFinder->getAllMetaAttributes();
+    
+    // Info about received bytes
+    $PageInfo->bytes_received = $this->content_bytes_received;
+    $PageInfo->header_bytes_received = $this->header_bytes_received;
+    
+    $dtr_values = $this->calulateDataTransferRateValues();
+    if ($dtr_values != null)
+    {
+      $PageInfo->data_transfer_rate = $dtr_values["data_transfer_rate"];
+      $PageInfo->unbuffered_bytes_read = $dtr_values["unbuffered_bytes_read"];
+      $PageInfo->data_transfer_time = $dtr_values["data_transfer_time"];
+    }
+    
     $PageInfo->setLinksFoundArray();
+    
+    $this->LinkFinder->resetLinkCache();
     
     return $PageInfo;
   }
   
   /**
+   * Calculates data tranfer rate values
+   *
+   * @return int The rate in bytes/second
+   */
+  protected function calulateDataTransferRateValues()
+  {
+    $vals = array();
+    
+    // Workd like this:
+    // After the server resonded, the socket-buffer is already filled with bytes,
+    // that means they were received within the server-response-time.
+    
+    // To calulate the real data transfer rate, these bytes have to be substractred from the received
+    // bytes beofre calulating the rate.
+    if ($this->data_transfer_time > 0 && $this->content_bytes_received > 4 * $this->socket_prefill_size)
+    {
+      $vals["unbuffered_bytes_read"] = $this->content_bytes_received + $this->header_bytes_received - $this->socket_prefill_size;
+      $vals["data_transfer_rate"] = $vals["unbuffered_bytes_read"] / $this->data_transfer_time;
+      $vals["data_transfer_time"] = $this->data_transfer_time;
+    }
+    else
+    {
+      $vals = null;
+    }
+    
+    return $vals;
+  }
+  
+  /**
    * Opens the socket to the host.
    *
-   * @param  int    &$error_code   Error-code by referenct if an error occured.
-   * @param  string &$error_string Error-string by reference
+   * @param  int    &$error_code          Error-code by referenct if an error occured.
+   * @param  string &$error_string        Error-string by reference
+   *
    * @return bool   TRUE if socket could be opened, otherwise FALSE.
    */
   protected function openSocket(&$error_code, &$error_string)
-  {
+  { 
+    PHPCrawlerBenchmark::reset("connecting_server");
     PHPCrawlerBenchmark::start("connecting_server");
-    
+
     // SSL or not?
     if ($this->url_parts["protocol"] == "https://") $protocol_prefix = "ssl://";
     else $protocol_prefix = "";
@@ -444,29 +535,32 @@ class PHPCrawlerHTTPRequest
     // Open socket
     if ($this->proxy != null)
     {
-      //$this->socket = @fsockopen ($this->proxy["proxy_host"], $this->proxy["proxy_port"], $error_code, $error_str, $this->socketConnectTimeout);
       $this->socket = @stream_socket_client($this->proxy["proxy_host"].":".$this->proxy["proxy_port"], $error_code, $error_str,
                                            $this->socketConnectTimeout, STREAM_CLIENT_CONNECT);
     }
     else
     {
-      //$this->socket = @fsockopen ($protocol_prefix.$ip_address, $this->url_parts["port"], $error_code, $error_str, $this->socketConnectTimeout);
-      
       // If ssl -> perform Server name indication
       if ($this->url_parts["protocol"] == "https://")
+      {
         $context = stream_context_create(array('ssl' => array('SNI_server_name' => $this->url_parts["host"])));
+        $this->socket = @stream_socket_client($protocol_prefix.$ip_address.":".$this->url_parts["port"], $error_code, $error_str,
+                                              $this->socketConnectTimeout, STREAM_CLIENT_CONNECT, $context);
+      }
       else
-        $context = stream_context_create(array());
-      
-      $this->socket = @stream_socket_client($protocol_prefix.$ip_address.":".$this->url_parts["port"], $error_code, $error_str,
-                                           $this->socketConnectTimeout, STREAM_CLIENT_CONNECT, $context);
+      {
+        $this->socket = @stream_socket_client($protocol_prefix.$ip_address.":".$this->url_parts["port"], $error_code, $error_str,
+                                              $this->socketConnectTimeout, STREAM_CLIENT_CONNECT); // NO $context here, memory-leak-bug in php v. 5.3.x!!
+      }
     }
     
-    PHPCrawlerBenchmark::stop("connecting_server");
-    
+    $this->server_connect_time = PHPCrawlerBenchmark::stop("connecting_server");
+        
     // If socket not opened -> throw error
     if ($this->socket == false)
-    {
+    { 
+      $this->server_connect_time = null;
+      
       // If proxy not reachable
       if ($this->proxy != null)
       {
@@ -481,7 +575,10 @@ class PHPCrawlerHTTPRequest
         return false;
       }
     }
-    else return true;
+    else
+    {
+      return true;
+    }
   }
   
   /**
@@ -489,29 +586,26 @@ class PHPCrawlerHTTPRequest
    */
   protected function sendRequestHeader($request_header_lines)
   {
-    PHPCrawlerBenchmark::start("sending_header");
-    
     // Header senden
     $cnt = count($request_header_lines);
     for ($x=0; $x<$cnt; $x++)
     {
       fputs($this->socket, $request_header_lines[$x]);
     }
-    
-    PHPCrawlerBenchmark::stop("sending_header");
   }
   
   /**
    * Reads the response-header.
    *
-   * @param  int    &$error_code   Error-code by reference if an error occured.
-   * @param  string &$error_string Error-string by reference
-   * @return string  The response-header or NULL if an error occured
+   * @param  int    &$error_code           Error-code by reference if an error occured.
+   * @param  string &$error_string         Error-string by reference
+   *
+   * @return string The response-header or NULL if an error occured
    */
   protected function readResponseHeader(&$error_code, &$error_string)
-  {
+  { 
+    PHPCrawlerBenchmark::reset("server_response_time");
     PHPCrawlerBenchmark::start("server_response_time");
-    PHPCrawlerBenchmark::start("data_transfer_time", true);
     
     $status = socket_get_status($this->socket);
     $source_read = "";
@@ -522,14 +616,22 @@ class PHPCrawlerHTTPRequest
     {
       socket_set_timeout($this->socket, $this->socketReadTimeout);
       
-      // Read from socket
-      $line_read = fgets($this->socket, 1024); // Das @ ist da um die blöde "SSL fatal protocol error"-Warnung zu unterdrücken, 
-                                               // die keinen Sinn macht
+      // Read line from socket
+      $line_read = fgets($this->socket, 1024);
+      
+      // Server responded
       if ($server_responded == false)
       {
         $server_responded = true;
-        PHPCrawlerBenchmark::stop("server_response_time");
-        PHPCrawlerBenchmark::start("retreiving_header");
+        $this->server_response_time = PHPCrawlerBenchmark::stop("server_response_time");
+    
+        // Determinate socket prefill size
+        $status = socket_get_status($this->socket);
+        $this->socket_prefill_size = $status["unread_bytes"];
+        
+        // Start data-transfer-time bechmark
+        PHPCrawlerBenchmark::reset("data_transfer_time");
+        PHPCrawlerBenchmark::start("data_transfer_time");
       }
       
       $source_read .= $line_read;
@@ -554,22 +656,30 @@ class PHPCrawlerHTTPRequest
         return $header;
       }
       
-      if (substr($source_read, -4, 4) == "\r\n\r\n")
+      // Header found and read (2 newlines) -> stop
+      if (substr($source_read, -4, 4) == "\r\n\r\n" || substr($source_read, -2, 2) == "\n\n")
       {
         $header = substr($source_read, 0, strlen($source_read)-2);
-        
-        // Search for links (redirects) in the header
-        $this->LinkFinder->processHTTPHeader($header);
-        
-        PHPCrawlerBenchmark::stop("retreiving_header");
-        PHPCrawlerBenchmark::stop("data_transfer_time");
-        return $header;
+        break;
       }
     }
     
+    // Stop data-transfer-time bechmark
+    PHPCrawlerBenchmark::stop("data_transfer_time");
+    
+    // Header was found
+    if ($header != "")
+    {
+      // Search for links (redirects) in the header
+      $this->LinkFinder->processHTTPHeader($header);
+      $this->header_bytes_received = strlen($header);
+      return $header;
+    }
+        
     // No header found
     if ($header == "")
     {
+      $this->server_response_time = null;
       $error_code = PHPCrawlerRequestErrors::ERROR_NO_HTTP_HEADER;
       $error_string = "Host doesn't respond with a HTTP-header.";
       return null;
@@ -584,13 +694,12 @@ class PHPCrawlerHTTPRequest
    * @param int     &$error_code    Error-code by reference if an error occured.
    * @param &string &$error_string  Error-string by reference
    * @param &string &$document_received_completely Flag indicatign whether the content was received completely passed by reference
-   * @param &string &$bytes_received Number of bytes received, passed by reference
+   *
    * @return string  The response-content/source. May be emtpy if an error ocdured or data was streamed to the tmp-file.
    */
-  protected function readResponseContent($stream_to_file = false, &$error_code, &$error_string, &$document_received_completely, &$bytes_received)
-  {
-    PHPCrawlerBenchmark::start("retreiving_content");
-    PHPCrawlerBenchmark::start("data_transfer_time", true);
+  protected function readResponseContent($stream_to_file = false, &$error_code, &$error_string, &$document_received_completely)
+  { 
+    $this->content_bytes_received = 0;
     
     // If content should be streamed to file
     if ($stream_to_file == true)
@@ -606,91 +715,163 @@ class PHPCrawlerHTTPRequest
     }
     
     // Init
-    $status = socket_get_status($this->socket);
     $source_portion = "";
     $source_complete = "";
-    $bytes_received = 0;
     $document_received_completely = true;
-    $stop_receving = false;
+    $document_completed = false;
+    $gzip_encoded_content = null;
     
-    while ($stop_receving == false)
+    // Resume data-transfer-time benchmark
+    PHPCrawlerBenchmark::start("data_transfer_time");
+    
+    while ($document_completed == false)
+    {
+      // Get chunk from content
+      $content_chunk = $this->readResponseContentChunk($document_completed, $error_code, $error_string, $document_received_completely);
+      $source_portion .= $content_chunk;
+      
+      // Check if content is gzip-encoded (check only first chunk)
+      if ($gzip_encoded_content === null)
+      {
+        if (PHPCrawlerUtils::isGzipEncoded($content_chunk))
+          $gzip_encoded_content = true;
+        else
+          $gzip_encoded_content = false;
+      }
+      
+      // Stream to file or store source in memory
+      if ($stream_to_file == true)
+      {
+        @fwrite($fp, $content_chunk);
+      }
+      else
+      {
+        $source_complete .= $content_chunk;
+      }
+      
+      // Decode gzip-encoded content when done with document
+      if ($document_completed == true && $gzip_encoded_content == true)
+        $source_complete = $source_portion = PHPCrawlerUtils::decodeGZipContent($source_complete);
+    
+      // Find links in portion of the source
+      if (($gzip_encoded_content == false && $stream_to_file == false && strlen($source_portion) >= 200000) || $document_completed == true)
+      {
+        if (PHPCrawlerUtils::checkStringAgainstRegexArray($this->lastResponseHeader->content_type, $this->linksearch_content_types))
+        {
+          PHPCrawlerBenchmark::stop("data_transfer_time");
+          $this->LinkFinder->findLinksInHTMLChunk($source_portion);
+          $source_portion = substr($source_portion, -1500);
+          PHPCrawlerBenchmark::start("data_transfer_time");
+        }
+      }
+    }
+    
+    if ($stream_to_file == true) @fclose($fp);
+    
+    // Stop data-transfer-time benchmark
+    PHPCrawlerBenchmark::stop("data_transfer_time");
+    $this->data_transfer_time = PHPCrawlerBenchmark::getElapsedTime("data_transfer_time");
+    
+    return $source_complete;
+  }
+  
+  /**
+   * Reads a chunk from the response-content
+   *
+   * @return string
+   */
+  protected function readResponseContentChunk(&$document_completed, &$error_code, &$error_string, &$document_received_completely)
+  { 
+    $source_chunk = "";
+    $stop_receiving = false;
+    $bytes_received = 0;
+    $document_completed = false;
+    
+    // If chunked encoding and protocol to use is HTTP 1.1
+    if ($this->http_protocol_version == PHPCrawlerHTTPProtocols::HTTP_1_1 && $this->lastResponseHeader->transfer_encoding == "chunked")
+    {
+      // Read size of next chunk
+      $chunk_line = @fgets($this->socket, 128);
+      if (trim($chunk_line) == "") $chunk_line = @fgets($this->socket, 128);
+      $current_chunk_size = hexdec(trim($chunk_line));
+    }
+    else
+    {
+      $current_chunk_size = 20240;
+    }
+    
+    if ($current_chunk_size === 0)
+    {
+      $stop_receiving = true;
+      $document_completed = true;
+    }
+    
+    while ($stop_receiving == false)
     {
       socket_set_timeout($this->socket, $this->socketReadTimeout);
       
-      // Read from socket
-      $line_read = @fread($this->socket, 1024); // Das @ ist da um die blöde "SSL fatal protocol error"-Warnung zu unterdrücken, 
-                                                // die keinen Sinn macht
+      // Set byte-buffer to bytes in socket-buffer (Fix for SSL-hang-bug #56, thanks to MadEgg!)
+      $status = socket_get_status($this->socket);
+      if ($status["unread_bytes"] > 0)
+        $read_byte_buffer = $status["unread_bytes"];
+      else
+        $read_byte_buffer = 1024;
+      
+      // If chunk will be complete next read -> resize read-buffer to size of remaining chunk
+      if ($bytes_received + $read_byte_buffer >= $current_chunk_size && $current_chunk_size > 0)
+      {
+        $read_byte_buffer = $current_chunk_size - $bytes_received;
+        $stop_receiving = true;
+      }
+      
+      // Read line from socket
+      $line_read = @fread($this->socket, $read_byte_buffer); 
+      
+      $source_chunk .= $line_read;
+      $line_length = strlen($line_read);
+      $this->content_bytes_received += $line_length;
+      $this->global_traffic_count += $line_length;
+      $bytes_received += $line_length;
       
       // Check socket-status
       $status = socket_get_status($this->socket);
       
       // Check for EOF
-      if ($status["eof"] == true) $stop_receving = true;
+      if ($status["eof"] == true)
+      {
+        $stop_receiving = true;
+        $document_completed = true;
+      }
       
       // Socket timed out
       if ($status["timed_out"] == true)
       {
-        $stop_receving = true;
+        $stop_receiving = true;
+        $document_completed = true;
         $error_code = PHPCrawlerRequestErrors::ERROR_SOCKET_TIMEOUT;
         $error_string = "Socket-stream timed out (timeout set to ".$this->socketReadTimeout." sec).";
         $document_received_completely = false;
+        return $source_chunk;
       }
-      else
-      {
-        $source_portion .= $line_read;
-        $bytes_received += strlen($line_read);
-        $this->global_traffic_count += strlen($line_read);
-        
-        // Stream to file or store source in memory
-        if ($stream_to_file == true)
-        {
-          @fwrite($fp, $line_read);
-        }
-        else
-        {
-          $source_complete .= $line_read;
-        }
-      }
-      
+
       // Check if content-length stated in the header is reached
-      if ($this->lastResponseHeader->content_length == $bytes_received)
+      if ($this->lastResponseHeader->content_length == $this->content_bytes_received)
       {
-        $stop_receving = true;
+        $stop_receiving = true;
+        $document_completed = true;
       }
       
       // Check if contentsize-limit is reached
-      if ($this->content_size_limit > 0 && $this->content_size_limit <= $bytes_received)
+      if ($this->content_size_limit > 0 && $this->content_size_limit <= $this->content_bytes_received)
       {
-        $stop_receving = true;
+        $document_received_completely = false;
+        $stop_receiving = true;
+        $document_completed = true;
       }
-                
-      // Find links in portion of the source
-      if (strlen($source_portion) >= 100000 || $stop_receving == true)
-      {
-        if (PHPCrawlerUtils::checkStringAgainstRegexArray($this->lastResponseHeader->content_type, $this->linksearch_content_types))
-        {
-          PHPCrawlerBenchmark::stop("retreiving_content");
-          PHPCrawlerBenchmark::stop("data_transfer_time");
-          
-          $this->LinkFinder->findLinksInHTMLChunk($source_portion);
-          $source_portion = substr($source_portion, -1500);
-          
-          PHPCrawlerBenchmark::start("retreiving_content");
-          PHPCrawlerBenchmark::start("data_transfer_time", true);
-        }
-      }
-
+      
     }
     
-    if ($stream_to_file == true) @fclose($fp);
-    
-    PHPCrawlerBenchmark::stop("retreiving_content");
-    PHPCrawlerBenchmark::stop("data_transfer_time");
-    
-    $this->data_transfer_time = PHPCrawlerBenchmark::getElapsedTime("data_transfer_time");
-    PHPCrawlerBenchmark::reset("data_transfer_time");
-    
-    return $source_complete;
+    return $source_chunk;
   }
   
   /**
@@ -707,6 +888,10 @@ class PHPCrawlerHTTPRequest
     if (count($this->post_data) > 0) $request_type = "POST";
     else $request_type = "GET";
     
+    // HTTP protocol
+    if ($this->http_protocol_version == PHPCrawlerHTTPProtocols::HTTP_1_1) $http_protocol_verison = "1.1";
+    else $http_protocol_verison = "1.0";
+    
     if ($this->proxy != null)
     {
       // A Proxy needs the full qualified URL in the GET or POST headerline.
@@ -715,12 +900,18 @@ class PHPCrawlerHTTPRequest
     else
     {
       $query = $this->prepareHTTPRequestQuery($this->url_parts["path"].$this->url_parts["file"].$this->url_parts["query"]);
-      $headerlines[] = $request_type." ".$query." HTTP/1.0\r\n";
+      $headerlines[] = $request_type." ".$query." HTTP/".$http_protocol_verison."\r\n";
     }
     
-    $headerlines[] = "HOST: ".$this->url_parts["host"]."\r\n";
+    $headerlines[] = "Host: ".$this->url_parts["host"]."\r\n";
     
-    $headerlines[] = "User-Agent: ".str_replace("\n", "", $this->userAgentString)."\r\n";
+    $headerlines[] = "User-Agent: ".str_replace("\n", "", $this->userAgentString)."\r\n";    $headerlines[] = "Accept: */*\r\n";
+    
+    // Request GZIP-content
+    if ($this->request_gzip_content == true)
+    {
+      $headerlines[] = "Accept-Encoding: gzip, deflate\r\n";
+    }
     
     // Referer
     if ($this->UrlDescriptor->refering_url != null)
@@ -729,7 +920,9 @@ class PHPCrawlerHTTPRequest
     }
     
     // Cookies
-    $headerlines[] = $this->buildCookieHeader();
+    $cookie_header = $this->buildCookieHeader();
+    if ($cookie_header != null) 
+      $headerlines[] = $this->buildCookieHeader();
     
     // Authentication
     if ($this->url_parts["auth_username"] != "" && $this->url_parts["auth_password"] != "")
@@ -832,6 +1025,7 @@ class PHPCrawlerHTTPRequest
    * Builds the cookie-header-part for the header to send.
    *
    * @return string  The cookie-header-part, i.e. "Cookie: test=bla; palimm=palaber"
+   *                 Returns NULL if no cookies should be send with the header.
    */
   protected function buildCookieHeader()
   {
@@ -849,7 +1043,7 @@ class PHPCrawlerHTTPRequest
     }
     else
     {
-      return "";
+      return null;
     }
   }
   
@@ -992,7 +1186,7 @@ class PHPCrawlerHTTPRequest
    * @param string $regex Regular-expression defining the rule
    * @return bool         TRUE if the rule was successfully added
    */
-  function addLinkSearchContentType($regex)
+  public function addLinkSearchContentType($regex)
   {
     $check = PHPCrawlerUtils::checkRegexPattern($regex); // Check pattern
     if ($check == true)
@@ -1000,6 +1194,31 @@ class PHPCrawlerHTTPRequest
       $this->linksearch_content_types[] = trim($regex);
     }
     return $check;
+  }
+  
+  /**
+   * Sets the http protocol version to use for requests
+   *
+   * @param int $http_protocol_version One of the PHPCrawlerHTTPProtocols-constants, or
+   *                                   1 -> HTTP 1.0
+   *                                   2 -> HTTP 1.1
+   */
+  public function setHTTPProtocolVersion($http_protocol_version)
+  {
+    if (preg_match("#[1-2]#", $http_protocol_version))
+    {
+      $this->http_protocol_version = $http_protocol_version;
+      return true;
+    }
+    else return false;
+  }
+  
+  public function requestGzipContent($mode)
+  {
+    if (is_bool($mode))
+    {
+      $this->request_gzip_content = $mode;
+    }
   }
 }
 ?>

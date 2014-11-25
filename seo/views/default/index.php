@@ -1,6 +1,6 @@
 <?php
 
-$this->menu = require dirname(__FILE__).'/../commonMenu.php';
+$this->menu = require dirname(__FILE__) . '/../commonMenu.php';
 
 // It may take a whils to crawl a site ...
 set_time_limit(10000);

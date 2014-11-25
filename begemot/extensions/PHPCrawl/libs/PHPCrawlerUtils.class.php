@@ -26,7 +26,7 @@ class PHPCrawlerUtils
    */
   public static function splitURL($url)
   {
-    // Protokoll der URL hinzufï¿½gen (da ansonsten parse_url nicht klarkommt)
+    // Protokoll der URL hinzufügen (da ansonsten parse_url nicht klarkommt)
     if (!preg_match("#^[a-z]+://# i", $url))
       $url = "http://" . $url;
     
@@ -71,13 +71,13 @@ class PHPCrawlerUtils
       $domain = substr($host, $pos+1);
     }
     
-    // DEFAULT VALUES fï¿½r protocol, path, port etc. (wenn noch nicht gesetzt)
+    // DEFAULT VALUES für protocol, path, port etc. (wenn noch nicht gesetzt)
       
     // Wenn Protokoll leer -> Protokoll ist "http://"
     if ($protocol == "") $protocol="http://";
     
     // Wenn Port leer -> Port setzen auf 80 or 443
-    // (abhï¿½ngig vom Protokoll)
+    // (abhängig vom Protokoll)
     if ($port == "")
     {
       if (strtolower($protocol) == "http://") $port=80;
@@ -87,7 +87,7 @@ class PHPCrawlerUtils
     // Wenn Pfad leet -> Pfad ist "/"
     if ($path=="") $path = "/";
     
-    // Rï¿½ckgabe-Array
+    // Rückgabe-Array
     $url_parts["protocol"] = $protocol;
     $url_parts["host"] = $host;
     $url_parts["path"] = $path;
@@ -161,6 +161,9 @@ class PHPCrawlerUtils
         $port_part = "";
       }
     }
+    
+    // If path is just a "/" -> remove it ("www.site.com/" -> "www.site.com")
+    if ($url_parts["path"] == "/" && $url_parts["file"] == "" && $url_parts["query"] == "") $url_parts["path"] = "";
     
     // Put together the url
     $url = $url_parts["protocol"] . $auth_part . $url_parts["host"]. $port_part . $url_parts["path"] . $url_parts["file"] . $url_parts["query"];
@@ -488,7 +491,7 @@ class PHPCrawlerUtils
   } 
   
   /**
-   * Serializes data (objects, arrayse etc.) and writes it to the given file.
+   * Serializes data (objects, arrays etc.) and writes it to the given file.
    */
   public static function serializeToFile($target_file, $data)
   {
@@ -520,7 +523,7 @@ class PHPCrawlerUtils
   {
     $args = func_get_args();
     
-    // Fï¿½r jedes zu sortierende Feld ein eigenes Array bilden
+    // Für jedes zu sortierende Feld ein eigenes Array bilden
     @reset($array);
     while (list($field) = @each($array)) 
     {
@@ -536,7 +539,7 @@ class PHPCrawlerUtils
       }
     }
 
-    // Argumente fï¿½r array_multisort bilden
+    // Argumente für array_multisort bilden
     for ($x=1; $x<count($args); $x++)
     {
       if (is_string($args[$x]))
@@ -567,11 +570,8 @@ class PHPCrawlerUtils
    */
   public static function getSystemTempDir()
   {
-    $tmpfile = tempnam("dummy","");
-    $path = dirname($tmpfile);
-    unlink($tmpfile);
-    
-    return $path."/";
+    $dir = sys_get_temp_dir()."/";
+    return $dir;
   }
   
   /**
@@ -631,6 +631,29 @@ class PHPCrawlerUtils
   { 
     if (preg_match("#^[a-z0-9/.&=?%-_.!~*'()]+$# i", $string)) return true;
     else return false;
+  }
+  
+  /**
+   * Decodes GZIP-encoded HTTP-data
+   */
+  public static function decodeGZipContent($content)
+  {
+    return gzinflate(substr($content, 10, -8));
+  }
+  
+  /**
+   * Checks whether the given data is gzip-encoded
+   */
+  public static function isGzipEncoded($content)
+  {
+    if(substr($content, 0, 3) == "\x1f\x8b\x08")
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
   }
 }
 ?>

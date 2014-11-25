@@ -171,8 +171,8 @@ class PhpcrawlSetup extends PHPCrawler {
       }
       
       if ($key=="obeyRobotsTxt") {
-        if ($this->setup_array_raw[$key]=="0") (bool)$argument=false;
-        if ($this->setup_array_raw[$key]=="1") (bool)$argument=true;
+        if ($this->setup_array_raw[$key]=="0") $argument=false;
+        if ($this->setup_array_raw[$key]=="1") $argument=true;
         $this->setup_array[$key]["arg_type"] = "bool";
         $this->setup_array[$key]["arg_value"] = $argument;
       }

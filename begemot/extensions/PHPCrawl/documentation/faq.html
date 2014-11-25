@@ -48,6 +48,12 @@
               
               ... whereas "phpcrawl_user" is the user who is running the crawler.
           </li>
+          
+          <li><b>When trying to use phpcrawl on a CentOS or RedHat sytem, a lot of "Warning: preg_match_all(): Compilation failed:
+                 unrecognized character after ..." errors get thrown.</b><br /><br />
+                 The reason is an old PCRE-library installed on some CentOS/RedHat systems (mostly version 6.xx).
+                 Please update this library to the current version (8.xx) and everything should work fine.
+          </li>
         </ol>
         </div>
         
@@ -59,7 +65,7 @@
         
       </div>
   
-      <div id="footer">Copyright © 2003 - 2012 Uwe Hunfeld phpcrawl@cuab.de</div>
+      <div id="footer">Copyright © 2003 - 2014 Uwe Hunfeld phpcrawl@cuab.de</div>
   </div>
   
 </div>

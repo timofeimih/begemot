@@ -3,7 +3,7 @@ $this->breadcrumbs=array(
 	'Seo Pages'=>array('index'),
 	'Manage',
 );
-$this->menu = require dirname(__FILE__).'/../commonMenu.php';
+$this->menu = require dirname(__FILE__) . '/../commonMenu.php';
 //$this->menu=array(
 //	array('label'=>'List SeoPages','url'=>array('index')),
 //	array('label'=>'Create SeoPages','url'=>array('create')),
