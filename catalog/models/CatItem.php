@@ -258,6 +258,8 @@ class CatItem extends ContentKitModel
         $criteria->params = array(':catId' => $catId, ':published' => 1);
         $price = CatItemsToCat::model()->find($criteria);
 
+        $returnPrice=0;
+
         if (isset($price->maxprice)) $returnPrice = $price->maxprice;
 
         return (int)$returnPrice;
