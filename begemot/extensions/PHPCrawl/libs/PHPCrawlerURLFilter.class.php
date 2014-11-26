@@ -124,7 +124,7 @@ class PHPCrawlerURLFilter
    * @param string $url  The URL as a PHPCrawlerURLDescriptor-object
    * @return bool TRUE if the URL matches the defined rules.
    */
-  protected function urlMatchesRules(PHPCrawlerURLDescriptor $url)
+  public function urlMatchesRules(PHPCrawlerURLDescriptor $url)
   { 
     // URL-parts of the URL to check against the filter-rules
     $url_parts = PHPCrawlerUtils::splitURL($url->url_rebuild);

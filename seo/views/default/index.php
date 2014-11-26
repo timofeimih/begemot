@@ -5,42 +5,46 @@ $this->menu = require dirname(__FILE__) . '/../commonMenu.php';
 // It may take a whils to crawl a site ...
 set_time_limit(10000);
 
-$dir =  Yii::getPathOfAlias('application.modules.begemot.extensions.PHPCrawl.libs');
-include ($dir.'/PHPCrawler.class.php');
-include ($dir.'/PHPCrawlerUtils.class.php');
-include ($dir.'/UrlCache/PHPCrawlerURLCacheBase.class.php');
-include ($dir.'/UrlCache/PHPCrawlerMemoryURLCache.class.php');
-include ($dir.'/UrlCache/PHPCrawlerSQLiteURLCache.class.php');
-include ($dir.'/PHPCrawlerHTTPRequest.class.php');
-include ($dir.'/PHPCrawlerLinkFinder.class.php');
-include ($dir.'/PHPCrawlerDNSCache.class.php');
-include ($dir.'/PHPCrawlerCookieDescriptor.class.php');
-include ($dir.'/PHPCrawlerResponseHeader.class.php');
-include ($dir.'/CookieCache/PHPCrawlerCookieCacheBase.class.php');
-include ($dir.'/CookieCache/PHPCrawlerMemoryCookieCache.class.php');
-include ($dir.'/CookieCache/PHPCrawlerSQLiteCookieCache.class.php');
-include ($dir.'/PHPCrawlerURLFilter.class.php');
-include ($dir.'/PHPCrawlerRobotsTxtParser.class.php');
-include ($dir.'/PHPCrawlerProcessReport.class.php');
-include ($dir.'/PHPCrawlerUserSendDataCache.class.php');
-include ($dir.'/PHPCrawlerURLDescriptor.class.php');
-include ($dir.'/PHPCrawlerDocumentInfo.class.php');
-include ($dir.'/PHPCrawlerBenchmark.class.php');
-include ($dir.'/PHPCrawlerUrlPartsDescriptor.class.php');
-include ($dir.'/PHPCrawlerStatus.class.php');
-include ($dir.'/Enums/PHPCrawlerAbortReasons.class.php');
-include ($dir.'/Enums/PHPCrawlerRequestErrors.class.php');
-include ($dir.'/Enums/PHPCrawlerUrlCacheTypes.class.php');
-include ($dir.'/Enums/PHPCrawlerMultiProcessModes.class.php');
-include ($dir.'/ProcessCommunication/PHPCrawlerProcessCommunication.class.php');
-include ($dir.'/ProcessCommunication/PHPCrawlerDocumentInfoQueue.class.php');
+$dir =  Yii::getPathOfAlias('application.modules.begemot.extensions.PHPCrawl.libs').'/';
+
+include($dir.'PHPCrawler.class.php');
+include($dir.'PHPCrawlerBenchmark.class.php');
+include($dir.'PHPCrawlerCookieDescriptor.class.php');
+include($dir.'PHPCrawlerDNSCache.class.php');
+include($dir.'PHPCrawlerDocumentInfo.class.php');
+include($dir.'PHPCrawlerHTTPRequest.class.php');
+include($dir.'PHPCrawlerLinkFinder.class.php');
+include($dir.'PHPCrawlerProcessReport.class.php');
+include($dir.'PHPCrawlerResponseHeader.class.php');
+include($dir.'PHPCrawlerRobotsTxtParser.class.php');
+include($dir.'PHPCrawlerStatus.class.php');
+include($dir.'PHPCrawlerURLDescriptor.class.php');
+include($dir.'PHPCrawlerURLFilter.class.php');
+include($dir.'PHPCrawlerUrlPartsDescriptor.class.php');
+include($dir.'PHPCrawlerUserSendDataCache.class.php');
+include($dir.'PHPCrawlerUtils.class.php');
+include($dir.'UrlCache/PHPCrawlerURLCacheBase.class.php');
+include($dir.'UrlCache/PHPCrawlerMemoryURLCache.class.php');
+include($dir.'UrlCache/PHPCrawlerSQLiteURLCache.class.php');
+include($dir.'ProcessCommunication/PHPCrawlerDocumentInfoQueue.class.php');
+include($dir.'ProcessCommunication/PHPCrawlerProcessCommunication.class.php');
+include($dir.'ProcessCommunication/PHPCrawlerProcessHandler.class.php');
+include($dir.'ProcessCommunication/PHPCrawlerStatusHandler.class.php');
+include($dir.'Enums/PHPCrawlerAbortReasons.class.php');
+include($dir.'Enums/PHPCrawlerHTTPProtocols.class.php');
+include($dir.'Enums/PHPCrawlerMultiProcessModes.class.php');
+include($dir.'Enums/PHPCrawlerRequestErrors.class.php');
+include($dir.'Enums/PHPCrawlerUrlCacheTypes.class.php');
+include($dir.'CookieCache/PHPCrawlerCookieCacheBase.class.php');
+include($dir.'CookieCache/PHPCrawlerMemoryCookieCache.class.php');
+include($dir.'CookieCache/PHPCrawlerSQLiteCookieCache.class.php');
 
 // Inculde the phpcrawl-mainclass
 //include("libs/PHPCrawler.class.php");
 SeoPages::model()->deleteAll(); 
 SeoLinks::model()->deleteAll(); 
 // Extend the class and override the handleDocumentInfo()-method 
-class MyCrawler extends PHPCrawler 
+class MyCrawler extends PHPCrawler
 {
   function handleDocumentInfo($DocInfo) 
   {
@@ -79,15 +83,15 @@ class MyCrawler extends PHPCrawler
     // print_r($DocInfo->links_found_url_descriptors);
     // die();
     foreach ($DocInfo->links_found_url_descriptors as $link){
-        
 
+
+       // echo $link->link_raw.'<br/>';
         if ($this->UrlFilter->urlMatchesRules($link)){
-            //echo $link->link_raw.'<br/>';  
             $linkModel = new SeoLinks();
             $linkModel->url = $DocInfo->url;
             $linkModel->href = $link->link_raw;
             $linkModel->anchor = $link->linktext;
-            
+
             $linkModel->type = 0;
             $linkModel->save();
            // $linkModel
@@ -116,6 +120,9 @@ class MyCrawler extends PHPCrawler
 // and start the crawling-process. 
 $site_name =  $_SERVER['SERVER_NAME'];
 $crawler = new MyCrawler();
+$dir =  Yii::getPathOfAlias('webroot.files').'/';
+$crawler->setWorkingDirectory($dir);
+$crawler->setUrlCacheType(PHPCrawlerUrlCacheTypes::URLCACHE_SQLITE);
 
 // URL to crawl
 $crawler->setURL($site_name);
@@ -124,10 +131,14 @@ $crawler->setURL($site_name);
 $crawler->addContentTypeReceiveRule("#text/html#");
 
 // Ignore links to pictures, dont even request pictures
-$crawler->addURLFilterRule("#\.(jpg|jpeg|gif|png|js|css)$#i");
+$crawler->addURLFilterRule("#\.(jpg|jpeg|gif|png|js|css|less|ico)$#i");
 
 // Store and send cookie-data like a browser does
 $crawler->enableCookieHandling(true);
+$crawler->setRequestDelay(0.4);
+$crawler->setLinkExtractionTags(array("href"));
+
+$crawler->addURLFilterRule("#\?(.*)+# i");
 
 // Set the traffic-limit to 1 MB (in bytes,
 // for testing we dont want to "suck" the whole site)

@@ -37,7 +37,7 @@ class PHPCrawler
    *
    * @var PHPCrawlerURLFilter
    */
-  protected $UrlFilter;
+  public $UrlFilter;
   
   /**
    * The RobotsTxtParser-Object
