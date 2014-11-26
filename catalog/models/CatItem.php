@@ -101,6 +101,13 @@ class CatItem extends ContentKitModel
 
     }
 
+    public function getCategoriesItemIn()
+    {
+        $categories = CatItemsToCat::model()->with('cat')->findAll(array("condition" => '`t`.`itemId`=' . $this->id .''));
+
+        return $categories;
+    }
+
     public function getOption()
     {
         $ids = CatItemsToItems::model()->findAll(array("condition" => 'itemId=' . $this->id, 'order' => 'id ASC'));
@@ -310,7 +317,19 @@ class CatItem extends ContentKitModel
         }
     }
 
+    public function searchInModel($queryWord)
+    {
+      $queryWord = addcslashes($queryWord, '%_'); // escape LIKE's special characters
+      $criteria = new CDbCriteria( array(
+          'condition' => "name LIKE :match",
+          'params'    => array(':match' => "%$queryWord%") 
+      ) );
 
+      $items = CatItem::model()->findAll( $criteria ); 
+
+      return $items;
+    }
+    
     public function combinedWithParser()
     {
 
