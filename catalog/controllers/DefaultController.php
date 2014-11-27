@@ -7,7 +7,15 @@ class DefaultController extends Controller {
     public function actionIndex() {
         $this->render('index');
     }
+    public function actionTest() {
 
+        $queueId = 'parser';
+        $queue = new CLongTaskQueue($queueId);
+
+        $activeTask = '';
+
+
+    }
     public function actionRenderImages($action = 'none') {
 
         Yii::import('begemot.extensions.CLongTaskQueue');
