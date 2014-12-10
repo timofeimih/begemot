@@ -16,7 +16,7 @@ class DefaultController extends Controller
         return array(
 
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
-                'actions' => array('index', 'newFile', 'delete', 'update','parser'),
+                'actions' => array('index', 'newFile', 'delete', 'update'),
                 'expression' => 'Yii::app()->user->canDo("")'
             ),
             array('deny',  // deny all users
@@ -31,12 +31,7 @@ class DefaultController extends Controller
         $this->render('index');
     }
 
-    public function actionParser()
-    {
 
-
-        $this->render('parser');
-    }
 
     public function actionNewFile()
     {
