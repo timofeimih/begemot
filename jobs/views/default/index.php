@@ -20,35 +20,38 @@ $this->menu = array(
         <tbody>
     
         <?php $number = 0; ?>
-        <?php foreach($itemList as $key => $item): ?>
-            <tr class='item-<?php echo $number ?>'>
-                <td><?php echo $key?></td>
-                <td><?php echo (isset($item['executable']) & $item['executable'] == true) ? "Да" : "Нет"?></td>
-                <td class='period'><?php if(isset($item['time'])) echo JobManager::timeToString($item['time']);?></td>
-                <td class='time'>
-                    <?php if(isset($item['hour'])) echo JobManager::timeToString($item['hour']) . ":00";?></td>
-                <td>
-                    <input type="button"
-                           class='btn btn-primary turnOnOff'
-                           data-name='<?php echo $key?>'
-                           data-turn='1'
-                           value='Включить'
-                           style='display: <?php echo ($item['executable'] == true) ? 'none' : 'inline'?>'>
-                    <input type="button"
-                           class='btn btn-danger turnOnOff'
-                           data-name='<?php echo $key?>'
-                           data-turn='0'
-                           value='Отключить'
-                           style='display: <?php echo ($item['executable'] == true) ? 'inline' : 'none'?>'>
-                    <input type="button"
-                           class='btn btn-danger removeTask'
-                           data-name='<?php echo $key?>'
-                           value='Удалить задачу'>
-                    <input type="button" name='<?php echo $key?>' class='btn btn-info changeTime' value='Поменять период'>
-                </td>
-            </tr>
-            <?php $number++; ?>
+        <?php if ($itemList): ?>
+            <?php foreach($itemList as $key => $item): ?>
+                <tr class='item-<?php echo $number ?>'>
+                    <td><?php echo $key?></td>
+                    <td><?php echo (isset($item['executable']) & $item['executable'] == true) ? "Да" : "Нет"?></td>
+                    <td class='period'><?php if(isset($item['time'])) echo JobManager::timeToString($item['time']);?></td>
+                    <td class='time'>
+                        <?php if(isset($item['hour'])) echo JobManager::timeToString($item['hour']) . ":00";?></td>
+                    <td>
+                        <input type="button"
+                               class='btn btn-primary turnOnOff'
+                               data-name='<?php echo $key?>'
+                               data-turn='1'
+                               value='Включить'
+                               style='display: <?php echo ($item['executable'] == true) ? 'none' : 'inline'?>'>
+                        <input type="button"
+                               class='btn btn-danger turnOnOff'
+                               data-name='<?php echo $key?>'
+                               data-turn='0'
+                               value='Отключить'
+                               style='display: <?php echo ($item['executable'] == true) ? 'inline' : 'none'?>'>
+                        <input type="button"
+                               class='btn btn-danger removeTask'
+                               data-name='<?php echo $key?>'
+                               value='Удалить задачу'>
+                        <input type="button" name='<?php echo $key?>' class='btn btn-info changeTime' value='Поменять период'>
+                    </td>
+                </tr>
+                <?php $number++; ?>
         <?php endforeach ?>
+        <?php endif ?>
+        
 
         </tbody>
     </table>
