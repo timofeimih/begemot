@@ -59,7 +59,7 @@ class DefaultController extends Controller
 		$crons = new JobManager();
 
 		$this->render('index',array(
-		 	'itemList' => (array) $crons->getListCronJob(),
+		 	'itemList' => $crons->getListCronJob(),
 		 ));
 
 	}
@@ -70,7 +70,7 @@ class DefaultController extends Controller
 		$jobManager = new JobManager();
 
 		$this->render('jobs',array(
-		 	'itemList' => (array) $jobManager->getAllJobs(),
+		 	'itemList' => $jobManager->getAllJobs(),
 		 	'jobManager' => $jobManager
 		 ));
 	}
