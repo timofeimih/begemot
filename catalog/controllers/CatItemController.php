@@ -260,7 +260,7 @@ class CatItemController extends Controller
                 $itemToCat->item->catId = $itemToCat->catId;
                 $itemToCat->item->save();
             }
-
+            $this->redirect(array('update','id'=>$model->id,'tab'=>$tab));
         }
 
         $this->render('update', array(
@@ -368,7 +368,6 @@ class CatItemController extends Controller
                     $catItem->catId = $model->catId;
 
                 }
-
 
                 $catItem->save();
 
