@@ -1,7 +1,7 @@
 <?php
 class ChangeCatItemsJob extends BaseJob{
 
-	protected $name = "ChangeCatItemJob";
+	protected $name = "ChangeCatItemsJob";
 	protected $description = "description";
 
 	public function getParameters()
@@ -27,16 +27,15 @@ class ChangeCatItemsJob extends BaseJob{
 		foreach(glob(Yii::app()->basePath . "/../files/parsersData/*.data") as $file) {	
 			$websiteName = Yii::app()->params['adminEmail'];
 
-		    $json = file_get_contents($file); 
-		    $json = json_decode($json);
+		    $json = require($file); 
 
-		    $filename = $json->name;
+		    $filename = $json['name'];
 
 		    ParsersStock::model()->deleteAll(array('condition' => "`filename`='" . $filename . "'"));
 
-		    $length = count($json->items);
+		    $length = count($json['items']);
 
-		    foreach ($json->items as $itemParsed) {
+		    foreach ($json['items'] as $itemParsed) {
 		      $new = new ParsersStock;
 		      $itemParsed = (array)$itemParsed;
 		      $itemParsed['filename'] = $filename;
@@ -73,7 +72,9 @@ class ChangeCatItemsJob extends BaseJob{
 		      mail($to, $subject, $message, $headers);
 
 		      echo 'no changes';
-		      return false;
+		      return true;
+
+		      exit();
 		    }
 
 		        $changed = array();
@@ -134,7 +135,6 @@ class ChangeCatItemsJob extends BaseJob{
 		    }
 		}
 
-		
 	}
 
 }
