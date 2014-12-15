@@ -8,7 +8,10 @@
  * @property string $title
  * @property string $text
  */
-class Promo extends CActiveRecord
+
+Yii::import('begemot.extensions.contentKit.ContentKitModel');
+
+class Promo extends ContentKitModel
 {
 	/**
 	 * Returns the static model of the specified AR class.
@@ -35,13 +38,15 @@ class Promo extends CActiveRecord
 	{
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
-		return array(
+        $rules = array(
 			array('title', 'length', 'max'=>100),
 			array('text', 'length', 'max'=>1000),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('id, title, text', 'safe', 'on'=>'search'),
 		);
+
+        return array_merge(parent::rules(), $rules);
 	}
 
 	/**
@@ -60,11 +65,11 @@ class Promo extends CActiveRecord
 	 */
 	public function attributeLabels()
 	{
-		return array(
+		return array_merge( array(
 			'id' => 'ID',
 			'title' => 'Title',
-			'text' => 'Text',
-		);
+			'text' => 'Text'),
+		parent::attributeLabels());
 	}
 
 	/**
@@ -86,4 +91,8 @@ class Promo extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
+
+
+
+
 }

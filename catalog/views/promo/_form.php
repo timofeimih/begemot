@@ -6,7 +6,7 @@
 
 <div class="form">
 
-<?php $form=$this->beginWidget('CActiveForm', array(
+<?php $form=$this->beginWidget('bootstrap.widgets.TbActiveForm', array(
 	'id'=>'promo-form',
 	'enableAjaxValidation'=>false,
 )); ?>
@@ -37,7 +37,16 @@
 
 
 	</div>
-
+    <div class="row">
+        <?php
+        $this->widget('begemot.extensions.contentKit.widgets.KitFormPart',
+            array(
+                'form' => $form,
+                'model' => $model
+            )
+        );
+        ?>
+    </div>
 	<div class="row buttons">
 		<?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save'); ?>
 	</div>
@@ -81,8 +90,10 @@
 
 
         $configFile = Yii::getPathOfAlias(CatalogModule::PROMO_CONFIG_FILE_ALIAS);
-        if (file_exists($configFile)){
-            $picturesConfig = require($configFile);
+        if (file_exists($configFile.'.php')){
+
+
+            $picturesConfig = require($configFile.'.php');
         } else{
             $picturesConfig = $defaultConfig;
         }

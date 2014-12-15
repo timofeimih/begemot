@@ -51,7 +51,7 @@ class PromoRelation extends CActiveRecord
     public function relations()
     {
         return array(
-            'name' => array(self::BELONGS_TO, 'Promo', 'promoId'),
+            'promo' => array(self::BELONGS_TO, 'Promo', 'promoId'),
         );
     }
 
