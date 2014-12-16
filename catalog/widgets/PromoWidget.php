@@ -4,6 +4,7 @@ class PromoWidget extends CWidget {
     
     public $categoryId = null;
     public $itemId = null;
+    public $viewFileName = 'promoIndex';
 
     
     public function run(){
@@ -47,7 +48,7 @@ class PromoWidget extends CWidget {
         }
 
         if (count($data)>0)
-            $this->render('promoIndex',array('promos'=>$data));
+            $this->render($this->viewFileName,array('promos'=>$data));
         
     }
     

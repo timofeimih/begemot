@@ -77,7 +77,7 @@ if (is_null($tab)) $tab = 'data';
 <?php if ($tab == 'positions'): ?>
 
     <?php
-    $items = PromoRelation::model()->with(array('name'))->findAll(array('condition' => 'promoId=' . $model->id . ' and type=' . PromoTypeEnum::TO_POSITION));
+    $items = PromoRelation::model()->with(array('promo'))->findAll(array('condition' => 'promoId=' . $model->id . ' and type=' . PromoTypeEnum::TO_POSITION));
 
     if (is_array($items) && count($items) > 0) {
 

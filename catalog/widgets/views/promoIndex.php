@@ -1,8 +1,4 @@
 <?php
-Yii::app()->clientScript->registerCssFile('/css/catalog/promo.css');
-Yii::app()->clientScript->registerScriptFile('/js/jquery.cycle2.min.js', 0);
-
-
 Yii::import('pictureBox.components.PBox');
 
 ?>
@@ -10,22 +6,10 @@ Yii::import('pictureBox.components.PBox');
 <div id="promoWidget">
     <nav class="tab-nav"  id="per-slide-template">
 
-
-
-
     </nav>
 
     <div class='btn cycle-prev' id="leftBtn"></div>
-    <div id="slides" class="cycle-slideshow"
-         data-cycle-fx="scrollHorz"
-         data-cycle-speed="100"
-         data-cycle-pause-on-hover="true"
-         data-cycle-slides="> div.slide"
-         data-cycle-pager="#per-slide-template"
-         data-cycle-pager-active-class="active"
-         data-cycle-prev=".cycle-prev#leftBtn"
-         data-cycle-next=".btn#rightBtn"
-        >
+    <div>
         <?php foreach ($promos as $promo):?>
              <div class="slide" data-cycle-pager-template="<a href=#><?php echo $promo->promo->title;?></a>">
                  <div id="contentImg">
