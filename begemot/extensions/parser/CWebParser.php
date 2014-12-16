@@ -200,7 +200,14 @@ class CWebParser
      */
     private function doTask($task)
     {
-
+        /*
+         * Проверяем тип содержание. Нам нужен только text/html
+         * В будущем можно будет доработать под проверку по массиву
+         * с несколькими типами mime
+         *
+         * Проверка на код ответа http 200
+         *
+         */
         $ch = curl_init( 'http://'.$this->host. $task->url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
@@ -208,7 +215,9 @@ class CWebParser
         curl_setopt($ch, CURLOPT_NOBODY, 1);
         curl_exec($ch);
         $mime = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
+        if ($httpCode!=200) return;
         if ($mime!='text/html') return;
 
         $pageContent = $this->getPageContent($task->url);
