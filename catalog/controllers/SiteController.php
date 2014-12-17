@@ -116,27 +116,28 @@ class SiteController extends Controller {
             $parentCategory = CatCategory::model()->findByPk($category->pid);
         }
 
-        $catsIDs = $category->getAllCatChilds($catId);
+        //$catsIDs = $category->getAllCatChilds($catId);
 
-        $iDsArray = array($catId);
-        foreach ($catsIDs as $catData) {
-            $iDsArray[] = $catData['id'];
-        }
+//        $iDsArray = array($catId);
+//        foreach ($catsIDs as $catData) {
+//            $iDsArray[] = $catData['id'];
+//        }
 
-        $iDsStr = '(' . implode(',', $iDsArray) . ')';
+       // $iDsStr = '(' . implode(',', $iDsArray) . ')';
         $criteria = new CDbCriteria;
 
         $criteria->select = 't.itemId, t.catId';
-        $criteria->condition = '`t`.`catId` in ' . $iDsStr . '';
+        $criteria->condition = '`t`.`catId` = ' . $catId . '';
+
         $criteria->with = array(
             'item'=>array(
                 'condition'=>'published=1'
             )
         );
 
-        $criteria->group = 'item.id';
+       // $criteria->group = 'item.id';
         $criteria->distinct = true;
-        $criteria->order = 'item.top DESC, t.order ASC';
+        $criteria->order = 't.order ASC';
 
         if (isset($_GET['sort'])) {
            $sort = ($_GET['sort'] == 'asc') ? 'asc' : 'desc';
