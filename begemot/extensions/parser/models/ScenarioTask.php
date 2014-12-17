@@ -46,8 +46,16 @@ class ScenarioTask extends CActiveRecord
 		);
 	}
 
-    public function completeTask (){
-        $this->taskStatus = 'done';
+    public function completeTask ($error=null){
+        if (!is_null($error)){
+
+            $this->taskStatus = 'error';
+        }
+        else{
+            $this->taskStatus = 'done';
+
+        }
+
         $this->save();
     }
 
@@ -72,6 +80,13 @@ class ScenarioTask extends CActiveRecord
             return true;
         }
     }
+
+    static public function getActiveTaskCount($processId){
+        $sql ='SELECT count(*) FROM webParserScenarioTask where processId='.$processId.' and taskStatus="new";' ;
+        $taskCount = Yii::app()->db->createCommand($sql)->queryScalar();
+        return $taskCount;
+    }
+
 
 
 }

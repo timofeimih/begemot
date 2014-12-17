@@ -11,7 +11,7 @@
 
 <?php
 $this->menu = require dirname(__FILE__) . '/../commonMenu.php';
-echo $processId;
+//echo $processId;
 
 
 Yii::import('begemot.extensions.parser.*');
@@ -47,7 +47,14 @@ $webParser->parse($processId);
 //$webParser->getAllUrlFromPage($pageContent);
 //echo  md5('123', true);
 
+echo 'Количество активных задач:'. $webParser->getActiveTaskCount().'!!';
 
-echo '<pre>';
-print_r($webParser->filteredUrlArray);
-echo '</pre>';
+echo '<br>';
+foreach ($webParser->doneTasks as $doneTask){
+    echo $doneTask->id.'<br>';
+}
+//echo '<pre>';
+//print_r($webParser->filteredUrlArray);
+//echo '</pre>';
+
+echo '<script>location.reload();</script>>';

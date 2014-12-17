@@ -65,6 +65,8 @@ class CWebParser
     private $parserName = null;
     private $parseScenario = null;
 
+    public $doneTasks = array();
+
     public function getProcessId()
     {
         return $this->processId;
@@ -208,6 +210,7 @@ class CWebParser
          * Проверка на код ответа http 200
          *
          */
+
         $ch = curl_init( 'http://'.$this->host. $task->url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
@@ -217,15 +220,23 @@ class CWebParser
         $mime = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-        if ($httpCode!=200) return;
-        if ($mime!='text/html') return;
+        if ($httpCode!=200){
+            $task->completeTask(200);
+            $this->doneTasks[]=$task;
+            return;
+        }
+
+        if ($mime!='text/html'){
+            $task->completeTask(-1);
+            $this->doneTasks[]=$task;
+            return;
+        }
 
         $pageContent = $this->getPageContent($task->url);
         $scenarioItem = $this->getScenarioItem($task->scenarioName);
 
         $doc = phpQuery::newDocument($pageContent);
         phpQuery::selectDocument($doc);
-
         foreach ($scenarioItem['navigation'] as $scenarioName=>$navigationRule){
 
             $searchHrefsDocumentPart = pq($navigationRule);
@@ -250,6 +261,7 @@ class CWebParser
         }
 
         $task->completeTask();
+        $this->doneTasks[]=$task;
 
     }
 
@@ -498,6 +510,10 @@ class CWebParser
 
         return $url;
 
+    }
+
+    public function getActiveTaskCount(){
+        return ScenarioTask::getActiveTaskCount($this->getProcessId());
     }
 
 } 
