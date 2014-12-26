@@ -23,7 +23,7 @@ class CatItemsToCatController extends Controller
 				'actions'=>array('delete','orderUp','orderDown', 'changeThroughDisplayValue', 
 					// 'index',
 					'admin'),
-                'expression' => 'Yii::app()->user->isAdmin()'
+                'expression' => ' Yii::app()->user->canDo("Catalog")'
 			),
 			array('deny',  // deny all users
 				'users'=>array('*'),
