@@ -229,6 +229,7 @@ $script = '
 
             function refreshPictureBox(divId,state){
 
+
                 $.ajax({
                     url:"/pictureBox/default/ajaxLayout",
                     data:state,
@@ -239,6 +240,9 @@ $script = '
                         $("#"+divId).html(html);
 
                         
+                    },
+                    error:function(param,param1,param2){
+                        alert(param2);
                     }
                 });
             }
@@ -251,6 +255,8 @@ $thisPictureBoxScript = '
                 PB_'.$config['divId'].'.pictureBoxPage = 1;
                 PB_'.$config['divId'].'.id = "'.$id.'";
                 PB_'.$config['divId'].'.elementId = '.$elementId.';
+
+
 
                 refreshPictureBox("'.$config['divId'].'",PB_'.$config['divId'].');
                
