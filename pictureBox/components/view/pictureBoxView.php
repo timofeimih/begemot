@@ -242,7 +242,7 @@ $script = '
                         
                     },
                     error:function(param,param1,param2){
-                        alert(param2);
+                        alert(param.responseText);
                     }
                 });
             }
