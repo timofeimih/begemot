@@ -19,7 +19,7 @@
 </div>
 
 <div class="modal-body">
-    <img id="ladybug_ant" style="float:left;" src="/files/pictureBox/catalogItem/477/0.jpg?tmp=100"/>
+    <img id="ladybug_ant" style="float:left;" src=""/>
 </div>
 
 <div class="modal-footer">
@@ -128,10 +128,10 @@ function sendResizeRequest(){
             resizeData.selection.height = Math.round(resizeData.selection.height/scaleX);
 
     }
-    alert(resizeData.selection.x1+' '+resizeData.selection.y1+' '+resizeData.selection.width+' '+resizeData.selection.height+' ');
+    //alert(resizeData.selection.x1+' '+resizeData.selection.y1+' '+resizeData.selection.width+' '+resizeData.selection.height+' ');
     $.ajax(
         {
-            url: '/pictureBox/default/ajaxMakeFilteredImage/id/catalogItem/elementId/'+resizeData.catId+'/pictureId/'+resizeData.activeImage+'/filterName/'+resizeData.filterName+'/x/'+resizeData.selection.x1+'/y/'+resizeData.selection.y1+'/width/'+resizeData.selection.width+'/height/'+resizeData.selection.height,
+            url: '/pictureBox/default/ajaxMakeFilteredImage/id/'+PB_".$config['divId'].".id +'/elementId/'+resizeData.catId+'/pictureId/'+resizeData.activeImage+'/filterName/'+resizeData.filterName+'/x/'+resizeData.selection.x1+'/y/'+resizeData.selection.y1+'/width/'+resizeData.selection.width+'/height/'+resizeData.selection.height,
             success: alert('Размер изображения изменен!')
         });
 }
