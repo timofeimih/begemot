@@ -13,7 +13,7 @@ class ParsersModule extends CWebModule {
             'parsers.models.*',
             'jobs.components.*',
             'application.jobs.*',
-
+            'pictureBox.components.PictureBox'
         ));
 
     }
