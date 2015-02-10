@@ -208,11 +208,11 @@ return array(
             // The database component used
             'connectionID' => 'db',
             // The itemTable name (default:authitem)
-            'itemTable' => 'items',
+            'itemTable' => 'authItem',
             // The assignmentTable name (default:authassignment)
-            'assignmentTable' => 'assignments',
+            'assignmentTable' => 'authAssignment',
             // The itemChildTable name (default:authitemchild)
-            'itemChildTable' => 'itemchildren',
+            'itemChildTable' => 'authItemChild',
         ),
 
 //        'request' => array(

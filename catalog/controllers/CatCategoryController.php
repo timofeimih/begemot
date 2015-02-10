@@ -39,7 +39,9 @@ class CatCategoryController extends Controller
 
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
                 'actions' => array('admin', 'delete', 'orderUp', 'orderDown', 'create', 'update', 'index', 'view','tidyPost'),
+
                 'expression' => 'Yii::app()->user->canDo("Catalog")'
+
             ),
             array('deny', // deny all users
                 'users' => array('*'),
