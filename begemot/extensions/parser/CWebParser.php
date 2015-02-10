@@ -32,6 +32,9 @@
  * Сбор данных - если у сценария есть параметр dataFields, это значит на данной странице
  * могут быть данные которые надо вытащить и сохранить.
  */
+
+Yii::import('TaskManager');
+
 class CWebParser
 {
     public $urlArray = array();
@@ -41,7 +44,7 @@ class CWebParser
     /**
      * @var int Сколько задач обрабатывается за один запуск процесса
      */
-    public $tasksPerExecute = 1;
+    public $tasksPerExecute = 5;
 
 
     /**
@@ -72,7 +75,12 @@ class CWebParser
         return $this->processId;
     }
 
-    public function CWebParser($parserName, $host,$scenario)
+    /**
+     * @var TaskManager Экземпляр класса управляющего задачами для текущего процесса
+     */
+    public $taskManager = null;
+
+    public function CWebParser($parserName, $host, $scenario, $processId)
     {
         Yii::import('begemot.extensions.parser.models.*');
         $dir = Yii::getPathOfAlias('begemot.extensions.parser');
@@ -80,14 +88,21 @@ class CWebParser
         $this->parserName = $parserName;
         $this->host = $host;
         $this->setScenario($scenario);
+        $this->processId = $processId;
+
+        $this->taskManager = new TaskManager($processId);
+
+
     }
 
     /**
      * Собственно главный процесс, который надо выполнять многократно
      * с определенным сценарием.
      */
-    public function parse($processId = null)
+    public function parse()
     {
+        $processId = $this->getProcessId();
+
         $status = null;
         if (is_null($processId)) {
             $status = $this->startNewParseProccess();
@@ -122,7 +137,7 @@ class CWebParser
         //Начинаем обработку очередной страницы по сценарию сбора информации
 
         //Для начала узнаем есть ли существующие задания для сценарием в БД
-        //Для нашего id процесса естественно
+        //Для нашего id процесса и со статусом new
         if (ScenarioTask::isExistSomeTask($this->processId)) {
             //Задачи есть. Выполняем что можем за один запуск
             $this->doSomeTasks();
@@ -161,11 +176,20 @@ class CWebParser
             $weHaveNewTasks = false;
             foreach ($startUrlArray as $startTask) {
 
-                    //Проверять было задание или нет тут не нужно. Мы знаем, что заданий нет никаких.
-                    //Ни новых, ни выполненных.
+                //Проверять было задание или нет тут не нужно. Мы знаем, что заданий нет никаких.
+                //Ни новых, ни выполненных.
+                if (!$this->isTaskExist($startTask['url'], $startTask['scenarioItemName'])) {
                     $this->createTask($startTask['url'], $startTask['scenarioItemName']);
                     $weHaveNewTasks = true;
+                }
+            }
 
+            if (!$weHaveNewTasks) {
+                /**
+                 * Процесс парсинга закончен. Все что парсер мог сделать - он сделал.
+                 */
+                $webParserProcess->status = 'done';
+                $webParserProcess->save();
             }
 
         }
@@ -211,7 +235,7 @@ class CWebParser
          *
          */
 
-        $ch = curl_init( 'http://'.$this->host. $task->url);
+        $ch = curl_init('http://' . $this->host . $task->url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_HEADER, 1);
@@ -220,48 +244,113 @@ class CWebParser
         $mime = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-        if ($httpCode!=200){
-            $task->completeTask(200);
-            $this->doneTasks[]=$task;
+        if ($httpCode != 200) {
+
+            $this->doneTasks[] = $task;
+            $task->completeTask(-1);
             return;
         }
 
-        if ($mime!='text/html'){
+        if ($mime != 'text/html') {
+
             $task->completeTask(-1);
-            $this->doneTasks[]=$task;
+            $this->doneTasks[] = $task;
             return;
         }
 
         $pageContent = $this->getPageContent($task->url);
+
         $scenarioItem = $this->getScenarioItem($task->scenarioName);
 
         $doc = phpQuery::newDocument($pageContent);
         phpQuery::selectDocument($doc);
-        foreach ($scenarioItem['navigation'] as $scenarioName=>$navigationRule){
 
-            $searchHrefsDocumentPart = pq($navigationRule);
+        if (isset($scenarioItem['navigation']) && is_array($scenarioItem['navigation'])) {
+            foreach ($scenarioItem['navigation'] as $scenarioName => $navigationRule) {
 
-            //Перебираем все части кода которые нашли по правилу сценария
-            foreach ($searchHrefsDocumentPart as $navigationPart){
-                //Создаем ScenarioTask для каждого найденного урл
-                $urlArray = $this->getAllUrlFromContent($navigationPart);
-                foreach($urlArray as $url){
-                    echo $url.' '.$scenarioName;
-                    echo ($this->isTaskExist($url,$scenarioName)?'уже есть':'новые');
-                    echo '<br>';
-                    if (!$this->isTaskExist($url,$scenarioName)){
+                $searchHrefsDocumentPart = pq($navigationRule);
 
-                        $this->createTask($url,$scenarioName);
+                //Перебираем все части кода которые нашли по правилу сценария
+                foreach ($searchHrefsDocumentPart as $navigationPart) {
+                    //Создаем ScenarioTask для каждого найденного урл
+                    $urlArray = $this->getAllUrlFromContent($navigationPart);
+                    foreach ($urlArray as $url) {
+                        if (!$this->isTaskExist($url, $scenarioName)) {
+
+                            $this->createTask($url, $scenarioName);
+                        }
                     }
                 }
+
+
             }
+        }
+
+        /**
+         * Начинаем сбор данных по набору фильтров.
+         * Если фильтр начинается с "@", то он процедурный. То есть это
+         * не css путь, а некий стандартный модификатор. Например @url - это фильтр,
+         * который в качестве данных просит вернуть url страницы с которой ведется работа. И т.д.
+         *
+         * Если имя фильтра начинается с @, то это так же не простое имя поля данных
+         */
 
 
+        if (isset($scenarioItem['dataFields']) && is_array($scenarioItem['dataFields'])) {
+
+            foreach ($scenarioItem['dataFields'] as $fieldName => $fieldFilter) {
+
+                if ($fieldName=='@') continue;
+
+                $dataFieldModel = new WebParserData();
+
+
+                $dataFieldModel->processId = $this->processId;
+
+                $dataFieldModel->fieldName = $fieldName;
+                $planeData = $this->executeFilter($fieldFilter, $task);
+                $dataFieldModel->fieldData = $planeData;
+
+                if (isset($scenarioItem['dataFields']['@'])) {
+                    foreach ($scenarioItem['dataFields']['@'] as $massFilterKey=>$massFilter) {
+                        switch ($massFilterKey) {
+                            case WebParserDataEnums::DATA_ID_ARRAY_KEY :
+
+                                $dataFieldModel->fieldId =  $this->executeFilter($massFilter, $task);
+
+                                break;
+                        }
+                    }
+                }
+
+                $dataFieldModel->save();
+
+
+            }
 
         }
 
+
         $task->completeTask();
-        $this->doneTasks[]=$task;
+        $this->doneTasks[] = $task;
+
+    }
+
+    private function executeFilter($filter, $task)
+    {
+
+
+        if ($filter{0} == "@") {
+            //Процедурный фильтр
+
+            if ($filter == WebParserDataEnums::DATA_FILTER_URL) {
+                return $task->url;
+            }
+        }
+
+
+        return pq($filter)->html();
+
 
     }
 
@@ -299,13 +388,12 @@ class CWebParser
         $webPageFromBase = 'none';
         $url = $this->normalizeUrl($url);
 
-
         if ($this->isUrlUniq($url, $webPageFromBase)) {
-            $pageUrl = $this->host.$url;
+            $pageUrl = 'http://'.$this->host . $url;
 
             $ch = curl_init($pageUrl);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
             $data = curl_exec($ch);
 
             curl_close($ch);
@@ -339,7 +427,7 @@ class CWebParser
     {
 
 
-        $urlArray = array ();
+        $urlArray = array();
         foreach (pq($сontent)->find('a') as $a) {
             $a = pq($a);
             $urlArray[] = $a->attr('href');
@@ -366,7 +454,7 @@ class CWebParser
     {
 
 
-        return  array_filter($urlArray, array(get_class($this), 'regExpChecker'));
+        return array_filter($urlArray, array(get_class($this), 'regExpChecker'));
     }
 
 
@@ -393,18 +481,6 @@ class CWebParser
 
     }
 
-    private function regExpChecker($var)
-    {
-
-        foreach ($this->urlFilterArray as $urlFilter) {
-            if (preg_match($urlFilter, $var)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-
     private function normalizeUrlArray($urlArray)
     {
 
@@ -421,9 +497,9 @@ class CWebParser
 
         $url = strtolower($url);
 
-       if (!preg_match('#^/#',$url)) {
-          $url='/'.$url;
-       }
+        if (!preg_match('#^/#', $url)) {
+            $url = '/' . $url;
+        }
 
 
         return $url;
@@ -486,34 +562,79 @@ class CWebParser
         $newTask->save();
     }
 
+    private function regExpChecker($var)
+    {
+        foreach ($this->urlFilterArray as $urlFilter) {
+            if (preg_match($urlFilter, $var)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    /**
+     * @param $scenarioInput Массив с описанием сценария работы для парсера
+     */
     private function setScenario($scenarioInput)
     {
         $scenarioArray = array();
         foreach ($scenarioInput as $scenarioItem) {
+
+            /*
+             * Ищем и кладем отдельно фильтры с процедурными именами
+             */
+            if (isset($scenarioItem['dataFields'])){
+
+                foreach ($scenarioItem['dataFields'] as $key=>$scenarioFilter) {
+                    if ($scenarioFilter{0} == '@') {
+                        if (!isset($scenarioItem['dataFields']['@'])) {
+                            $scenarioItem['dataFields']['@'] = array();
+                        }
+
+                        $scenarioItem['dataFields']['@'][$key] = $scenarioFilter;
+                        unset ($scenarioItem['dataFields'][$key]);
+
+                    }
+                }
+            }
+
             $scenarioArray[$scenarioItem['name']] = $scenarioItem;
+
         }
 
         $this->parseScenario = $scenarioArray;
 
     }
 
-    private function getScenarioItem($name){
+    private function getScenarioItem($name)
+    {
         return $this->parseScenario[$name];
     }
 
-    private function removeHostFromUrl ($url){
+    private function removeHostFromUrl($url)
+    {
         $url_data = parse_url($url);
 
-        $url = $url_data['path'].
-        (isset($url_data['query'])?'?'.$url_data['query']:'').
-        (isset($url_data['fragment'])?'#'.$url_data['fragment']:'');
+        $url = $url_data['path'] .
+            (isset($url_data['query']) ? '?' . $url_data['query'] : '') .
+            (isset($url_data['fragment']) ? '#' . $url_data['fragment'] : '');
 
         return $url;
 
     }
 
-    public function getActiveTaskCount(){
-        return ScenarioTask::getActiveTaskCount($this->getProcessId());
+
+
+    public function getProcessStatus()
+    {
+
+        $processId = $this->processId;
+
+        $webParserProcess = WebParserProcess::model()->findByPk($processId);
+
+        return $webParserProcess->status;
+
     }
 
 } 
