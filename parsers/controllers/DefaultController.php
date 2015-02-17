@@ -226,10 +226,14 @@ class DefaultController extends Controller
 
     public function actionIndex()
     {
+
+        $timeFile = require(Yii::app()->basePath.'/../files/parsersData/time.txt');
+
         $this->render('index',array(
             // 'models'=>$models,
             // 'return' => $return,
-            'fileListOfDirectory' => $this->getFiles()
+            'fileListOfDirectory' => $this->getFiles(),
+            'timeArray' => $timeFile
         ));
 
     }

@@ -45,6 +45,8 @@ class DefaultController extends Controller
 
     public function actionRunJob()
     {
+
+
         if (isset($_POST['name'])) {
             $class = new $_POST['name'];
             if(!$class->runJob())  throw new CHttpException(400,'Ошибка');

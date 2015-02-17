@@ -129,11 +129,13 @@ class ChangeCatItemsJob extends BaseJob{
 		    $subject = "Изменилось " . count($changed) . " карточек";
 
 		    if (mail($to, $subject, $message, $headers)) {
-		      echo Yii::app()->params['adminEmail'];
+		      //echo Yii::app()->params['adminEmail'];
 		    } else{
-		      echo "no message";
+		      //echo "no message";
 		    }
 		}
+
+		return true;
 
 	}
 
