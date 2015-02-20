@@ -69,6 +69,7 @@
 
         <input type="submit" name='saveItemsToItems' class='btn btn-primary' value='сохранить'/>
     </form>
+
     <?php
     $related = CatItemsToItems::model()->findAll(array('select'=>'itemId', 'condition' => 'toItemId='.$model->id));
     if ((!$model->isNewRecord) && (count($related) > 0)):
