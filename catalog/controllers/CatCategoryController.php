@@ -82,7 +82,7 @@ class CatCategoryController extends Controller
                             $columnName = $column->name;
 
                             if ($columnName==$table->primaryKey) continue;
-
+                            if ($columnName=='published') {$itemCopy->$columnName = 0;continue;};
                             $itemCopy->$columnName = $itemOriginal->$columnName;
 
                         }
@@ -114,7 +114,17 @@ class CatCategoryController extends Controller
                             copy($file1,$file2);
                         }
 
-                   
+                        //Копируем привязки к разделам, если нужно
+                        if (isset($_POST['mode']) && $_POST['mode']=='catOfOriginal'){
+                            $CatItemsRelations = CatItemsToCat::model()->findAll('itemId = '.$itemId);
+
+                            foreach ($CatItemsRelations as $CatItemsToCat){
+                                $newCatItemToCat = new CatItemsToCat();
+                                $newCatItemToCat->catId = $CatItemsToCat->catId;
+                                $newCatItemToCat->itemId = $lastId;
+                                $newCatItemToCat->save();
+                            }
+                        }
 
 
                     }

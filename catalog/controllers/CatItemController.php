@@ -302,6 +302,14 @@ class CatItemController extends Controller
         CatItemsToItems::model()->deleteAll("itemId = '$id' OR toItemId = '$id'");
         $this->delete_files(Yii::getPathOfAlias('webroot') . '/files/pictureBox/catalogItem/' . $id . "/");
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
+
+        //Удаляем привязки к категориям
+        $CatItemsRelations = CatItemsToCat::model()->findAll('itemId = '.$id);
+
+        foreach ($CatItemsRelations as $catItemToCat){
+            $catItemToCat->delete();
+        }
+
         if (!isset($_GET['ajax']))
             $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
     }
