@@ -31,4 +31,19 @@ class WebParserDataEnums {
      */
      const DATA_FILTER_URL = '@url';
 
-} 
+
+    /**
+     * Типы задач
+     */
+    const TASK_TYPE_NAVIGATION = 'navigation';
+    const TASK_TYPE_DATA = 'navigation';
+    const TASK_TYPE_IMAGE = 'navigation';
+    /**
+     * Типы входных данных для задач
+     */
+
+    const TASK_TARGET_DATA_TYPE_URL = 'url';
+    const TASK_TARGET_DATA_TYPE_DATA = 'data';
+
+
+}
