@@ -8,6 +8,10 @@ $menuPart1 = array(
         'url' => array('/catalog/catItem/create'),
     ),
     array(
+        'label' => 'Скопировать позицию',
+        'url' => array('/catalog/catCategory/makeCopy'),
+    ),
+    array(
         'label' => 'Управление разделами',
         'items' => array(
             array(

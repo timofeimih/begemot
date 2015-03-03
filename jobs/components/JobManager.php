@@ -220,15 +220,17 @@ class JobManager extends CApplicationComponent{
 		    $json = require($directory . 'time.txt');
 		    //print_r($files);
 		    $array = (array) $json;
+		   $arr = array($name => $time);
 
-		    if(is_array($array)){
-		    	if (array_key_exists($name, $array)) {
-			    	$array[$name] = $time;
+			if (array_search('time.txt', $files)) {
+			    $array = file_get_contents($dir . 'time.txt');
+			    if (is_array($array)) {
+				$arr = array_merge($array, $arr);
 			    }
+			    
+			}
 
-
-			    PictureBox::crPhpArr($array, $tempFile);
-		    }
+			PictureBox::crPhpArr($arr, Yii::app()->basePath . "/../files/parsersData/time.txt");
 		    
 		}
 		

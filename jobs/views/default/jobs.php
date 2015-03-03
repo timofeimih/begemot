@@ -8,6 +8,7 @@ $this->menu = array(
 
 <h1>Все работы</h1>
 
+<div class="success" style='color: green'></div>
 <table>
     <thead>
     <tr>

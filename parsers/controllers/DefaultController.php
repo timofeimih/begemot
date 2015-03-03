@@ -139,17 +139,13 @@ class DefaultController extends Controller
         $class->runJob();
         $json = $class->getLastParsedData();
 
-
         ParsersStock::model()->deleteAll(array('condition' => "`filename`='" . $class->getName() . "'"));
-
-        $length = count($json->items);
-
         
-
-        foreach ($json->items as $item) {
+    
+        foreach ($json['items'] as $item) {
             $new = new ParsersStock;
             $item = (array)$item;
-            $item['filename'] = $json->name;
+            $item['filename'] = $json['name'];
             $item['name'] = substr($item['name'], 0, 99);
 
             if (ParsersLinking::model()->find(array(
@@ -165,12 +161,10 @@ class DefaultController extends Controller
         }
         ob_clean();
 
-        $tempfile = file_get_contents(Yii::app()->basePath.'/../files/parsersData/time.txt');
-        $timeArray = json_decode($tempfile);
-        $timeArray = (array)$timeArray;
+        $tempfile = require(Yii::app()->basePath.'/../files/parsersData/time.txt');
 
 
-        echo date("d.m.Y H:i", $timeArray[$class->getName()]);
+        echo date("d.m.Y H:i", $tempfile[$class->getName()]);
 
 
     }
@@ -232,10 +226,14 @@ class DefaultController extends Controller
 
     public function actionIndex()
     {
+
+        $timeFile = require(Yii::app()->basePath.'/../files/parsersData/time.txt');
+
         $this->render('index',array(
             // 'models'=>$models,
             // 'return' => $return,
-            'fileListOfDirectory' => $this->getFiles()
+            'fileListOfDirectory' => $this->getFiles(),
+            'timeArray' => $timeFile
         ));
 
     }
