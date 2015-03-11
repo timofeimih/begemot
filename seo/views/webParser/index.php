@@ -17,25 +17,22 @@ $this->menu = require dirname(__FILE__) . '/../commonMenu.php';
 Yii::import('begemot.extensions.parser.*');
 Yii::import('begemot.extensions.parser.models.*');
 
-
 $site_name = $_SERVER['SERVER_NAME'];
 
 
 
-$parseScenario = array(
-    array(
-        'name' => 'allPages',
+$parseScenario = [
+    'allPages'=>[
+        'type' => WebParserDataEnums::TASK_TYPE_NAVIGATION,
         'startUrl' => 'http://www.buggy-motor.ru/catalog/Baggi_79/FC-1100_Sport_430.html',
-        'navigation' => array(
+        'parser_rules' => [
             'allPages' => '',
-        ),
-        'dataFields' => array(
-            WebParserDataEnums::DATA_ID_ARRAY_KEY=>WebParserDataEnums::DATA_FILTER_URL,
-            'title'=>'title',
-            'pageHtmlCode'=>'html',
-        ),
-    ),
-);
+        ],
+    ],
+//    'seoData'=>[
+//        'type'=>WebParserDataEnums::TASK_TYPE_DATA
+//    ]
+];
 
 $webParser = new CWebParser('seoParser',$site_name ,$parseScenario,$processId);
 

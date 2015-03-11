@@ -20,7 +20,7 @@ $this->menu = array(
 		<?php foreach($fileListOfDirectory as $item): ?>
 			<tr>
 				<td><?php echo $item['name']?></td>
-				<td class='date'><?php echo date("d.m.Y H:i", $item['time']) ?></td>
+				<td class='date'><?php echo date("d.m.Y H:i", $timeArray[$item['name']]) ?></td>
 				<td><input type="checkbox" value='<?php echo $item['name']?>' name='parse[]'/></td>
 				
 				<td><input type='button' class='parseNew' data-file='<?php echo $item['className']?>' value='Спарсить новые данные'></td>
