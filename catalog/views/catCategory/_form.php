@@ -59,7 +59,23 @@
 		<?php echo $form->error($model,'seo_title'); ?>
 	</div>
 
+    <div class="row">
+        <?php echo $form->labelEx($model,'layout'); ?>
+        <?php echo $form->textField($model,'layout',array('size'=>60)); ?>
+        <?php echo $form->error($model,'layout'); ?>
+    </div>
 
+    <div class="row">
+        <?php echo $form->labelEx($model,'viewFile'); ?>
+        <?php echo $form->textField($model,'viewFile',array('size'=>60)); ?>
+        <?php echo $form->error($model,'viewFile'); ?>
+    </div>
+
+    <div class="row">
+        <?php echo $form->labelEx($model, 'itemViewFile'); ?>
+        <?php echo $form->textField($model, 'itemViewFile', array('size'=>60)); ?>
+        <?php echo $form->error($model, 'itemViewFile'); ?>
+    </div>
 
 	<div class="row buttons">
 		<?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save'); ?>
