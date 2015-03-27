@@ -18,9 +18,9 @@ class ChangeCatItemsJob extends BaseJob{
 	public function runJob()
 	{
 
-		if ( ! isset(Yii::app()->modules['parsers'])){ return false;};
+		//if ( ! array_key_exists('parsers', Yii::app()->getModules())){ return false;};
 
-		Yii::import('parsers.models.*');
+		Yii::import('application.modules.parsers.models.*');
 
 		$arrayOfJobs = array();
 
@@ -134,6 +134,8 @@ class ChangeCatItemsJob extends BaseJob{
 		      echo "no message";
 		    }
 		}
+
+		return true;
 
 	}
 

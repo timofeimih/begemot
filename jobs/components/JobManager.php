@@ -75,8 +75,13 @@ class JobManager extends CApplicationComponent{
 
 		$filename = $parameters['filename'];
 		$arrayIndex = $filename . " - " . time() ;
-        $parameters['lastExecuted'] = 0;
+
+		$today  = strtotime("00:00:00");
+		$yesterday  = strtotime("-2 day", $today);
+
+        $parameters['lastExecuted'] = $yesterday + $parameters['time'] + $parameters['hour'] + $parameters['minutes'];
         $parameters['executable'] = true;
+        $parameters['lastExecutedForText'] = 0;
 
         $parameters['filename'];
 
@@ -94,14 +99,20 @@ class JobManager extends CApplicationComponent{
         
 	}
 
-	public function changeTime($jobIndex, $time = 86400, $hour = '1')
+	public function changeTime($jobIndex, $time = 86400, $hour = '1', $minutes = 0)
 	{
 		$all = (array) $this->getListCronJob();
 
 		if (array_key_exists($jobIndex, $all)) {
 
+			$today  = strtotime("00:00:00");
+			$yesterday  = strtotime("-2 day", $today);
+
 			$all[$jobIndex]['time'] = $time;
 			$all[$jobIndex]['hour'] = $hour;
+			$all[$jobIndex]['minutes'] = $minutes;
+			$all[$jobIndex]['lastExecuted'] = $yesterday + $all[$jobIndex]['time'] + $all[$jobIndex]['hour'] + $all[$jobIndex]['minutes'];
+			$all[$jobIndex]['lastExecutedForText'] = 0;
 
 			$this->saveConfigFile((array) $all);
 
@@ -204,33 +215,25 @@ class JobManager extends CApplicationComponent{
 	public function changeTimeOfLastExecuted($name, $time = 0)
 	{
 
-		$array = array();
-		$directory = dirname(Yii::app()->basePath) . "/parsers/history/";
+        $dir    = Yii::app()->basePath . "/../files/parsersData/";
 
-		 if (!file_exists($directory)) {
-            mkdir($directory, 0777, true);
-
+        if (!file_exists($dir)) {
+            mkdir($dir, 0777);
         }
-		$files  = scandir($directory);
+        $files  = scandir($dir);
 
-		
+        $arr = array($name => $time);
 
-		if (array_search('time.txt', $files)) {
+        if (array_search('time.txt', $files)) {
+            $array = file_get_contents($dir . 'time.txt');
+            if (is_array($array)) {
+                $arr = array_merge($array, $arr);
+            }
+            
+        }
 
-		    $json = require($directory . 'time.txt');
-		    //print_r($files);
-		    $array = (array) $json;
+        PictureBox::crPhpArr($arr, Yii::app()->basePath . "/../files/parsersData/time.txt");
 
-		    if(is_array($array)){
-		    	if (array_key_exists($name, $array)) {
-			    	$array[$name] = $time;
-			    }
-
-
-			    PictureBox::crPhpArr($array, $tempFile);
-		    }
-		    
-		}
 		
 		return true;
 	}
@@ -267,15 +270,18 @@ class JobManager extends CApplicationComponent{
 
 				if ($item['executable'] == true) {
 						
-					if (($item['lastExecuted'] + $item['time'] + $item['hour'] - 60) < time()) {
+					if (($item['lastExecuted'] + $item['time'] - 60) < time()) {
 						
 						$className = $item['filename'];
 						$classItem = new $className;
 						//$classItem->runJob($filename);
 						$classItem->runJob();
 						$this->changeTimeOfLastExecuted($filename, time());
+						echo $filename;
 
-						$item['lastExecuted'] = (int)mktime(0, 0, 0, date('n'), date('j'));
+						$item['lastExecutedForText'] = $item['lastExecuted'] + $item['time'];
+
+						$item['lastExecuted'] = $item['lastExecuted'] + $item['time'];
 						
 						echo "run" . time() .  " - " . $filename .  " - " . $item['lastExecuted'];
 					}
