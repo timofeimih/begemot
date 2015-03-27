@@ -200,9 +200,8 @@ $script = '
             }
             
             function setTitleAlt(state,divId){
-                 var title = $("#"+divId+" input[name=title]").attr("value");
-                 var alt = $("#"+divId+" input[name=alt]").attr("value");
-                 
+                 var title = $("#"+divId+" input[name=title]").val();
+                 var alt = $("#"+divId+" input[name=alt]").val();
                  var data = {};
                  data.title = title;
                  data.alt = alt;

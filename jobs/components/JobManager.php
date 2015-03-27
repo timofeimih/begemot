@@ -229,10 +229,11 @@ class JobManager extends CApplicationComponent{
             if (is_array($array)) {
                 $arr = array_merge($array, $arr);
             }
-            
+
         }
 
         PictureBox::crPhpArr($arr, Yii::app()->basePath . "/../files/parsersData/time.txt");
+
 
 		
 		return true;

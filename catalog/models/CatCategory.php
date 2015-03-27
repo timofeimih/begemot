@@ -66,6 +66,7 @@ class CatCategory extends CActiveRecord
 			array('name', 'required'),
 			array('pid, dateCreate, dateUpdate, status', 'numerical', 'integerOnly'=>true),
 			array('name, name_t', 'length', 'max'=>70),
+			array('layout, viewFile, itemViewFile, seo_title', 'length', 'max'=>255),
 			array('text,level,seo_title', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
@@ -139,6 +140,7 @@ class CatCategory extends CActiveRecord
                 $categoryArray['order'] = $category->order;
                 $categoryArray['level'] = $category->level;
                 $categoryArray['name_t'] = $category->name_t;
+                $categoryArray['model'] = $category;
 
                 $catsArray[$category->id]=$categoryArray;
             }
