@@ -19,7 +19,7 @@ class TaskManager {
         return ScenarioTask::getActiveTaskCount($this->processId);
     }
 
-    public function createTask($target_id,$target_type, $scenarioItemName, $status = null)
+    public function createTask($taskType,$target_id,$target_type, $scenarioItemName, $status = null)
     {
 
         $newTask = new ScenarioTask();
@@ -27,6 +27,7 @@ class TaskManager {
         $newTask->target_type = $target_type;
         $newTask->processId = $this->processId;
         $newTask->scenarioName = $scenarioItemName;
+        $newTask->taskType = $taskType;
         if (is_null($status)) {
             $newTask->taskStatus = 'new';
         } else {

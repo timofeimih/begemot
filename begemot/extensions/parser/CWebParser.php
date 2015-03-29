@@ -6,7 +6,10 @@
  * Основное преимущество в том, что парсит не все и сразу, а делит процесс на этапы.
  * Обычные парсеры на больших сайтах могут отъедать ресурсы, подвешивать сервер и
  * могут не успеть выполниться за установленный в php параметр выполнения
- * времени скрипта.
+ * времени скрипта. Основной упор на полный контроль и мониторинг процесса парсинга.
+ * Удобство и скорость создания новых парсеров для сайта с инеграцией в админку - цель.
+ *
+ * Задача оптимального расходования ресурсов сервера и временных ресурсов не цель данной библиотеки.
  *
  * Этот класс парсит нужное количество страниц за один запуск. Что позволяет тонко настраивать и контролировать процесс
  * сбора информации. Пишется сценарий сбора информации и класс запускается до тех пор, пока процесс не завершиться.
@@ -19,8 +22,6 @@
  * времени
  *
  *
- * Каждая обработка задачи из плана это обработка одной страницы по одному указанному сценарию.
- *
  * Работа по сценарию распределена на два этапа. Навигация и сбор данных
  *
  * Навигация - это сбор ссылок на страницы которые надо будет обработать на
@@ -29,8 +30,6 @@
  * и генерируются новые задачи в план выполнения с пометкой по какому сценарию надо
  * их обработать.
  *
- * Сбор данных - если у сценария есть параметр dataFields, это значит на данной странице
- * могут быть данные которые надо вытащить и сохранить.
  */
 
 Yii::import('TaskManager');
@@ -82,6 +81,7 @@ class CWebParser
 
     public function CWebParser($parserName, $host, $scenario, $processId)
     {
+
         Yii::import('begemot.extensions.parser.models.*');
         $dir = Yii::getPathOfAlias('begemot.extensions.parser');
         require_once($dir . '/phpQuery-onefile.php');
@@ -173,6 +173,7 @@ class CWebParser
                     $startTaskItem['scenarioItemName'] = $scenarioName;
                     $startTaskItem['url'] = $this->normalizeUrl($this->removeHostFromUrl($scenarioItem['startUrl']));
                     $startTaskItem['target_type'] = WebParserDataEnums::TASK_TARGET_DATA_TYPE_URL;
+                    $startTaskItem['task_type'] = 'start_navigation';
                     $startUrlArray[] = $startTaskItem;
                 }
             }
@@ -190,13 +191,18 @@ class CWebParser
 
             foreach ($startUrlArray as $startTask) {
 
-                $target_id = $this->getDocumentId($startTask['url']);
+
                 $target_type = WebParserDataEnums::TASK_TARGET_DATA_TYPE_URL;
 
-                if (!$this->isTaskExist($target_id, $target_type, $startTask['scenarioItemName'])) {
-                    $taskManager->createTask($target_id, $target_type, $startTask['scenarioItemName']);
+                $WebParserUrl = $this->getUrlObject($startTask['url']);
+
+                $targetId = $WebParserUrl->id;
+                //TODO на забыть добавить всем проверкам на существование задания тип задания
+                if (!$this->isTaskExist($targetId, $target_type, $startTask['scenarioItemName'])) {
+                    $taskManager->createTask(WebParserDataEnums::TASK_TYPE_START_NAVIGATION,$targetId, $target_type, $startTask['scenarioItemName']);
                     $weHaveNewTasks = true;
                 }
+
             }
 
             if (!$weHaveNewTasks) {
@@ -209,6 +215,24 @@ class CWebParser
 
         }
 
+    }
+
+    public function getUrlObject($url){
+
+        if (!($webParserUrl = WebParserUrl::model()->find('`url`="'.$url.'" and `procId`='.$this->processId))) {
+            $webParserUrl = new WebParserUrl();
+
+            $webParserUrl->procId= $this->processId;
+            $webParserUrl->url = $url;
+
+
+            if ($webParserUrl->save()){
+                $webParserUrl->id = Yii::app()->db->getLastInsertId();
+            }
+        }
+
+
+        return $webParserUrl;
     }
 
     /**
@@ -241,47 +265,87 @@ class CWebParser
      */
     private function doTask($task)
     {
+        //Действуем от типа задачи
 
-        $pageContent = $this->getTaskTargetContent($task);
 
-        $scenarioItem = $this->getScenarioItem($task->scenarioName);
+        if ($task->taskType == WebParserDataEnums::TASK_TYPE_START_NAVIGATION){
 
-        $doc = phpQuery::newDocument($pageContent);
-        phpQuery::selectDocument($doc);
+            //Данный тип задач обрабатываем так. Проверяем код ответа http. Проверяем mime,
+            //Если все норм - грузим страницу и сохраняем в виде WebParserPage
+            $url = $task->getTargetData();
 
-        $taskManager = $this->taskManager;
+            if ($data = $this->checkRemotePage($url)){
 
-        if (isset($scenarioItem['parser_rules']) && is_array($scenarioItem['parser_rules'])) {
-            foreach ($scenarioItem['parser_rules'] as $scenarioTaskName => $navigationRule) {
+                if ($data['mime']=='text/html' && $data['httpCode']==200){
 
-                $searchHrefsDocumentPart = pq($navigationRule);
+                    $webParserPage = $this->parsePage($url);
 
-                //Перебираем все части кода которые нашли по правилу сценария
-                foreach ($searchHrefsDocumentPart as $navigationPart) {
-                    //Создаем ScenarioTask для каждого найденного урл
-                    $urlArray = $this->getAllUrlFromContent($navigationPart);
-                    foreach ($urlArray as $url) {
 
-                        /*
-                         * Что бы проверить существование задачи, нужно выяснить target_id
-                         * по данной ссылке
-                         */
+                    if (!$this->isTaskExist(WebParserDataEnums::TASK_TARGET_DATA_TYPE_WEBPAGE,$webParserPage->id,$task->scenarioName)){
 
-                        //Тип цели нам известен, выставляем его сразу
-                        $target_type = WebParserDataEnums::TASK_TARGET_DATA_TYPE_URL;
-
-                        $target_id = $this->getDocumentId($url);
-
-                        if (!$this->isTaskExist($target_id, $target_type, $scenarioTaskName)) {
-
-                            $taskManager->createTask($target_id, $target_type, $scenarioTaskName);
-                        }
+                        $this->taskManager->createTask(
+                            WebParserDataEnums::TASK_TYPE_PROCESS_URL,
+                            $webParserPage->id,
+                            WebParserDataEnums::TASK_TARGET_DATA_TYPE_WEBPAGE,
+                            $task->scenarioName);
                     }
                 }
+            }
+
+        }
 
 
+        if ($task->taskType == WebParserDataEnums::TASK_TYPE_PROCESS_URL){
+
+            $pageContent = $task->getTargetData();
+
+            $scenarioItem = $this->getScenarioItem($task->scenarioName);
+
+            $doc = phpQuery::newDocument($pageContent);
+            phpQuery::selectDocument($doc);
+
+            $taskManager = $this->taskManager;
+
+            if (isset($scenarioItem['parser_rules']) && is_array($scenarioItem['parser_rules'])) {
+                foreach ($scenarioItem['parser_rules'] as $scenarioTaskName => $navigationRule) {
+
+                    $searchHrefsDocumentPart = pq($navigationRule);
+
+                    //Перебираем все части кода которые нашли по правилу сценария
+                    foreach ($searchHrefsDocumentPart as $navigationPart) {
+                        //Создаем ScenarioTask для каждого найденного урл
+                        $urlArray = $this->getAllUrlFromContent($navigationPart);
+                        foreach ($urlArray as $url) {
+
+                            $target_type = WebParserDataEnums::TASK_TARGET_DATA_TYPE_URL;
+
+                            $WebParserUrl = $this->getUrlObject($url);
+
+                            $targetId = $WebParserUrl->id;
+
+                            if (!$this->isTaskExist($targetId, $target_type,$scenarioTaskName)) {
+                                $taskManager->createTask(WebParserDataEnums::TASK_TYPE_START_NAVIGATION,$targetId, $target_type, $scenarioTaskName);
+
+                            }
+
+                            //Тип цели нам известен, выставляем его сразу
+                            $target_type = WebParserDataEnums::TASK_TARGET_DATA_TYPE_URL;
+
+                            //$target_id = $this->getDocumentId($url);
+
+//                            if (!$this->isTaskExist($target_id, $target_type, $scenarioTaskName)) {
+//
+//                                $taskManager->createTask($target_id, $target_type, $scenarioTaskName);
+//                            }
+                        }
+                    }
+
+
+                }
             }
         }
+
+
         //TODO: переработать сбор данных еще надо
 
         /**
@@ -388,77 +452,12 @@ class CWebParser
 
     }
 
-    /**
-     *
-     * Смотрит в БД собирали ли уже данные по этому адресу. Если собирали, то
-     * берем из базы, что бы второй раз не делать запрос к сайту.
-     * Если не собирали то curl забирает код удаленного документа.
-     *
-     * @param $url адрес страницы которую скачиваем ил`и достаем из базы
-     * @return string возвращаем контент страницы по адресу
-     */
-    private function getTaskTargetContent($task)
-    {
-
-        //Если цель веб-страница
-        if ($task->target_type == WebParserDataEnums::TASK_TARGET_DATA_TYPE_URL) {
-            //die($url);
-            $webPageFromBase = 'none';
-
-            $webParserPage = WebParserPage::model()->findByPk($task->target_id);
-
-            $url = $this->normalizeUrl($webParserPage->url);
-
-            if ($this->isUrlUniq($url, $webPageFromBase)) {
-
-
-                /*
-                 * Проверяем тип содержание. Нам нужен только text/html
-                 * В будущем можно будет доработать под проверку по массиву
-                 * с несколькими типами mime
-                 *
-                 * Проверка на код ответа http 200
-                 *
-                 */
-                $webParserPage = $this->parsePage($url);
-
-
-                if ($webParserPage->http_code != 200) {
-
-                    $this->doneTasks[] = $task;
-                    $task->completeTask(-1);
-                    return;
-                }
-
-                if ($webParserPage->mime != 'text/html') {
-
-                    $task->completeTask(-1);
-                    $this->doneTasks[] = $task;
-                    return;
-                }
-
-
-                $data = $webParserPage->content;
-
-
-            } else {
-                $data = $webPageFromBase->content;
-
-            }
-
-            return $data;
-        }
-
-
-
-
-    }
 
     /**
      * Парсим страницу. Сохраняем в базу в соответствии с моделью. Сохраняем контент, код http
      * на случай ошибки и mime тип.
      *
-     * @param $url ссылка на страницу. относительная
+     * @param $url string ссылка на страницу. относительная
      * @return WebParserPage спасенная страница возвращается в виде экземпляра модели WebParserPage
      */
     public function parsePage($url)
@@ -470,36 +469,32 @@ class CWebParser
 
         $webParserPage->url = $url;
 
-        $ch = curl_init($fullPageUrl);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HEADER, 1);
-        curl_setopt($ch, CURLOPT_NOBODY, 1);
-        curl_exec($ch);
 
-        $mime = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-        $webParserPage->mime = $mime;
-        $webParserPage->http_code = $httpCode;
+        $webParserPage->procId = $this->processId;
 
-        if ($httpCode == 200 or $mime == 'text/html') {
+        if ($this->checkRemotePage($webParserPage->url)) {
 
             $ch = curl_init($fullPageUrl);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+
+            $mime = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
             $data = curl_exec($ch);
 
             curl_close($ch);
 
             $webParserPage->content = $data;
+            $webParserPage->mime = $mime;
+            $webParserPage->http_code = $httpCode;
 
-        }
 
-        $webParserPage->procId = $this->processId;
+            if (!$webParserPage->save()) {
+                die('Ошибка сохранения модели в protected/modules/begemot/extensions/parser/CWebParser.php');
+            }
 
-        if (!$webParserPage->save()) {
-            die('Ошибка сохранения модели в protected/modules/begemot/extensions/parser/CWebParser.php');
         }
 
         return $webParserPage;
@@ -530,7 +525,6 @@ class CWebParser
 
         return $this->filterUrlArray($urlArray);
 
-
     }
 
     public function addUrlFilter($regExpFilter)
@@ -540,7 +534,6 @@ class CWebParser
 
     public function filterUrlArray($urlArray)
     {
-
 
         return array_filter($urlArray, array(get_class($this), 'regExpChecker'));
     }
@@ -582,7 +575,7 @@ class CWebParser
     public function normalizeUrl($url)
     {
 
-        $url = strtolower($url);
+        //$url = strtolower($url);
 
         if (!preg_match('#^/#', $url)) {
             $url = '/' . $url;
@@ -696,5 +689,37 @@ class CWebParser
         return $url;
 
     }
+
+    /**
+     * @param $webParserPage WebParserPage
+     * @return bool
+     */
+    private function checkRemotePage($url){
+
+        $fullPageUrl = 'http://' . $this->host . $url;
+
+        $ch = curl_init($fullPageUrl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_HEADER, 1);
+        curl_setopt($ch, CURLOPT_NOBODY, 1);
+        curl_exec($ch);
+
+        $mime = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        if ($mime!='text/html') return false;
+        if ($httpCode!=200) return false;
+
+        $returnData = [];
+        $returnData['mime']=$mime;
+        $returnData['httpCode']=$httpCode;
+
+
+
+        return $returnData;
+    }
+
+
 
 } 

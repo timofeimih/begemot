@@ -62,15 +62,26 @@ class ScenarioTask extends CActiveRecord
     }
 
     public function getTargetData(){
+
         if($this->target_type == WebParserDataEnums::TASK_TARGET_DATA_TYPE_URL){
-            $webPage = WebParserPage::model()->findByPk($this->target_id);
-            return $webPage->content;
+            $webParserUrl = WebParserUrl::model()->findByPk($this->target_id);
+            return $webParserUrl->url;
         }
 
-        if($this->target_type == WebParserDataEnums::TASK_TARGET_DATA_TYPE_DATA){
-
+        if($this->target_type == WebParserDataEnums::TASK_TARGET_DATA_TYPE_WEBPAGE){
+            $webParserPage = WebParserPage::model()->findByPk($this->target_id);
+            return $webParserPage->content;
         }
+
     }
+
+    public function getTargetObject(){
+        if ($this->taskType=WebParserDataEnums::TASK_TARGET_DATA_TYPE_WEBPAGE){
+            return WebParserPage::model()->fingByPk($this->targetId);
+        }
+
+    }
+
 
     static public function isExistSomeTask ($processId){
         $sql = "SELECT COUNT(*) FROM webParserScenarioTask WHERE processId=".$processId.' and taskStatus="new"';

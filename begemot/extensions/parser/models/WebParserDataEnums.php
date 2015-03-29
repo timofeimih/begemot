@@ -35,7 +35,15 @@ class WebParserDataEnums {
     /**
      * Типы задач
      */
-    const TASK_TYPE_NAVIGATION = 'navigation';
+
+    /**
+     * Так помечаем все новые ссылки.
+     */
+    const TASK_TYPE_START_NAVIGATION = 'start_navigation';
+    /**
+     * Если ссылка прошла проверку и данные были спарсены, то создаем такую задачу.
+     */
+    const TASK_TYPE_PROCESS_URL = 'process_url';
     const TASK_TYPE_DATA = 'navigation';
     const TASK_TYPE_IMAGE = 'navigation';
     /**
@@ -43,6 +51,7 @@ class WebParserDataEnums {
      */
 
     const TASK_TARGET_DATA_TYPE_URL = 'url';
+    const TASK_TARGET_DATA_TYPE_WEBPAGE = 'web_page';
     const TASK_TARGET_DATA_TYPE_DATA = 'data';
 
 

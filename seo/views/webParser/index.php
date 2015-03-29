@@ -23,7 +23,7 @@ $site_name = $_SERVER['SERVER_NAME'];
 
 $parseScenario = [
     'allPages'=>[
-        'type' => WebParserDataEnums::TASK_TYPE_NAVIGATION,
+        'type' => WebParserDataEnums::TASK_TYPE_START_NAVIGATION,
         'startUrl' => 'http://www.buggy-motor.ru/catalog/Baggi_79/FC-1100_Sport_430.html',
         'parser_rules' => [
             'allPages' => '',
@@ -39,6 +39,7 @@ $webParser = new CWebParser('seoParser',$site_name ,$parseScenario,$processId);
 
 $webParser->addUrlFilter('#mailto#i');
 $webParser->addUrlFilter('#\##i');
+$webParser->tasksPerExecute = 5;
 $webParser->parse();
 
 
@@ -59,3 +60,4 @@ foreach ($webParser->doneTasks as $doneTask){
 echo $webParser->getProcessStatus();
 //if($webParser->getProcessStatus()!='done')
 //echo '<script>location.reload();</script>>';
+
