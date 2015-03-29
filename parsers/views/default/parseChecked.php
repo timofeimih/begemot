@@ -74,8 +74,8 @@ $this->menu = array(
 	$(document).on("click", '.checkAll', function(){
 		var checkboxes = $(this).parents("TABLE").find("INPUT[type='checkbox']");
 
-		if ($(this).attr("checked")) {
-			checkboxes.attr("checked", true);
-		} else checkboxes.attr("checked", false);
+		if ($(this).prop("checked")) {
+			checkboxes.prop("checked", true);
+		} else checkboxes.prop("checked", false);
 	})
 </script>

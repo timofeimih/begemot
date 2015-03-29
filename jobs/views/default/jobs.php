@@ -68,15 +68,44 @@ $this->menu = array(
                     </select><br/>
                     Точное время выполнения: <select name="hour">
                         <option value='3600'>1</option>
+                        <option value='7200'>2</option>
                         <option value='10800'>3</option>
+                        <option value='14400'>4</option>
+                        <option value='18000'>5</option>
+                        <option value='21600'>6</option>
                         <option value='25200'>7</option>
+                        <option value='28800'>8</option>
                         <option value='32400'>9</option>
                         <option value='36000'>10</option>
+                        <option value='39600'>11</option>
                         <option value='43200'>12</option>
+                        <option value='46800'>13</option>
+                        <option value='50400'>14</option>
                         <option value='54000'>15</option>
+                        <option value='57600'>16</option>
+                        <option value='61200'>17</option>
                         <option value='64800'>18</option>
+                        <option value='68400'>19</option>
+                        <option value='72000'>20</option>
+                        <option value='75600'>21</option>
+                        <option value='79200'>22</option>
                         <option value='82800'>23</option>
-                    </select> час<br/>
+                    </select> час 
+
+                    <select name="minutes">
+                        <option value='0'>0</option>
+                        <option value='300'>5</option>
+                        <option value='600'>10</option>
+                        <option value='900'>15</option>
+                        <option value='1200'>20</option>
+                        <option value='1500'>25</option>
+                        <option value='1800'>30</option>
+                        <option value='2100'>35</option>
+                        <option value='2400'>40</option>
+                        <option value='2700'>45</option>
+                        <option value='3000'>50</option>
+                        <option value='3300'>55</option>
+                    </select> минут<br/>
                     <input type="hidden" name='filename' class='filename'/>
                     <input type="hidden" class='listname'/>
 

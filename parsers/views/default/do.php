@@ -296,10 +296,11 @@ $this->menu = array(
 	})
 
 	$(document).on("click", ".checkAll", function(){
-		if($(this).attr("checked")){
-			$(this).parents("TABLE").find("input[type='checkbox']").attr("checked", true);
+
+		if($(this).prop("checked")){
+			$(this).parents("TABLE").find("input[type='checkbox']").prop('checked', true);
 		} 
-		else $(this).parents("TABLE").find("input[type='checkbox']").attr("checked", false);
+		else $(this).parents("TABLE").find("input[type='checkbox']").prop('checked', false);
 	})
 
 
@@ -369,15 +370,6 @@ $this->menu = array(
 		})
 
 	})
-
-	$(document).on("click", '.checkAll', function(){
-		var checkboxes = $(this).parents("TABLE").find("INPUT[type='checkbox']");
-
-		if ($(this).attr("checked")) {
-			checkboxes.attr("checked", true);
-		} else checkboxes.attr("checked", false);
-	})
-
 	
 
 	

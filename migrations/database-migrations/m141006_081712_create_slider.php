@@ -18,6 +18,7 @@ class m141006_081712_create_slider extends Migrations
            `order` int(11) NOT NULL,
            PRIMARY KEY (`id`)
          ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
+
         $this->execute($sql);
 
         return true;
