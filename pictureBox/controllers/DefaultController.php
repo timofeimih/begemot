@@ -20,7 +20,7 @@ class DefaultController extends Controller
         $this->renderImageAgain($id, $elemId, $pictureId, $config);
     }
 
-    //Функция пересборки изображений 
+    //Функция пересборки изображений
     public function renderImageAgain($id, $elemId, $pictureId, $config)
     {
 
@@ -268,6 +268,8 @@ class DefaultController extends Controller
             $elementId = $_REQUEST['elementId'];
             $pictureId = $_REQUEST['pictureId'];
             $filesList = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/data.php';
+
+
 
             if (file_exists($filesList)) {
                 $data = require($filesList);

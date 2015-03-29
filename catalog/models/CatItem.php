@@ -75,7 +75,8 @@ class CatItem extends ContentKitModel
         return array(
             'name' => array(self::BELONGS_TO, 'CatItemsToCat', 'itemId'),
             'category' => array(self::BELONGS_TO, 'CatCategory', 'catId'),
-            'reviews' => array(self::HAS_MANY, 'Reviews', 'pid', 'condition' => 'status=1')
+            'reviews' => array(self::HAS_MANY, 'Reviews', 'pid', 'condition' => 'status=1'),
+            'options' => array(self::MANY_MANY, 'CatItem', 'catItemsToItems(itemId, toItemId)'),
         );
     }
 

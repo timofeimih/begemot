@@ -242,11 +242,10 @@ class DefaultController extends Controller
     {
         $fileListOfDirectory = array();
         $timeArray = array();
-        if (file_exists(Yii::app()->basePath.'/../files/parsersData/time.txt') ) {
-            $tempfile = file_get_contents(Yii::app()->basePath.'/../files/parsersData/time.txt');
-            $timeArray = json_decode($tempfile);
-            $timeArray = (array)$timeArray;
+        if (file_exists(Yii::app()->basePath.'/config/cronConfig.php')) {
+            $timeArray = require(Yii::app()->basePath.'/config/cronConfig.php');
         }
+
 
         foreach(glob(Yii::app()->basePath.'/jobs/*ParserJob.php') as $path) {  
 
@@ -256,11 +255,20 @@ class DefaultController extends Controller
             $className = str_replace('.php', '', $className);
             $class = new $className;
 
-            if (array_key_exists($class->getName(), $timeArray)) {
-                $time = $timeArray[$class->getName()];
-            } else{
-                $time = 1;
+
+            $time = '';
+
+            foreach ($timeArray as $key => $value) {
+                if (strtok($key, " ") == $className){
+                   
+
+                    if ($value['lastExecutedForText'] == 0) {
+                         $time .= $key . " - еще не выполнялась<br/>";
+                    } else  $time .= $key . " - " . date("d.m.Y H:i", $value['lastExecutedForText']) ."<br/>";
+                    
+                }
             }
+
 
             array_push ( $fileListOfDirectory, array('name' => $class->getName(), 'time' => $time, 'className' => $className) );
         }

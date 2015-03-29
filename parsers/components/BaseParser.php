@@ -71,7 +71,9 @@ class BaseParser extends BaseJob{
             
         }
 
+
     PictureBox::crPhpArr($arr, Yii::app()->basePath . "/../files/parsersData/time.txt");
+
 
 
 

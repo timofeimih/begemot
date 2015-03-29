@@ -68,7 +68,6 @@ class DefaultController extends Controller
 
 	public function actionJobs()
 	{
-
 		$jobManager = new JobManager();
 
 		$this->render('jobs',array(
@@ -107,7 +106,7 @@ class DefaultController extends Controller
 
 			$JobManager = new JobManager;
 			
-			echo $JobManager->changeTime($_POST['name'], (int) $_POST['time'], (int) $_POST['hour']);
+			echo $JobManager->changeTime($_POST['name'], (int) $_POST['time'], (int) $_POST['hour'], (int) $_POST['minutes']);
 
 			
 		}
