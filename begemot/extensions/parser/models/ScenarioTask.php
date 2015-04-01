@@ -39,10 +39,12 @@ class ScenarioTask extends CActiveRecord
 		return array(
 			array('processId', 'numerical', 'integerOnly'=>true),
 			array('scenarioName', 'length', 'max'=>45),
-			array('url', 'length', 'max'=>1000),
+			//array('length', 'max'=>1000),
+
+
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, processId, scenarioName, url', 'safe', 'on'=>'search'),
+			array('id, processId, scenarioName', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -59,6 +61,28 @@ class ScenarioTask extends CActiveRecord
         $this->save();
     }
 
+    public function getTargetData(){
+
+        if($this->target_type == WebParserDataEnums::TASK_TARGET_DATA_TYPE_URL){
+            $webParserUrl = WebParserUrl::model()->findByPk($this->target_id);
+            return $webParserUrl->url;
+        }
+
+        if($this->target_type == WebParserDataEnums::TASK_TARGET_DATA_TYPE_WEBPAGE){
+            $webParserPage = WebParserPage::model()->findByPk($this->target_id);
+            return $webParserPage->content;
+        }
+
+    }
+
+    public function getTargetObject(){
+        if ($this->taskType=WebParserDataEnums::TASK_TARGET_DATA_TYPE_WEBPAGE){
+            return WebParserPage::model()->fingByPk($this->targetId);
+        }
+
+    }
+
+
     static public function isExistSomeTask ($processId){
         $sql = "SELECT COUNT(*) FROM webParserScenarioTask WHERE processId=".$processId.' and taskStatus="new"';
         $taskCount = Yii::app()->db->createCommand($sql)->queryScalar();
@@ -70,8 +94,9 @@ class ScenarioTask extends CActiveRecord
         }
     }
 
-    static public function isExistTask ($url,$scenarioName,$processId){
-        $sql = "SELECT COUNT(*) FROM webParserScenarioTask WHERE url='".$url."' and scenarioName='".$scenarioName."' and processId = ".$processId;
+    static public function isExistTask ($target_id,$target_type,$scenarioName,$processId){
+
+        $sql = "SELECT COUNT(*) FROM webParserScenarioTask WHERE target_id='".$target_id."'and target_type='".$target_type."' and scenarioName='".$scenarioName."' and processId = ".$processId;
         $taskCount = Yii::app()->db->createCommand($sql)->queryScalar();
 
         if ($taskCount==0){

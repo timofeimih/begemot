@@ -45,6 +45,8 @@ class DefaultController extends Controller
 
     public function actionRunJob()
     {
+
+
         if (isset($_POST['name'])) {
             $class = new $_POST['name'];
             if(!$class->runJob())  throw new CHttpException(400,'Ошибка');
@@ -66,7 +68,6 @@ class DefaultController extends Controller
 
 	public function actionJobs()
 	{
-
 		$jobManager = new JobManager();
 
 		$this->render('jobs',array(
@@ -105,7 +106,7 @@ class DefaultController extends Controller
 
 			$JobManager = new JobManager;
 			
-			echo $JobManager->changeTime($_POST['name'], (int) $_POST['time'], (int) $_POST['hour']);
+			echo $JobManager->changeTime($_POST['name'], (int) $_POST['time'], (int) $_POST['hour'], (int) $_POST['minutes']);
 
 			
 		}

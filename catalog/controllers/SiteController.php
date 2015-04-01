@@ -46,12 +46,9 @@ class SiteController extends Controller {
     public function actionItemView($catId = 0, $item = 0) {
         $uri = $_SERVER['REQUEST_URI'];
 
-        $item = CatItem::model()->findByPk($item);
+        $item = CatItem::model()->with('options')->findByPk($item);
         $this->layout = CatalogModule::$catalogItemViewLayout;
         $category = CatCategory::model()->findByPk($item->catId);
-
-
-
 
         $hrefParams = array(
             'title'=>$category->name_t,
@@ -67,7 +64,9 @@ class SiteController extends Controller {
             $this->redirect($itemHref, true, 301);
         }
 
-        $this->render('itemView', array('item' => $item, 'category' => $category));
+        $itemViewFile = $category->itemViewFile ? $category->itemViewFile : 'itemView';
+
+        $this->render($itemViewFile, array('item' => $item, 'category' => $category));
 
     }
 
@@ -112,10 +111,13 @@ class SiteController extends Controller {
         $category = CatCategory::model()->findByPk($catId);
         $maximalPriceValue = CatItem::model()->getItemWithMaximalPrice($catId);
         $parentCategory = null;
-        if ($category->pid != "-1"){
+        if ($category && $category->pid != "-1"){
             $parentCategory = CatCategory::model()->findByPk($category->pid);
         }
 
+        if($category->layout){
+            $this->layout = $category->layout;
+        }
         //$catsIDs = $category->getAllCatChilds($catId);
 
 //        $iDsArray = array($catId);
@@ -158,8 +160,9 @@ class SiteController extends Controller {
 
         $dataProvider = new CActiveDataProvider('CatItemsToCat', array('criteria' => $criteria, 'pagination' => array('pageSize'=>1000)));
 
+        $viewFile = $category->viewFile ? $category->viewFile : CatalogModule::$catalogCategoryViewFile;
 
-        $this->render('rCategoryView', array('categoryItems' => $dataProvider->getData(),'category'=>$category,'parentCat'=>$parentCategory, 'maximalPriceValue' => $maximalPriceValue));
+        $this->render($viewFile, array('categoryItems' => $dataProvider->getData(),'category'=>$category,'parentCat'=>$parentCategory, 'maximalPriceValue' => $maximalPriceValue));
     }
 
     public function actionBuy ($itemId){
@@ -201,3 +204,13 @@ class SiteController extends Controller {
     }
 
 }
+//
+//if(this.count > 0){
+//    $(this.elementCheck).each(function(el){
+//        el.attr('checked', 'checked').trigger('refresh');
+//    });
+//} else {
+//    $(this.elementCheck).each(function(el){
+//        el.removeAttr('checked').trigger('refresh');
+//    });
+//}

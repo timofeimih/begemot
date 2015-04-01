@@ -18,9 +18,9 @@ class ChangeCatItemsJob extends BaseJob{
 	public function runJob()
 	{
 
-		if ( ! isset(Yii::app()->modules['parsers'])){ return false;};
+		//if ( ! array_key_exists('parsers', Yii::app()->getModules())){ return false;};
 
-		Yii::import('parsers.models.*');
+		Yii::import('application.modules.parsers.models.*');
 
 		$arrayOfJobs = array();
 
@@ -129,11 +129,13 @@ class ChangeCatItemsJob extends BaseJob{
 		    $subject = "Изменилось " . count($changed) . " карточек";
 
 		    if (mail($to, $subject, $message, $headers)) {
-		      echo Yii::app()->params['adminEmail'];
+		      //echo Yii::app()->params['adminEmail'];
 		    } else{
-		      echo "no message";
+		      //echo "no message";
 		    }
 		}
+
+		return true;
 
 	}
 

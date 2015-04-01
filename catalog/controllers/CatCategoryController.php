@@ -38,8 +38,10 @@ class CatCategoryController extends Controller
         return array(
 
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
-                'actions' => array('admin', 'delete', 'orderUp', 'orderDown', 'create', 'update', 'index', 'view','tidyPost'),
-                'expression' => ' Yii::app()->user->canDo("Catalog")'
+                'actions' => array('admin', 'delete', 'orderUp', 'orderDown', 'create', 'update', 'index', 'view','makeCopy','tidyPost'),
+
+                'expression' => 'Yii::app()->user->canDo("Catalog")'
+
             ),
             array('deny', // deny all users
                 'users' => array('*'),
@@ -56,6 +58,81 @@ class CatCategoryController extends Controller
         $this->render('view', array(
             'model' => $this->loadModel($id),
         ));
+    }
+
+    /**
+     * Создание копии позиций катлога
+     */
+    public function actionMakeCopy()
+    {
+
+        if (isset($_POST['makeItemsCopy']) && isset($_POST['items'])) {
+            if (count($_POST['items'])) {
+                foreach ($_POST['items'] as $itemId) {
+                    $itemOriginal = CatItem::model()->findByPk($itemId);
+
+                    if ($itemOriginal){
+
+                        $itemCopy = new CatItem();
+                        $table = $itemOriginal->getMetaData()->tableSchema;
+
+                        $columns = $table->columns;
+                        foreach ($columns as $column){
+
+                            $columnName = $column->name;
+
+                            if ($columnName==$table->primaryKey) continue;
+                            if ($columnName=='published') {$itemCopy->$columnName = 0;continue;};
+                            $itemCopy->$columnName = $itemOriginal->$columnName;
+
+                        }
+
+                        $itemCopy->isNewRecord = true;
+                        $itemCopy->insert();
+
+                        $lastId = Yii::app()->db->getLastInsertId();
+
+                        //Копируем изображения
+                        Yii::import('pictureBox.components.PBox');
+                        $PBox = new PBox('catalogItem',$lastId);
+
+                        $galleryId = 'catalogItem';
+
+                        $originalPBox = new PBox($galleryId,$itemId);
+                        $newPBox = new PBox($galleryId,$lastId);
+
+                        $originalDataDir = dirname($originalPBox->dataFile);
+                        $destanationDataDir = dirname($newPBox->dataFile);
+                        mkdir ($destanationDataDir);
+
+                        $files = glob ($originalDataDir.'/*');
+
+                        foreach ($files as $file){
+
+                            $file1 = $file;
+                            $file2 = dirname($file).'/../'.$lastId.'/'.basename($file);
+                            copy($file1,$file2);
+                        }
+
+                        //Копируем привязки к разделам, если нужно
+                        if (isset($_POST['mode']) && $_POST['mode']=='catOfOriginal'){
+                            $CatItemsRelations = CatItemsToCat::model()->findAll('itemId = '.$itemId);
+
+                            foreach ($CatItemsRelations as $CatItemsToCat){
+                                $newCatItemToCat = new CatItemsToCat();
+                                $newCatItemToCat->catId = $CatItemsToCat->catId;
+                                $newCatItemToCat->itemId = $lastId;
+                                $newCatItemToCat->save();
+                            }
+                        }
+
+
+                    }
+                }
+            }
+        }
+
+        $this->render('copy');
     }
 
     /**

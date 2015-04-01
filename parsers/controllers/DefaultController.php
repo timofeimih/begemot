@@ -139,17 +139,13 @@ class DefaultController extends Controller
         $class->runJob();
         $json = $class->getLastParsedData();
 
-
         ParsersStock::model()->deleteAll(array('condition' => "`filename`='" . $class->getName() . "'"));
-
-        $length = count($json->items);
-
         
-
-        foreach ($json->items as $item) {
+    
+        foreach ($json['items'] as $item) {
             $new = new ParsersStock;
             $item = (array)$item;
-            $item['filename'] = $json->name;
+            $item['filename'] = $json['name'];
             $item['name'] = substr($item['name'], 0, 99);
 
             if (ParsersLinking::model()->find(array(
@@ -165,12 +161,10 @@ class DefaultController extends Controller
         }
         ob_clean();
 
-        $tempfile = file_get_contents(Yii::app()->basePath.'/../files/parsersData/time.txt');
-        $timeArray = json_decode($tempfile);
-        $timeArray = (array)$timeArray;
+        $tempfile = require(Yii::app()->basePath.'/../files/parsersData/time.txt');
 
 
-        echo date("d.m.Y H:i", $timeArray[$class->getName()]);
+        echo date("d.m.Y H:i", $tempfile[$class->getName()]);
 
 
     }
@@ -232,10 +226,14 @@ class DefaultController extends Controller
 
     public function actionIndex()
     {
+
+        $timeFile = require(Yii::app()->basePath.'/../files/parsersData/time.txt');
+
         $this->render('index',array(
             // 'models'=>$models,
             // 'return' => $return,
-            'fileListOfDirectory' => $this->getFiles()
+            'fileListOfDirectory' => $this->getFiles(),
+            'timeArray' => $timeFile
         ));
 
     }
@@ -244,11 +242,10 @@ class DefaultController extends Controller
     {
         $fileListOfDirectory = array();
         $timeArray = array();
-        if (file_exists(Yii::app()->basePath.'/../files/parsersData/time.txt') ) {
-            $tempfile = file_get_contents(Yii::app()->basePath.'/../files/parsersData/time.txt');
-            $timeArray = json_decode($tempfile);
-            $timeArray = (array)$timeArray;
+        if (file_exists(Yii::app()->basePath.'/config/cronConfig.php')) {
+            $timeArray = require(Yii::app()->basePath.'/config/cronConfig.php');
         }
+
 
         foreach(glob(Yii::app()->basePath.'/jobs/*ParserJob.php') as $path) {  
 
@@ -258,11 +255,20 @@ class DefaultController extends Controller
             $className = str_replace('.php', '', $className);
             $class = new $className;
 
-            if (array_key_exists($class->getName(), $timeArray)) {
-                $time = $timeArray[$class->getName()];
-            } else{
-                $time = 1;
+
+            $time = '';
+
+            foreach ($timeArray as $key => $value) {
+                if (strtok($key, " ") == $className){
+                   
+
+                    if ($value['lastExecutedForText'] == 0) {
+                         $time .= $key . " - еще не выполнялась<br/>";
+                    } else  $time .= $key . " - " . date("d.m.Y H:i", $value['lastExecutedForText']) ."<br/>";
+                    
+                }
             }
+
 
             array_push ( $fileListOfDirectory, array('name' => $class->getName(), 'time' => $time, 'className' => $className) );
         }

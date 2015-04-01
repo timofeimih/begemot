@@ -58,7 +58,6 @@ class BaseParser extends BaseJob{
 
         if (!file_exists($dir)) {
             mkdir($dir, 0777);
-
         }
         $files  = scandir($dir);
 
@@ -72,7 +71,10 @@ class BaseParser extends BaseJob{
             
         }
 
-        $this->saveParserData($arr);
+
+    PictureBox::crPhpArr($arr, Yii::app()->basePath . "/../files/parsersData/time.txt");
+
+
 
 
     }
