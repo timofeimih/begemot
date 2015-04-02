@@ -113,6 +113,38 @@ class CatCategoryController extends Controller
                             $file2 = dirname($file).'/../'.$lastId.'/'.basename($file);
                             copy($file1,$file2);
                         }
+                        //меняем все пути в файле-оглавлении
+                        $configFilePath = dirname($file).'/../'.$lastId.'/data.php';
+                        $configFileContentArray = file($configFilePath);
+
+
+                        $resultFile = '';
+
+                        foreach ($configFileContentArray as $configFileLine){
+                            $resultFile .= str_replace('files/pictureBox/catalogItem/'.$itemId,'files/pictureBox/catalogItem/'.$lastId,$configFileLine);
+
+                        }
+
+                        file_put_contents($configFilePath,$resultFile);
+
+                        //меняем все пути в файле избранных изображений
+                        $configFilePath = dirname($file).'/../'.$lastId.'/favData.php';
+                        if (file_exists($configFilePath)){
+
+                            $configFileContentArray = file($configFilePath);
+
+
+                            $resultFile = '';
+
+                            foreach ($configFileContentArray as $configFileLine){
+                                $resultFile .= str_replace('files/pictureBox/catalogItem/'.$itemId,'files/pictureBox/catalogItem/'.$lastId,$configFileLine);
+
+                            }
+
+                            file_put_contents($configFilePath,$resultFile);
+                        }
+
+
 
                         //Копируем привязки к разделам, если нужно
                         if (isset($_POST['mode']) && $_POST['mode']=='catOfOriginal'){
