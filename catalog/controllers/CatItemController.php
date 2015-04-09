@@ -190,9 +190,8 @@ class CatItemController extends Controller
         }
         // --change positions
 
-        if (isset($_POST['saveItemsToItems']) && isset($_POST['options'])) {
-            CatItemsToItems::model()->deleteAll(array("condition" => 'itemId=' . $id));
-
+        if (isset($_POST['saveItemsToItems']) & isset($_POST['options'])  & isset($_POST['items'])) {
+            CatItemsToItems::model()->deleteAll(array("condition" => 'itemId=' . $id . " OR toItemId=" . $id));
 
             if (count($_POST['options'])) {
                 foreach ($_POST['options'] as $itemId) {
@@ -202,9 +201,31 @@ class CatItemController extends Controller
                     $item->toItemId = $itemId;
 
                     $item->save();
+                    
                 }
 
             }
+
+             if (count($_POST['items'])) {
+                foreach ($_POST['items'] as $itemId) {
+                    $item = new CatItemsToItems();
+
+                    $item->itemId = $itemId;
+                    $item->toItemId = $id;
+
+                    $item->save();
+                }
+
+            }
+
+        } else if (isset($_POST['saveItemsToItems']) && !isset($_POST['options'])) {
+            CatItemsToItems::model()->deleteAll(array("condition" => 'itemId=' . $id . " OR toItemId=" . $id));
+        }
+
+        if (isset($_POST['saveItemsToItems']) && isset($_POST['items'])) {
+
+
+            
 
         } else if (isset($_POST['saveItemsToItems']) && !isset($_POST['options'])) {
             CatItemsToItems::model()->deleteAll(array("condition" => 'itemId=' . $id));
@@ -215,7 +236,8 @@ class CatItemController extends Controller
         if (isset(Yii::app()->modules['parsers'])) {
 
 
-            Yii::import('parsers.models.ParsersLinking');
+            Yii::import('application.modules.parsers.models.ParsersLinking');
+            Yii::import('application.modules.parsers.models.ParsersStock');
 
             $synched = ParsersLinking::model()->with('item')->find(array('condition' => "t.toId='" . $model->id . "'"));
 
