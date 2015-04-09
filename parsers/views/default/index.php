@@ -21,7 +21,8 @@ $this->menu = array(
 			<tr>
 
 				<td><?php echo $item['name']?></td>
-				<td class='date'><?php echo date("d.m.Y H:i", $timeArray[$item['name']]) ?></td>
+				<td class='date'><?php echo $item['time'] ?></td>
+				
 
 				<td><input type="checkbox" value='<?php echo $item['name']?>' name='parse[]'/></td>
 				
@@ -51,7 +52,9 @@ $this->menu = array(
 				button.parents("TR").find(".date").html(data);
 			};
 			
-		})
+		}).fail(function(data){
+            alert(data.responseText);
+        });
 
 	})
 </script>

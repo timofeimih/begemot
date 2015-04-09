@@ -28,6 +28,28 @@ class ParsersLinking extends CActiveRecord
 	{
 		return 'parsers_linking';
 	}
+
+	public function search($id=null)
+	{
+		// Warning: Please modify the following code to remove attributes that
+		// should not be searched.
+
+        $criteria=new CDbCriteria;
+                if ($id===null)
+
+                    $criteria->compare('id',$this->id);
+                else
+                    $criteria->compare('id',$id);
+		$criteria->compare('fromId',$this->fromId,true);
+		$criteria->compare('toId',$this->toId,true);
+		
+
+
+		return new CActiveDataProvider($this, array(
+			'criteria'=>$criteria,
+
+		));
+	}
         
         
 	/**

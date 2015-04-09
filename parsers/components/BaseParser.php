@@ -3,6 +3,7 @@
 class BaseParser extends BaseJob{
     protected $items = array();
     protected $time = 0;
+    protected $name = '';
 
 
     public function addItem($id, $price, $name, $text, $quantity)
@@ -26,10 +27,12 @@ class BaseParser extends BaseJob{
         return true;
     }
 
+
+
     public function getLastParsedData()
     {   
-        $file = require(Yii::app()->basePath . "/../files/parsersData/" . $this->name . '.data');
-        return $file;
+        $file = dirname(Yii::app()->request->scriptFile) . "/files/parsersData/" . $this->name . '.data';
+        return require($file);
     }
 
 
@@ -41,41 +44,43 @@ class BaseParser extends BaseJob{
         $arr = array_merge(array('name' => $this->name), array('items' => $this->items));
         
         $this->saveParserData($arr);
-
-
     }
 
     public function saveParserData($arrayToWrite)
     {
-        PictureBox::crPhpArr($arrayToWrite, Yii::app()->basePath . "/../files/parsersData/" . $this->name . '.data');
+
+        if ( ! is_writable(dirname(Yii::app()->request->scriptFile) . "/files/parsersData/")) {
+            throw new Exception("Файл " . dirname(Yii::app()->request->scriptFile) . "/files/parsersData/" . " не может быть изменен. Недостаточно прав", 503);
+            
+        }
+
+        PictureBox::crPhpArr($arrayToWrite, dirname(Yii::app()->request->scriptFile).'/files/parsersData/' . $this->name . '.data');
     }
 
     public function saveTime()
     {   
 
-        $this->time = time();
-        $dir    = Yii::app()->basePath . "/../files/parsersData/";
-
-        if (!file_exists($dir)) {
-            mkdir($dir, 0777);
+        if ( ! is_writable(dirname(Yii::app()->request->scriptFile) . "/files/parsersData/time.txt")) {
+            throw new Exception("Файл " . dirname(Yii::app()->request->scriptFile) . "/files/parsersData/time.txt" . " не может быть изменен. Недостаточно прав", 503);
+            
         }
+
+        $this->time = time();
+        $dir    = dirname(Yii::app()->request->scriptFile) . "/files/parsersData/";
+
         $files  = scandir($dir);
 
         $arr = array($this->name => $this->time);
 
         if (array_search('time.txt', $files)) {
-            $array = file_get_contents($dir . 'time.txt');
-            if (is_array($array)) {
-                $arr = array_merge($array, $arr);
+            $json = require(dirname(Yii::app()->request->scriptFile).'/files/parsersData/time.txt');
+            if (is_array($json)) {
+                $arr = array_merge($json, $arr);
             }
             
         }
 
-
-    PictureBox::crPhpArr($arr, Yii::app()->basePath . "/../files/parsersData/time.txt");
-
-
-
+        PictureBox::crPhpArr($arr, dirname(Yii::app()->request->scriptFile).'/files/parsersData/time.txt');
 
     }
 

@@ -8,7 +8,12 @@ class JobManager extends CApplicationComponent{
 
 	public function __construct()
 	{
-		$this->dir = Yii::app()->basePath . '/config/';
+
+		if ( ! is_writable(dirname(Yii::app()->request->scriptFile) . "/files/parsersData/")) {
+			throw new Exception(dirname(Yii::app()->request->scriptFile) . "/files/parsersData/ нету прв для записи" , 503);
+			
+		}
+		$this->dir = dirname(Yii::app()->request->scriptFile) . "/files/parsersData/";
 
 		foreach(glob(Yii::app()->basePath . "/modules/*", GLOB_ONLYDIR) as $path) {    
 
@@ -116,7 +121,7 @@ class JobManager extends CApplicationComponent{
 
 			$this->saveConfigFile((array) $all);
 
-			return $this::timeToString($time);
+			return $this->timeToString($time);
 		} else{
 			return "error: нету такого индекса в заданиях";
 		}
@@ -168,7 +173,7 @@ class JobManager extends CApplicationComponent{
 
     }
 
-	public static function timeToString($time)
+	public function timeToString($time)
 	{
 
 		$string = '';
@@ -276,8 +281,8 @@ class JobManager extends CApplicationComponent{
 						$className = $item['filename'];
 						$classItem = new $className;
 						//$classItem->runJob($filename);
-						$classItem->runJob();
-						$this->changeTimeOfLastExecuted($filename, time());
+						//$classItem->runJob();
+						//$this->changeTimeOfLastExecuted($filename, time());
 						echo $filename;
 
 						$item['lastExecutedForText'] = $item['lastExecuted'] + $item['time'];

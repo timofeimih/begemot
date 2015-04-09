@@ -120,6 +120,8 @@ class DefaultController extends Controller
 
         if(isset($_POST['item'])){
             foreach ($_POST['item'] as $item) {
+
+
                 if (isset($item['id'])) {
                     $model = CatItem::model()->findByPk($item['id']);
                     $model->price = $item['price'];
@@ -133,7 +135,7 @@ class DefaultController extends Controller
     }
 
     public function actionParseNew($className)
-    {
+    {   
 
         $class = new $className;
         $class->runJob();
@@ -161,7 +163,7 @@ class DefaultController extends Controller
         }
         ob_clean();
 
-        $tempfile = require(Yii::app()->basePath.'/../files/parsersData/time.txt');
+        $tempfile = require(dirname(Yii::app()->request->scriptFile) . "/files/parsersData/time.txt");
 
 
         echo date("d.m.Y H:i", $tempfile[$class->getName()]);
@@ -169,37 +171,90 @@ class DefaultController extends Controller
 
     }
 
-    public function actionDo($file)
+    public function actionDo($file, $tab = 'changed')
     {
 
-        $parserLinkingIds = ParsersLinking::model()->findAll();
+        
+        $catItems = array();
+        $itemList = array();
 
-        $iDsArray = array();
-        foreach ($parserLinkingIds as $parserData) {
-            $iDsArray[] = $parserData['toId'];
+        
+        if ($tab == 'allSynched') {
+            $itemList = ParsersLinking::model()->findAllByAttributes(array('filename' => $file), array('order' => 'id ASC'));
+
         }
 
-        $criteria = new CDbCriteria();
-        $criteria->addNotInCondition("id", $iDsArray);
-        $criteria->order = 'name ASC';
+        if ($tab == 'changed') {
+            $combined = ParsersLinking::model()->findAllByAttributes(array('filename' => $file), array('order' => 'id ASC'));
 
-        $catItems = CatItem::model()->findAll($criteria);
-
-
-        $itemList = array(
-            'combined' => ParsersLinking::model()->findAllByAttributes(array('filename' => $file), array('order' => 'id ASC')),
-            'combinedAndChanged' => array(),
-            'notCombined' => ParsersStock::model()->findAllByAttributes(array('filename' => $file, 'linked' => 0), array('order' => 'id ASC')),
-        );
-
-        if ($itemList['combined']) {
-            foreach ($itemList['combined'] as $item) {
-                if ($item->linking->price != $item->item->price || $item->linking->quantity != $item->item->quantity) {
-                    $itemList['combinedAndChanged'][] = $item;
+            if ($combined) {
+                foreach ($combined as $item) {
+                    if ($item->linking->price != $item->item->price || $item->linking->quantity != $item->item->quantity) {
+                        $itemList[] = $item;
+                    }
                 }
+
+            }
+        }
+
+        if ($tab == 'new' | $tab == 'newWithId') {
+            $parserLinkingIds = ParsersLinking::model()->findAll();
+
+            $iDsArray = array();
+            foreach ($parserLinkingIds as $parserData) {
+                $iDsArray[] = $parserData['toId'];
             }
 
+            $criteria = new CDbCriteria();
+            $criteria->addNotInCondition("id", $iDsArray);
+            $criteria->order = 'name ASC';
+
+            $catItems = CatItem::model()->findAll($criteria);
         }
+
+        if ($tab == 'new') {
+
+            $itemList = new ParsersStock;
+
+            $itemList->filename = $file;
+            $itemList->linked = 0;
+            $itemList->ids = array();
+
+            
+           
+        }
+
+        if ($tab == 'newWithId') {
+
+            $ids = array();
+            foreach ($catItems as $item) {
+                if ($item->article != '') {
+                    $ids[] = $item->article;
+                }
+    
+            }
+
+            // print_r($ids);
+            // return;
+
+            $itemList = new ParsersStock;
+
+            $itemList->filename = $file;
+            $itemList->linked = 0;
+            $itemList->ids = $ids;
+
+
+        }
+
+        if ($tab == 'allSynched') {
+            $itemList = new ParsersLinking;
+
+            $itemList->filename = $file;
+        }
+
+        if (isset($_GET['ParsersStock']))
+                $itemList->Attributes = $_GET['ParsersStock'];
+
 
 
 
@@ -208,9 +263,34 @@ class DefaultController extends Controller
             // 'return' => $return,
             'filename' => $file,
             'itemList' => $itemList,
-            'allItems' => $catItems
+            'allItems' => $catItems,
+            'tab' => $tab
         ));
 
+    }
+
+    public function deteleLinkingButton($data)
+    {
+        return "<input type='button' value='Удалить связь' data-id='{$data->id}' class='deleteLinking btn'>";
+    }
+
+    public function getSyncButtons($data, $row){
+        $return = "<button type='button'  data-filename='{$data->filename}' class='composite btn btn-info' name='{$data->name}'>Объединить с ...</button>";
+        if ($data->findedByArticle()){
+            $return .= "<form action='/parsers/default/syncCard' data-removeAfter='.item-$row' class='ajaxSubmit'>
+                <input type='hidden' name='ParsersLinking[fromId]' id='name' value='{$data->id}'><br/>
+                <input type='hidden' name='ParsersLinking[toId]' id='itemId' value='{$data->findedByArticle()}' >
+                <input type='hidden' name='ParsersLinking[filename]' id='itemId' value='{$data->filename}' >
+                <button type='submit' class='compositeRightNow btn btn-primary' data-id='{$data->findedByArticle()}' title=''>Привязать сразу по артиклю к (<a style='color:white;text-decoration:underline' href='" . $this->createUrl('/catalog/catItem/update', array('id' => $data->findedByArticle() )) . "'>{$data->findedByArticle()}</a>)</button></td>
+            </form>"; 
+
+        }
+
+        return $return;
+    }
+
+    public function getAddAsNewButton($data){ 
+        return '<button type="button" class="addAsNew" data-filename="{$data->filename}" data-id="{$data->id}" price="{$data->price}" name="{$data->name}" text="{$data->text}">Добавить как новый</button>';
     }
 
     public function actionLinking()
@@ -233,6 +313,7 @@ class DefaultController extends Controller
             // 'models'=>$models,
             // 'return' => $return,
             'fileListOfDirectory' => $this->getFiles(),
+
             'timeArray' => $timeFile
         ));
 
@@ -242,8 +323,25 @@ class DefaultController extends Controller
     {
         $fileListOfDirectory = array();
         $timeArray = array();
-        if (file_exists(Yii::app()->basePath.'/config/cronConfig.php')) {
-            $timeArray = require(Yii::app()->basePath.'/config/cronConfig.php');
+
+
+
+        if ( ! is_writable(dirname(Yii::app()->request->scriptFile).'/files/parsersData/')) {
+            throw new Exception(dirname(Yii::app()->request->scriptFile).'/files/parsersData/' . "не может быть изменена. Недостаточно прав", 503);
+            
+        }
+
+        if ( ! file_exists(dirname(Yii::app()->request->scriptFile).'/files/parsersData/time.txt')) {
+
+            $myfile = fopen(dirname(Yii::app()->request->scriptFile).'/files/parsersData/time.txt', "w");
+            fclose($myfile);
+
+            PictureBox::crPhpArr(array(), dirname(Yii::app()->request->scriptFile).'/files/parsersData/time.txt');
+            chmod(dirname(Yii::app()->request->scriptFile).'/files/parsersData/time.txt', 0765);
+        }
+        
+        if (file_exists(dirname(Yii::app()->request->scriptFile).'/files/parsersData/time.txt')) {
+            $timeArray = require(dirname(Yii::app()->request->scriptFile).'/files/parsersData/time.txt');
         }
 
 
@@ -259,13 +357,12 @@ class DefaultController extends Controller
             $time = '';
 
             foreach ($timeArray as $key => $value) {
-                if (strtok($key, " ") == $className){
-                   
+                if ($key == $class->getName()){
+                   $time = date("d.m.Y H:i", $value) ."<br/>";
 
-                    if ($value['lastExecutedForText'] == 0) {
-                         $time .= $key . " - еще не выполнялась<br/>";
-                    } else  $time .= $key . " - " . date("d.m.Y H:i", $value['lastExecutedForText']) ."<br/>";
                     
+                } else{
+                    $time = "Еще не выполнялась<br/>";
                 }
             }
 

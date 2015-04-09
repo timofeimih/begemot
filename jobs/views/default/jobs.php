@@ -7,7 +7,6 @@ $this->menu = array(
 
 
 <h1>Все работы</h1>
-
 <div class="success" style='color: green'></div>
 <table>
     <thead>
@@ -142,12 +141,15 @@ $this->menu = array(
     $(document).on("click", ".run", function(){
         var button = $(this);
         var params = {'name': $(this).attr("data-name")};
+        button.val('Делается...')
 
-
+        $(".doing").html("делается").fadeIn();
         $.post('/jobs/default/runJob/', params,  function(data){
             $(".success").html("Задача запустилась").fadeIn();
+            button.val('Запустить')
+            $(".doing").fadeOut();
 
-            setTimeout(function(){$(".success").fadeOut()}, 1000);
+            setTimeout(function(){$(".success").fadeOut()}, 10000);
         }).fail(function(){
             alert("Не вышло");
         });

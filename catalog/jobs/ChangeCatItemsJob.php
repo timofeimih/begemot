@@ -24,7 +24,7 @@ class ChangeCatItemsJob extends BaseJob{
 
 		$arrayOfJobs = array();
 
-		foreach(glob(Yii::app()->basePath . "/../files/parsersData/*.data") as $file) {	
+		foreach(glob(dirname(Yii::app()->request->scriptFile) . "/files/parsersData/*.data") as $file) {	
 			$websiteName = Yii::app()->params['adminEmail'];
 
 		    $json = require($file); 
