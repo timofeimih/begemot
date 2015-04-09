@@ -197,10 +197,10 @@ return array(
         ), 
         
         
-        'errorHandler' => array(
-            // use 'site/error' action to display errors
-            'errorAction' => 'site/error',
-        ),
+//        'errorHandler' => array(
+//            // use 'site/error' action to display errors
+//            'errorAction' => 'site/error',
+//        ),
         'authManager' => array(
             // Path to SDbAuthManager in srbac module if you want to use case insensitive
             //access checking (or CDbAuthManager for case sensitive access checking)
