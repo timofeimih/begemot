@@ -50,7 +50,7 @@ class DefaultController extends Controller
                 $webroot = Yii::getPathOfAlias('webroot');
                 $file = fopen($webroot . '/protected/views/site/pages/' . $model->filename . '.php', 'w');
                 fclose($file);
-                chmod($webroot . '/protected/views/site/pages/' . $model->filename . '.php', 0777);
+                @chmod($webroot . '/protected/views/site/pages/' . $model->filename . '.php', 0777);
 
                 $this->redirect('/pages');
                 return;

@@ -158,7 +158,7 @@ class CKFinder_Connector_CommandHandler_FileUpload extends CKFinder_Connector_Co
                 }
                 if (is_file($sFilePath) && ($perms = $_config->getChmodFiles())) {
                     $oldumask = umask(0);
-                    chmod($sFilePath, $perms);
+                    @chmod($sFilePath, $perms);
                     umask($oldumask);
                 }
                 break;

@@ -337,7 +337,6 @@ class DefaultController extends Controller
             fclose($myfile);
 
             PictureBox::crPhpArr(array(), dirname(Yii::app()->request->scriptFile).'/files/parsersData/time.txt');
-            chmod(dirname(Yii::app()->request->scriptFile).'/files/parsersData/time.txt', 0765);
         }
         
         if (file_exists(dirname(Yii::app()->request->scriptFile).'/files/parsersData/time.txt')) {

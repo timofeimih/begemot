@@ -259,7 +259,7 @@ class CKFinder_Connector_CommandHandler_Thumbnail extends CKFinder_Connector_Com
         $_config =& CKFinder_Connector_Core_Factory::getInstance("Core_Config");
         if (file_exists($targetFile) && ($perms = $_config->getChmodFiles())) {
             $oldUmask = umask(0);
-            chmod($targetFile, $perms);
+            @chmod($targetFile, $perms);
             umask($oldUmask);
         }
 
