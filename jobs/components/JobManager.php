@@ -281,8 +281,8 @@ class JobManager extends CApplicationComponent{
 						$className = $item['filename'];
 						$classItem = new $className;
 						//$classItem->runJob($filename);
-						//$classItem->runJob();
-						//$this->changeTimeOfLastExecuted($filename, time());
+						$classItem->runJob();
+						$this->changeTimeOfLastExecuted($filename, time());
 						echo $filename;
 
 						$item['lastExecutedForText'] = $item['lastExecuted'] + $item['time'];
