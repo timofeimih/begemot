@@ -70,24 +70,16 @@
         
 
     <?php
-    $related = CatItemsToItems::model()->findAll(array('select'=>'itemId', 'condition' => 'toItemId='.$model->id));
+    $related = CatItemsToItems::model()->with('item')->findAll(array('select'=>'itemId', 'condition' => 'toItemId='.$model->id));
     if ((!$model->isNewRecord) && (count($related) > 0)):
         ?>
         <h2>Сопутствует</h2>
         <p>Список других товаров, у которых текущий товар указан как сопутствующий товар или в виде опции.</p>
         <?php
-
-        $arrayOfItems = array();
-        foreach ($related as $item) {
-            array_push($arrayOfItems, $item->itemId);
-        }
-        $arrayOfItems = array_filter($arrayOfItems);
         foreach ($items as $item): ?>
-            <?php if(in_array($item->id, $arrayOfItems)): ?>
-                <div id="<?php echo $item->id;?>" style="float: left; width: 100%;">
-                    <a href="/catalog/catItem/update/id/<?php echo $item->id;?>"><?php echo $item->name; ?> </a><a onClick="removeOption('<?php echo $item->id;?>', '<?php echo $model->id;?>');" href="#">Убрать</a>
+                <div id="<?php echo $item->item->id;?>" style="float: left; width: 100%;">
+                    <a href="/catalog/catItem/update/id/<?php echo $item->item->item->id;?>"><?php echo $item->item->name; ?> </a><a onClick="removeOption('<?php echo $item->item->id;?>', '<?php echo $model->id;?>');" href="#">Убрать</a>
                 </div>
-            <?php endif; ?>
         <?php
         endforeach;
         ?>
@@ -180,23 +172,17 @@
     </form>
 
     <?php
-    $related = CatItemsToItems::model()->findAll(array('select'=>'itemId', 'condition' => 'itemId='.$model->id));
-    if ((!$model->isNewRecord) && $related):
+    $related = CatItemsToItems::model()->with('toItem')->findAll(array('select'=>'itemId', 'condition' => 'itemId='.$model->id));
+    if ((!$model->isNewRecord) & $related):
         ?>
         <h2>Уже в опция у данных карточек</h2>
         <?php
 
-        $arrayOfItems = array();
-        foreach ($related as $item) {
-            array_push($arrayOfItems, $item->itemId);
-        }
         $arrayOfItems = array_filter($arrayOfItems);
-        foreach ($items as $item): ?>
-            <?php if(in_array($item->id, $arrayOfItems)): ?>
-                <div id="<?php echo $item->id;?>" style="float: left; width: 100%;">
-                    <a href="/catalog/catItem/update/id/<?php echo $item->id;?>"><?php echo $item->name; ?> </a><a onClick="removeOption('<?php echo $item->id;?>', '<?php echo $model->id;?>');" href="#">Убрать</a>
+        foreach ($related as $item): ?>
+                <div id="<?php echo $item->toItem->id;?>" style="float: left; width: 100%;">
+                    <a href="/catalog/catItem/update/id/<?php echo $item->toItem->id;?>"><?php echo $item->toItem->name; ?> </a><a onClick="removeOption('<?php echo $model->id;?>', '<?php echo $item->toItem->id;?>');" href="#">Убрать</a>
                 </div>
-            <?php endif; ?>
         <?php
         endforeach;
         ?>
@@ -208,7 +194,7 @@
                 $.ajax({
                     url: '/catalog/catItem/options/id/'+id+'/subid/'+subid,
                     success: function(){
-                        $('#'+id).remove();
+                        $('#'+subid).remove();
                     }
                 });
             }

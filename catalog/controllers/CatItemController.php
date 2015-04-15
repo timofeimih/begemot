@@ -190,10 +190,11 @@ class CatItemController extends Controller
         }
         // --change positions
 
-        if (isset($_POST['saveItemsToItems']) & isset($_POST['options'])  & isset($_POST['items'])) {
+
+        if (isset($_POST['saveItemsToItems'])) {
             CatItemsToItems::model()->deleteAll(array("condition" => 'itemId=' . $id . " OR toItemId=" . $id));
 
-            if (count($_POST['options'])) {
+            if (isset($_POST['options'])) {
                 foreach ($_POST['options'] as $itemId) {
                     $item = new CatItemsToItems();
 
@@ -206,7 +207,7 @@ class CatItemController extends Controller
 
             }
 
-             if (count($_POST['items'])) {
+             if (isset($_POST['items'])) {
                 foreach ($_POST['items'] as $itemId) {
                     $item = new CatItemsToItems();
 
@@ -217,18 +218,6 @@ class CatItemController extends Controller
                 }
 
             }
-
-        } else if (isset($_POST['saveItemsToItems']) && !isset($_POST['options'])) {
-            CatItemsToItems::model()->deleteAll(array("condition" => 'itemId=' . $id . " OR toItemId=" . $id));
-        }
-
-        if (isset($_POST['saveItemsToItems']) && isset($_POST['items'])) {
-
-
-            
-
-        } else if (isset($_POST['saveItemsToItems']) && !isset($_POST['options'])) {
-            CatItemsToItems::model()->deleteAll(array("condition" => 'itemId=' . $id));
         }
 
         $fileListOfDirectory = array();
