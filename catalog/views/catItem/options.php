@@ -78,7 +78,7 @@
         <?php
         foreach ($items as $item): ?>
                 <div id="<?php echo $item->item->id;?>" style="float: left; width: 100%;">
-                    <a href="/catalog/catItem/update/id/<?php echo $item->item->item->id;?>"><?php echo $item->item->name; ?> </a><a onClick="removeOption('<?php echo $item->item->id;?>', '<?php echo $model->id;?>');" href="#">Убрать</a>
+                    <a href="/catalog/catItem/update/id/<?php echo $item->item->id;?>"><?php echo $item->item->name; ?> </a><a onClick="removeOption('<?php echo $item->item->id;?>', '<?php echo $model->id;?>');" href="#">Убрать</a>
                 </div>
         <?php
         endforeach;
