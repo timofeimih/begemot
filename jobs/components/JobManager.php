@@ -173,7 +173,7 @@ class JobManager extends CApplicationComponent{
 
     }
 
-	public function timeToString($time)
+	public static function timeToString($time)
 	{
 
 		$string = '';
@@ -276,7 +276,7 @@ class JobManager extends CApplicationComponent{
 
 				if ($item['executable'] == true) {
 						
-					if (($item['lastExecuted'] + $item['time'] - 60) < time()) {
+					if (($item['lastExecuted'] + $item['time'] + $item['hour'] - 60) < time()) {
 						
 						$className = $item['filename'];
 						$classItem = new $className;
@@ -285,9 +285,11 @@ class JobManager extends CApplicationComponent{
 						$this->changeTimeOfLastExecuted($filename, time());
 						echo $filename;
 
-						$item['lastExecutedForText'] = $item['lastExecuted'] + $item['time'];
 
-						$item['lastExecuted'] = $item['lastExecuted'] + $item['time'];
+
+						$item['lastExecutedForText'] = mktime(0, 0, 0) + $item['time'] + $item['hour'];
+
+						$item['lastExecuted'] = mktime(0, 0, 0);
 						
 						echo "run" . time() .  " - " . $filename .  " - " . $item['lastExecuted'];
 					}

@@ -2,7 +2,7 @@
 
 class ParseCommand extends CConsoleCommand
 {
-    public function run()
+    public function run($args)
     {
 
         $n = new JobManager();
