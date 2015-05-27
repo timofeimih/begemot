@@ -194,7 +194,7 @@ class CatCategoryController extends Controller
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id the ID of the model to be updated
      */
-    public function actionUpdate($id)
+    public function actionUpdate($id, $tab = 'data')
     {
         $model = $this->loadModel($id);
 
@@ -209,6 +209,7 @@ class CatCategoryController extends Controller
 
         $this->render('update', array(
             'model' => $model,
+            'tab' => $tab,
         ));
 
 
