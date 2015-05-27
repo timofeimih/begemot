@@ -282,7 +282,7 @@ class JobManager extends CApplicationComponent{
 						$classItem = new $className;
 						//$classItem->runJob($filename);
 						$classItem->runJob();
-						//$this->changeTimeOfLastExecuted($filename, time());
+						$this->changeTimeOfLastExecuted($filename, time());
 						echo $filename;
 
 
@@ -291,7 +291,7 @@ class JobManager extends CApplicationComponent{
 
 						$item['lastExecuted'] = mktime(0, 0, 0);
 						
-						echo "run" . mktime(0, 0, 0) .  " - " . $filename .  " - " . $item['lastExecuted'];
+						echo "run" . time() .  " - " . $filename .  " - " . $item['lastExecuted'];
 					}
 					else echo 'no run' . time();
 				}
