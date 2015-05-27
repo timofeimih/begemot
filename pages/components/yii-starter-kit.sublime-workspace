@@ -1,0 +1,3623 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"consu",
+				"consultansCount"
+			],
+			[
+				"strrep",
+				"str_replace"
+			],
+			[
+				"background",
+				"background-size"
+			],
+			[
+				"repe",
+				"repeat-x"
+			],
+			[
+				"text-",
+				"text-decoration"
+			],
+			[
+				"text",
+				"text-indent"
+			],
+			[
+				"backgro",
+				"background-size"
+			],
+			[
+				"formula",
+				"formula"
+			],
+			[
+				"j",
+				"j"
+			],
+			[
+				"info",
+				"info_for_email"
+			],
+			[
+				"subs",
+				"substr_compare"
+			],
+			[
+				"sauce",
+				"sauce"
+			],
+			[
+				"function",
+				"function_exists"
+			],
+			[
+				"humidity",
+				"humidity"
+			],
+			[
+				"box",
+				"box-shadow"
+			],
+			[
+				"backgroun",
+				"background-position"
+			],
+			[
+				"queryFirst",
+				"queryFirstField"
+			],
+			[
+				"border-bottom-",
+				"border-bottom-width"
+			],
+			[
+				"cur",
+				"cursor"
+			],
+			[
+				"back",
+				"background-position"
+			],
+			[
+				"type",
+				"typeSelect"
+			],
+			[
+				"regi",
+				"regionSelect"
+			],
+			[
+				"font-",
+				"font-family"
+			],
+			[
+				"di",
+				"display"
+			],
+			[
+				"bor",
+				"border-radius"
+			],
+			[
+				"marg",
+				"margin-left"
+			],
+			[
+				"tex",
+				"text-decoration"
+			],
+			[
+				"bac",
+				"background-position"
+			],
+			[
+				"Main",
+				"mainFunction"
+			],
+			[
+				"Mess",
+				"MessageController"
+			],
+			[
+				"baci",
+				"background-clip"
+			],
+			[
+				"content",
+				"content"
+			],
+			[
+				"d",
+				"display"
+			],
+			[
+				"for",
+				"foreach	foreach …"
+			],
+			[
+				"array_key",
+				"array_key_exists"
+			],
+			[
+				"utf",
+				"utf8_encode"
+			],
+			[
+				"htmle",
+				"html_entity_decode"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/environments/dev/.env",
+			"settings":
+			{
+				"buffer_size": 731,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/console/yii",
+			"settings":
+			{
+				"buffer_size": 793,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/vendor/autoload.php",
+			"settings":
+			{
+				"buffer_size": 183,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/vendor/vlucas/phpdotenv/src/Dotenv.php",
+			"settings":
+			{
+				"buffer_size": 8554,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/common/env.php",
+			"settings":
+			{
+				"buffer_size": 226,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/.env",
+			"settings":
+			{
+				"buffer_size": 754,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/assets/.htaccess",
+			"settings":
+			{
+				"buffer_size": 219,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "##\n# You should look at the following URL's in order to grasp a solid understanding\n# of Nginx configuration files in order to fully unleash the power of Nginx.\n# http://wiki.nginx.org/Pitfalls\n# http://wiki.nginx.org/QuickStart\n# http://wiki.nginx.org/Configuration\n#\n# Generally, you will want to move this file somewhere, and start with a clean\n# file but keep this around for reference. Or just disable in sites-enabled.\n#\n# Please see /usr/share/doc/nginx-doc/examples/ for more detailed examples.\n##\n\nserver {\n	listen 80 default_server;\n	listen [::]:80 default_server ipv6only=on;\n\n	root /usr/share/nginx/html;\n	index index.html index.htm;\n\n	# Make site accessible from http://localhost/\n	server_name localhost;\n\n	location / {\n		# First attempt to serve request as file, then\n		# as directory, then fall back to displaying a 404.\n		try_files $uri $uri/ =404;\n		# Uncomment to enable naxsi on this location\n		# include /etc/nginx/naxsi.rules\n	}\n\n	# Only for nginx-naxsi used with nginx-naxsi-ui : process denied requests\n	#location /RequestDenied {\n	#	proxy_pass http://127.0.0.1:8080;    \n	#}\n\n	#error_page 404 /404.html;\n\n	# redirect server error pages to the static page /50x.html\n	#\n	#error_page 500 502 503 504 /50x.html;\n	#location = /50x.html {\n	#	root /usr/share/nginx/html;\n	#}\n\n	# pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000\n	#\n	#location ~ \\.php$ {\n	#	fastcgi_split_path_info ^(.+\\.php)(/.+)$;\n	#	# NOTE: You should have \"cgi.fix_pathinfo = 0;\" in php.ini\n	#\n	#	# With php5-cgi alone:\n	#	fastcgi_pass 127.0.0.1:9000;\n	#	# With php5-fpm:\n	#	fastcgi_pass unix:/var/run/php5-fpm.sock;\n	#	fastcgi_index index.php;\n	#	include fastcgi_params;\n	#}\n\n	# deny access to .htaccess files, if Apache's document root\n	# concurs with nginx's one\n	#\n	#location ~ /\\.ht {\n	#	deny all;\n	#}\n}\n\n\n# another virtual host using mix of IP-, name-, and port-based configuration\n#\n#server {\n#	listen 8000;\n#	listen somename:8080;\n#	server_name somename alias another.alias;\n#	root html;\n#	index index.html index.htm;\n#\n#	location / {\n#		try_files $uri $uri/ =404;\n#	}\n#}\n\n\n# HTTPS server\n#\n#server {\n#	listen 443;\n#	server_name localhost;\n#\n#	root html;\n#	index index.html index.htm;\n#\n#	ssl on;\n#	ssl_certificate cert.pem;\n#	ssl_certificate_key cert.key;\n#\n#	ssl_session_timeout 5m;\n#\n#	ssl_protocols SSLv3 TLSv1 TLSv1.1 TLSv1.2;\n#	ssl_ciphers \"HIGH:!aNULL:!MD5 or HIGH:!aNULL:!MD5:!3DES\";\n#	ssl_prefer_server_ciphers on;\n#\n#	location / {\n#		try_files $uri $uri/ =404;\n#	}\n#}",
+			"settings":
+			{
+				"buffer_size": 2489,
+				"line_ending": "Unix",
+				"name": "##"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/environments/dev/nginx.conf",
+			"settings":
+			{
+				"buffer_size": 1288,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/backend/config/web.php",
+			"settings":
+			{
+				"buffer_size": 2955,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/common/models/Page.php",
+			"settings":
+			{
+				"buffer_size": 1755,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/backend/views/page/_form.php",
+			"settings":
+			{
+				"buffer_size": 1261,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/common/models/Article.php",
+			"settings":
+			{
+				"buffer_size": 4641,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/backend/views/article/_form.php",
+			"settings":
+			{
+				"buffer_size": 2433,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/sftp-config.json",
+			"settings":
+			{
+				"buffer_size": 1259,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/models/.htaccess",
+			"settings":
+			{
+				"buffer_size": 0,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/.htaccess",
+			"settings":
+			{
+				"buffer_size": 219,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/backend/views/layouts/common.php",
+			"settings":
+			{
+				"buffer_size": 13864,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/views/layouts/_base.php",
+			"settings":
+			{
+				"buffer_size": 9762,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/backend/views/layouts/main.php",
+			"settings":
+			{
+				"buffer_size": 254,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/config/web.php",
+			"settings":
+			{
+				"buffer_size": 2008,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/config/_urlManager.php",
+			"settings":
+			{
+				"buffer_size": 609,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/controllers/PageController.php",
+			"settings":
+			{
+				"buffer_size": 603,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/controllers/SiteController.php",
+			"settings":
+			{
+				"buffer_size": 4444,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/common/config/base.php",
+			"settings":
+			{
+				"buffer_size": 5538,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/common/actions/SetLocaleAction.php",
+			"settings":
+			{
+				"buffer_size": 1993,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/common/config/web.php",
+			"settings":
+			{
+				"buffer_size": 704,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/views/site/index.php",
+			"settings":
+			{
+				"buffer_size": 607,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/common/models/WidgetText.php",
+			"settings":
+			{
+				"buffer_size": 1774,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/controllers/GenerateController.php",
+			"settings":
+			{
+				"buffer_size": 4102,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/callservice2/assets/AppAsset.php",
+			"settings":
+			{
+				"buffer_size": 546,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/common/models/CallButtons.php",
+			"settings":
+			{
+				"buffer_size": 3747,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/callservice2/controllers/SiteController.php",
+			"settings":
+			{
+				"buffer_size": 5131,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/common/models/CallButtonsSearch.php",
+			"settings":
+			{
+				"buffer_size": 1245,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/backend/models/search/CallButtonsSearch.php",
+			"settings":
+			{
+				"buffer_size": 1151,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/backend/views/page/index.php",
+			"settings":
+			{
+				"buffer_size": 920,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/views/page/view.php",
+			"settings":
+			{
+				"buffer_size": 217,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/backend/views/layouts/base.php",
+			"settings":
+			{
+				"buffer_size": 1284,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/web/call_assets/script.js",
+			"settings":
+			{
+				"buffer_size": 61619,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/backend/controllers/GenerateController.php",
+			"settings":
+			{
+				"buffer_size": 3582,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/backend/views/generate/index.php",
+			"settings":
+			{
+				"buffer_size": 1183,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/views/generate/_form.php",
+			"settings":
+			{
+				"buffer_size": 5824,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/tmp/fz3temp-1/style.css",
+			"settings":
+			{
+				"buffer_size": 0,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/modules/api/v1/controllers/UserController.php",
+			"settings":
+			{
+				"buffer_size": 1769,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/modules/user/models/AccountForm.php",
+			"settings":
+			{
+				"buffer_size": 1555,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/modules/user/controllers/SignInController.php",
+			"settings":
+			{
+				"buffer_size": 7962,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/views/generate/index.php",
+			"settings":
+			{
+				"buffer_size": 1159,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/assets/FrontendAsset.php",
+			"settings":
+			{
+				"buffer_size": 599,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/vendor/yiisoft/yii2-bootstrap/Nav.php",
+			"settings":
+			{
+				"buffer_size": 8792,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/modules/user/views/sign-in/signup.php",
+			"settings":
+			{
+				"buffer_size": 1244,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/rozvesdehod/protected/modules/catalog/views/catItem/commonMenu.php",
+			"settings":
+			{
+				"buffer_size": 1685,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "/var/www/justCoding/YII/yii2-starter-kit/frontend/web/index.html",
+			"settings":
+			{
+				"buffer_size": 64,
+				"line_ending": "Unix",
+				"name": "/var/www/justCoding/YII/yii2-starter-kit/frontend/"
+			}
+		},
+		{
+			"contents": "<!DOCTYPE html>\n<html lang=\"en\">\n\n<head>\n\n    <meta charset=\"utf-8\">\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n    <meta name=\"description\" content=\"\">\n    <meta name=\"author\" content=\"\">\n\n    <title>Landing Page - Start Bootstrap Theme</title>\n\n    <!-- Bootstrap Core CSS -->\n    <link href=\"css/bootstrap.min.css\" rel=\"stylesheet\">\n\n    <!-- Custom CSS -->\n    <link href=\"css/landing-page.css\" rel=\"stylesheet\">\n\n    <!-- Custom Fonts -->\n    <link href=\"font-awesome/css/font-awesome.min.css\" rel=\"stylesheet\" type=\"text/css\">\n    <link href=\"http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic\" rel=\"stylesheet\" type=\"text/css\">\n\n    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->\n    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->\n    <!--[if lt IE 9]>\n        <script src=\"https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js\"></script>\n        <script src=\"https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js\"></script>\n    <![endif]-->\n\n</head>\n\n<body>\n\n    <!-- Navigation -->\n    <nav class=\"navbar navbar-default navbar-fixed-top topnav\" role=\"navigation\">\n        <div class=\"container topnav\">\n            <!-- Brand and toggle get grouped for better mobile display -->\n            <div class=\"navbar-header\">\n                <button type=\"button\" class=\"navbar-toggle\" data-toggle=\"collapse\" data-target=\"#bs-example-navbar-collapse-1\">\n                    <span class=\"sr-only\">Toggle navigation</span>\n                    <span class=\"icon-bar\"></span>\n                    <span class=\"icon-bar\"></span>\n                    <span class=\"icon-bar\"></span>\n                </button>\n                <a class=\"navbar-brand topnav\" href=\"#\">Calls-express</a>\n            </div>\n            <!-- Collect the nav links, forms, and other content for toggling -->\n            <div class=\"collapse navbar-collapse\" id=\"bs-example-navbar-collapse-1\">\n                <ul class=\"nav navbar-nav navbar-right\">\n                    <li>\n                        <a href=\"#about\">About</a>\n                    </li>\n                    <li>\n                        <a href=\"#services\">Services</a>\n                    </li>\n                    <li>\n                        <a href=\"#contact\">Contact</a>\n                    </li>\n                </ul>\n            </div>\n            <!-- /.navbar-collapse -->\n        </div>\n        <!-- /.container -->\n    </nav>\n\n\n    <!-- Header -->\n    <a name=\"about\"></a>\n    <div class=\"intro-header\">\n        <div class=\"container\">\n\n            <div class=\"row\">\n                <div class=\"col-lg-12\">\n                    <div class=\"intro-message\">\n                        <h1>Calls-express</h1>\n                        <h3>Самый быстрый захват клиентов</h3>\n                        <hr class=\"intro-divider\">\n                        <!-- <ul class=\"list-inline intro-social-buttons\">\n                            <li>\n                                <a href=\"https://twitter.com/SBootstrap\" class=\"btn btn-default btn-lg\"><i class=\"fa fa-twitter fa-fw\"></i> <span class=\"network-name\">Twitter</span></a>\n                            </li>\n                            <li>\n                                <a href=\"https://github.com/IronSummitMedia/startbootstrap\" class=\"btn btn-default btn-lg\"><i class=\"fa fa-github fa-fw\"></i> <span class=\"network-name\">Github</span></a>\n                            </li>\n                            <li>\n                                <a href=\"#\" class=\"btn btn-default btn-lg\"><i class=\"fa fa-linkedin fa-fw\"></i> <span class=\"network-name\">Linkedin</span></a>\n                            </li>\n                        </ul> -->\n                    </div>\n                </div>\n            </div>\n\n        </div>\n        <!-- /.container -->\n\n    </div>\n    <!-- /.intro-header -->\n\n    \n\n	<a  name=\"contact\"></a>\n    <div class=\"banner\">\n\n        <div class=\"container\">\n\n            <div class=\"row\">\n                <div class=\"col-lg-6\">\n                    <h2>Calls-express</h2>\n                </div>\n                <!-- <div class=\"col-lg-6\">\n                    <ul class=\"list-inline banner-social-buttons\">\n                        <li>\n                            <a href=\"https://twitter.com/SBootstrap\" class=\"btn btn-default btn-lg\"><i class=\"fa fa-twitter fa-fw\"></i> <span class=\"network-name\">Twitter</span></a>\n                        </li>\n                        <li>\n                            <a href=\"https://github.com/IronSummitMedia/startbootstrap\" class=\"btn btn-default btn-lg\"><i class=\"fa fa-github fa-fw\"></i> <span class=\"network-name\">Github</span></a>\n                        </li>\n                        <li>\n                            <a href=\"#\" class=\"btn btn-default btn-lg\"><i class=\"fa fa-linkedin fa-fw\"></i> <span class=\"network-name\">Linkedin</span></a>\n                        </li>\n                    </ul>\n                </div> -->\n            </div>\n\n        </div>\n        <!-- /.container -->\n\n    </div>\n    <!-- /.banner -->\n\n    <!-- Footer -->\n    <footer>\n        <div class=\"container\">\n            <div class=\"row\">\n                <div class=\"col-lg-12\">\n                    <ul class=\"list-inline\">\n                        <li>\n                            <a href=\"#\">Home</a>\n                        </li>\n                        <li class=\"footer-menu-divider\">&sdot;</li>\n                        <li>\n                            <a href=\"#about\">About</a>\n                        </li>\n                        <li class=\"footer-menu-divider\">&sdot;</li>\n                        <li>\n                            <a href=\"#services\">Services</a>\n                        </li>\n                        <li class=\"footer-menu-divider\">&sdot;</li>\n                        <li>\n                            <a href=\"#contact\">Contact</a>\n                        </li>\n                    </ul>\n                    <p class=\"copyright text-muted small\">Copyright &copy; Your Company 2014. All Rights Reserved</p>\n                </div>\n            </div>\n        </div>\n    </footer>\n\n    <!-- jQuery -->\n    <script src=\"js/jquery.js\"></script>\n\n    <!-- Bootstrap Core JavaScript -->\n    <script src=\"js/bootstrap.min.js\"></script>\n\n</body>\n\n</html>\n",
+			"file": "/home/timofei/Загрузки/startbootstrap-landing-page-1.0.4/index.html",
+			"file_size": 11628,
+			"file_write_time": 1432541204000000,
+			"settings":
+			{
+				"buffer_size": 6397,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "<div class=\"jumbotron\" style=\"padding-bottom: 0px;\">\n	<h1 style=\"background-color: #800000;color: white;padding: 5px;\">Calls-Express.com</h1>\n	<p class=\"lead\">Звонок доставлен, распишитесь!\n	</p>\n</div>\n<div class=\"body-content\">\n	<div class=\"row\">\n		<div class=\"col-lg-12\">\n			<h2 style=\"text-align: center;\"><strong><span rel=\"font-family: Arial, Helvetica, Verdana, Tahoma, sans-serif; font-size: 21px; line-height: 33.5999984741211px;\">Знакомьтесь, это </span>Calls-Express</strong><strong> - первая служба доставки звонков!</strong><br></h2>\n			<h2>В отдел продаж за 15 секунд?</h2>\n			<p><strong>Calls Express - </strong>виджет нового поколения, работает по принципу обратного звонка (Call Back) и в отличие от классической формы заказа звонка с сайта соединяет менеджера с покупателем за 15 секунд.\n			</p>\n			<h2>Звонки должны сбываться во время!</h2>\n			<p>Только представьте, потенциальный покупатель зашел к Вам на сайт. Calls Express, анализируя его поведению предлагает связаться с менеджером за 15 секунд. Покупатель вводит номер телефона, инициируя мгновенную доставку звонка по IP телефонии.\n			</p>\n		</div>\n		<div class=\"col-lg-12\">\n			<h2>Что еще умеет Calls Express?</h2>\n			<ul>\n				<li>Производит на покупателя WOW-эффект</li>\n				<li>Повышает лояльность</li>\n				<li>Наращивает количество входящих интересов в 2 раза, что логично сказывается на увеличении воронки продаж</li>\n				<li>Не дает забыть про покупателя, потому что заставляет менеджера взять трубку немедленно, а не выбирать для этого время (после перекура или после обеда или после еще какого-то дела)</li>\n				<li>Записывает разговор для отдела качества</li>\n				<li>Отправляет на электронную почту отчет о покупателе с учетом всех необходимых данных (на какой номер был заказан звонок, с какой страницы сайта, время заказа, ip адрес и тд)</li>\n				<li>Сразу после окончания разговора отправляет покупателю SMS с контактами менеджера</li>\n				<li>Присылает отчет руководителю, если менеджер не успел взять трубку в регламентированные 25 секунд.</li>\n			</ul>\n			<h2>Как установить Calls Express? ... очень просто!</h2>\n			<h2>Взгляните на наши тарифы!</h2>\n			<p><strong><em><span style=\"color: rgb(149, 55, 52);\">Сайт находится в стадии наполнения, приносим извинения. Все вопросы можно задать через форму обратной связи, которая находится слева.</span></em></strong>\n			</p>\n		</div>\n	</div>\n</div>",
+			"settings":
+			{
+				"buffer_size": 2386,
+				"line_ending": "Unix",
+				"name": "<div class=\"jumbotron\" style=\"padding-bottom: 0px;"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/views/layouts/main.php",
+			"settings":
+			{
+				"buffer_size": 764,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/views/layouts/index.php",
+			"settings":
+			{
+				"buffer_size": 764,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "Packages/User/php/php.sublime-build",
+	"command_palette":
+	{
+		"height": 180.0,
+		"selected_items":
+		[
+			[
+				"setshm",
+				"Set Syntax: HTML"
+			],
+			[
+				"setsynjava",
+				"Set Syntax: JavaScript"
+			],
+			[
+				"tas",
+				"Tasks: New document"
+			],
+			[
+				"disab",
+				"LiveReload: Enable/disable plug-ins"
+			],
+			[
+				"disa",
+				"Package Control: Disable Package"
+			],
+			[
+				"stsjava",
+				"Set Syntax: JavaScript"
+			],
+			[
+				"git reset",
+				"Git: Reset (hard) HEAD"
+			],
+			[
+				"git qu",
+				"Git: Quick Commit"
+			],
+			[
+				"git cur",
+				"Git: Add Current File"
+			],
+			[
+				"git ii",
+				"Git: Init"
+			],
+			[
+				"git i",
+				"Git: Init"
+			],
+			[
+				"setsjavas",
+				"Set Syntax: JavaScript"
+			],
+			[
+				"setsyntahtml",
+				"Set Syntax: HTML"
+			],
+			[
+				"sesyntajs",
+				"Set Syntax: JavaScript"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"stnthtml",
+				"Set Syntax: HTML"
+			],
+			[
+				"new",
+				"File: New File Relative to Current View"
+			],
+			[
+				"seshm",
+				"Set Syntax: HTML"
+			],
+			[
+				"sesyntjavas",
+				"Set Syntax: JavaScript"
+			],
+			[
+				"task",
+				"Tasks: New document"
+			],
+			[
+				"ner",
+				"File: New File Relative to Current View"
+			],
+			[
+				"rena",
+				"File: Rename"
+			],
+			[
+				"d",
+				"File: Duplicate"
+			],
+			[
+				"du",
+				"File: Duplicate"
+			],
+			[
+				"re",
+				"File: New File Relative to Current View"
+			],
+			[
+				"nevr",
+				"File: New File Relative to Current View"
+			],
+			[
+				"rel",
+				"File: New File Relative to Current View"
+			],
+			[
+				"ren",
+				"File: Rename"
+			],
+			[
+				"packd",
+				"Package Control: Disable Package"
+			],
+			[
+				"packa",
+				"Package Control: Enable Package"
+			],
+			[
+				"syntahtml",
+				"Set Syntax: HTML"
+			],
+			[
+				"synp",
+				"Set Syntax: PHP"
+			],
+			[
+				"newf",
+				"File: New File Relative to Current View"
+			],
+			[
+				"packin",
+				"Package Control: Install Package"
+			],
+			[
+				"setsph",
+				"Set Syntax: PHP"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"live",
+				"Live CSS: Colorize"
+			],
+			[
+				"synless",
+				"Set Syntax: LESS"
+			],
+			[
+				"move",
+				"File: Move"
+			],
+			[
+				"Package Control: remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"addre",
+				"Package Control: Add Repository"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"delete",
+				"Trailing Spaces: Delete Trailing Spaces"
+			],
+			[
+				"clean",
+				"Trailing Spaces: Delete Trailing Spaces"
+			],
+			[
+				"add",
+				"Package Control: Add Repository"
+			],
+			[
+				"brows",
+				"Preferences: Browse Packages"
+			]
+		],
+		"width": 467.0
+	},
+	"console":
+	{
+		"height": 139.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/var/www/justCoding/YII/rozvesdehod/protected/config/main.php",
+		"/var/www/justCoding/YII/yii2.0begemot_migrate/modules/catalog/controllers/CatitemController.php",
+		"/var/www/justCoding/YII/yii2.0begemot_migrate/modules/catalog/controllers/CatItemController.php",
+		"/var/www/justCoding/YII/yii2.0begemot_migrate/modules/catalog/controllers/DefaultDeController.php",
+		"/var/www/justCoding/YII/yii2.0begemot_migrate/modules/catalog/controllers/DefaultController.php",
+		"/var/www/justCoding/YII/yii2.0begemot_migrate/composer.phar",
+		"/var/www/justCoding/YII/yii2.0begemot_migrate/modules/user/UserModule.php",
+		"/var/www/justCoding/YII/yii2.0begemot_migrate/modules/user/controllers/UserController.php",
+		"/var/www/justCoding/YII/yii2.0begemot_migrate/modules/user/controllers/LoginController.php",
+		"/var/www/justCoding/YII/yii2.0begemot_migrate/modules/user/controllers/AdminController.php",
+		"/var/www/justCoding/YII/yii2.0begemot_migrate/modules/user/models/UserLogin.php",
+		"/var/www/justCoding/YII/yii2.0begemot_migrate/modules/user/views/user/login.php",
+		"/var/www/justCoding/YII/yii2.0begemot_migrate/views/site/login.php",
+		"/var/www/justCoding/YII/yii2.0begemot_migrate/modules/begemot/views/layouts/main.php",
+		"/var/www/justCoding/YII/yii2.0begemot_migrate/views/layouts/main.php",
+		"/var/www/justCoding/YII/yii2.0begemot_migrate/vendor/bower/bootstrap/dist/css/bootstrap.css",
+		"/var/www/justCoding/YII/yii2.0begemot_migrate/config/db.php",
+		"/var/www/justCoding/YII/yii2.0begemot_migrate/modules/begemot/Module.php",
+		"/var/www/justCoding/YII/yii2.0begemot_migrate/modules/begemot/config.php",
+		"/var/www/justCoding/YII/yii2.0begemot_migrate/config/web.php",
+		"/var/www/justCoding/WordPress/b-spb.ru/23fevralja-2.html",
+		"/var/www/justCoding/YII/yii2.0begemot_migrate/modules/begemot/controllers/DefaultController.php",
+		"/var/www/justCoding/YII/yii2.0begemot_migrate/web/index-test.php",
+		"/var/www/justCoding/YII/yii2.0begemot_migrate/modules/user/controllers/DefaultController.php",
+		"/var/www/justCoding/YII/yii2.0begemot_migrate/modules/user/models/User.php",
+		"/var/www/justCoding/YII/yii2.0begemot_migrate/modules/user/views/user/index.php",
+		"/var/www/justCoding/YII/yii2.0begemot_migrate/vendor/yiisoft/yii2/base/Controller.php",
+		"/var/www/justCoding/YII/yii2.0begemot_migrate/modules/begemot/views/layouts/column2.php",
+		"/var/www/justCoding/YII/yii2.0begemot_migrate/modules/user/components/UserIdentity.php",
+		"/var/www/justCoding/YII/yii2.0begemot_migrate/modules/user/Module.php",
+		"/var/www/tmp/RDK/landing_fr.html",
+		"/var/www/tmp/buggy-2014/css/main.less",
+		"/var/www/tmp/RDK/landing_rus.html",
+		"/var/www/tmp/RDK/landing_eng.html",
+		"/var/www/tmp/RDK/index.html",
+		"/var/www/tmp/RDK/info.txt",
+		"/home/timofei/Загрузки/RDK/website/css/main.css",
+		"/home/timofei/Загрузки/RDK/website/index.html",
+		"/home/timofei/Загрузки/RDK/website/landing_rus.html",
+		"/var/www/justCoding/WordPress/b-spb.ru/redesign/bd-spb.ru/wp-content/themes/PRiNZ_BranfordMagazine_latest/styles/template-style.css",
+		"/var/www/justCoding/WordPress/b-spb.ru/redesign/bd-spb.ru/wp-content/themes/PRiNZ_BranfordMagazine_latest/header.php",
+		"/var/www/justCoding/WordPress/b-spb.ru/redesign/bd-spb.ru/wp-content/themes/PRiNZ_BranfordMagazine_latest/style.css",
+		"/var/www/justCoding/WordPress/b-spb.ru/redesign/bd-spb.ru/wp-config.php",
+		"/home/timofei/Загрузки/wordpress (2)/wp-settings.php",
+		"/var/www/tmp/lh.aijino.myjino.ru/includes/install.inc",
+		"/var/www/tmp/pages/style.css",
+		"/var/www/tmp/libraries.module",
+		"/var/www/tmp/style.css",
+		"/var/www/justCoding/games/checkers/index.html",
+		"/var/www/justCoding/games/checkers/css/style.css",
+		"/var/www/justCoding/games/checkers/js/main_script.js",
+		"/var/www/justCoding/games/moving in table/index.html",
+		"/var/www/justCoding/WordPress/b-spb.ru/redesign/bd-spb.ru/wp-content/themes/PRiNZ_BranfordMagazine_latest/styles/nav.css",
+		"/var/www/justCoding/WordPress/b-spb.ru/redesign/bd-spb.ru/.htaccess",
+		"/var/www/tmp/testParse.html",
+		"/var/www/justCoding/WordPress/b-spb.ru/redesign/bd-spb.ru/wp-content/themes/PRiNZ_BranfordMagazine_latest/page.php",
+		"/var/www/justCoding/WordPress/b-spb.ru/redesign/bd-spb.ru/wp-content/themes/PRiNZ_BranfordMagazine_latest/footer.php",
+		"/var/www/justCoding/WordPress/b-spb.ru/redesign/bd-spb.ru/wp-content/themes/PRiNZ_BranfordMagazine_latest/single.php",
+		"/var/www/justCoding/WordPress/b-spb.ru/redesign/bd-spb.ru/wp-content/themes/PRiNZ_BranfordMagazine_latest/ui.tabs.php",
+		"/var/www/justCoding/WordPress/b-spb.ru/Бизнес Диалог, Юридическая фирма » Юридические услуги. Бухгалтерские услуги._files/ui.tabs.css",
+		"/var/www/justCoding/WordPress/b-spb.ru/redesign/bd-spb.ru/wp-content/themes/PRiNZ_BranfordMagazine_latest/styles/ui.tabs.css",
+		"/var/www/tmp/calculated-fields-form/css/cupertino/jquery-ui-1.8.20.custom.css",
+		"/var/www/justCoding/WordPress/b-spb.ru/redesign/bd-spb.ru/wp-content/themes/PRiNZ_BranfordMagazine_latest/sidebar.php",
+		"/var/www/tmp/less_liveEdit/index.html",
+		"/var/www/tmp/less_liveEdit/app.js",
+		"/var/www/tmp/less_liveEdit/styles.less",
+		"/var/www/tmp/less_liveEdit/styles.scss",
+		"/var/www/tmp/less_liveEdit/styles.css",
+		"/var/www/justCoding/WordPress/b-spb.ru/mail_test.php",
+		"/var/www/justCoding/WordPress/b-spb.ru/send_visitka.php",
+		"/var/www/tmp/test.html",
+		"/var/www/justCoding/WordPress/b-spb.ru/clear_smslog.php",
+		"/var/www/justCoding/WordPress/b-spb.ru/redesign/bd-spb.ru/wp-content/themes/PRiNZ_BranfordMagazine_latest/index.php",
+		"/var/www/justCoding/WordPress/b-spb.ru/scripts_for_search_and_topDown_buttons.js",
+		"/var/www/justCoding/WordPress/b-spb.ru/formulas.html",
+		"/var/www/justCoding/WordPress/b-spb.ru/script_for_inn_ver2.js",
+		"/home/timofei/Загрузки/webfontkit-20140326-100203/testFont.html",
+		"/home/timofei/Загрузки/Nexa_Light/testFont.html",
+		"/home/timofei/Загрузки/webfont/nexa_light-demo.html",
+		"/home/timofei/Загрузки/Nexa_Light/nexa_light.css",
+		"/home/timofei/Загрузки/webfontkit-20140326-100203/stylesheet.css",
+		"/var/www/justCoding/WordPress/b-spb.ru/clean_smslog.php",
+		"/var/www/justCoding/WordPress/b-spb.ru/redesign/bd-spb.ru/wp-content/themes/PRiNZ_BranfordMagazine_latest/searchform.php",
+		"/var/www/tmp/less_liveEdit/styles.css.map",
+		"/var/www/justCoding/WordPress/b-spb.ru/redesign/bd-spb.ru/wp-content/themes/PRiNZ_BranfordMagazine_latest/ftpsync.settings",
+		"/var/www/tmp/wp-settings.php",
+		"/var/www/tmp/.htaccess",
+		"/var/www/tmp/musor/bd-spb.ru_error_log",
+		"/var/www/justCoding/WordPress/b-spb.ru/sms/options.php",
+		"/var/www/justCoding/WordPress/b-spb.ru/sms/menu.php",
+		"/var/www/justCoding/WordPress/b-spb.ru/sms/loadout.php",
+		"/var/www/justCoding/WordPress/b-spb.ru/sms/CSms4bBase.php",
+		"/var/www/justCoding/WordPress/b-spb.ru/sms/cforms/phpmailer/cforms_phpmailer.php",
+		"/var/www/justCoding/WordPress/b-spb.ru/sms/cforms/lib_aux.php",
+		"/var/www/justCoding/WordPress/b-spb.ru/sms/cforms/lib_ajax.php",
+		"/var/www/justCoding/WordPress/b-spb.ru/sms/send_sms.php",
+		"/var/www/justCoding/WordPress/b-spb.ru/sms/sendSmsSimple.php",
+		"/var/www/justCoding/WordPress/b-spb.ru/temp.html",
+		"/var/www/tmp/musor/php.ini",
+		"/var/www/tmp/calculated-fields-form/cp_calculatedfieldsf_public_int.inc.php",
+		"/var/www/tmp/calculated-fields-form/js/fbuilder-pro.jquery.js",
+		"/home/timofei/Загрузки/calculated-fields-form-master/js/fbuilder-pro.jquery.js",
+		"/home/timofei/Загрузки/tim/index.html",
+		"/home/timofei/Загрузки/jquery-ui-1.10.3.custom/css/ui-lightness/jquery-ui-1.10.3.custom.min.css",
+		"/home/timofei/Загрузки/jquery-ui-1.10.3.custom (2)/css/smoothness/jquery-ui-1.10.3.custom.min.css",
+		"/var/www/tmp/syntac.js",
+		"/var/www/justCoding/WordPress/b-spb.ru/wordpress.TODO",
+		"/home/timofei/Загрузки/mysql014.infobox.ru.sql",
+		"/var/www/tmp/wp-config.php",
+		"/var/www/justCoding/Django/cms/cms/settings.py",
+		"/var/www/justCoding/Django/cms/search/models.py",
+		"/var/www/justCoding/Django/cms/search/tests.py",
+		"/var/www/justCoding/Django/html/search/search.html",
+		"/var/www/justCoding/Django/html/cms/flatpages/default.html",
+		"/var/www/justCoding/Django/html/cms/admin/base.html",
+		"/var/www/justCoding/Django/cms/cms/urls.py",
+		"/var/www/justCoding/Django/cms/search/views.py",
+		"/usr/local/lib/python2.7/dist-packages/django/contrib/admin/templates/admin/includes/fieldset.html",
+		"/var/www/justCoding/WordPress/b-spb.ru/redesign/bd-spb.ru/wp-content/themes/PRiNZ_BranfordMagazine_latest/archive.php",
+		"/var/www/justCoding/WordPress/b-spb.ru/redesign/bd-spb.ru/wp-content/themes/PRiNZ_BranfordMagazine_latest/styles/style.css",
+		"/var/www/justCoding/Django/html/django-templates/cms/flatpages/default.html",
+		"/var/www/justCoding/Django/html/django-templates/cms/admin/flatpages/flatpage/change_form.html",
+		"/var/www/justCoding/Django/cms/manage.py",
+		"/var/www/justCoding/Django/cms/cms/untitled.TODO",
+		"/var/www/justCoding/Django/js/ckeditor/config.js",
+		"/var/www/justCoding/Django/js/ckeditor/ckeditor.js",
+		"/var/www/justCoding/YII/myprtfLite/static/js/main.js",
+		"/var/www/justCoding/Django/cms/cms/wsgi.pyc"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+			"/var/www/justCoding/WordPress/b-spb.ru",
+			"/var/www/justCoding/WordPress/b-spb.ru/redesign/bd-spb.ru/wp-content/themes/PRiNZ_BranfordMagazine_latest",
+			"/var/www/justCoding/WordPress/b-spb.ru",
+			"/var/www/justCoding/WordPress/b-spb.ru/sms/cforms",
+			"/var/www/justCoding/tmp/pricing-table",
+			"/var/www/justCoding/garbage/b-sp.ru_dump",
+			"/var/www/justCoding/YII/directAdvert/protected/components",
+			"/var/www/justCoding/YII/directAdvert/protected/models",
+			"/var/www/justCoding/YII/directAdvert/protected/models/_base",
+			"/var/www/justCoding/YII/directAdvert/protected",
+			"/var/www/justCoding/phpfox/phpfoxFramework/module/listing/include",
+			"/var/www/justCoding/phpfox/phpfoxFramework/module/listing",
+			"/var/www/justCoding/phpfox/phpfoxFramework/module/listing/static",
+			"/var/www/justCoding/phpfox/phpfoxFramework/module/listing/static/jscript",
+			"/var/www/justCoding/phpfox/listing",
+			"/var/www/justCoding/phpfox/listing/module/listing",
+			"/var/www/justCoding/phpfox/phpfoxFramework",
+			"/var/www/justCoding/phpfox/phpfoxFramework/module/listing",
+			"/var/www/justCoding/phpfox/phpfoxFramework/module/listing/include",
+			"/var/www/justCoding/phpfox/phpfoxFramework/module/listing/include/component",
+			"/var/www/justCoding/phpfox/phpfoxFramework/module/invite/template",
+			"/var/www/justCoding/phpfox/phpfoxFramework/module/invite/template/default",
+			"/var/www/justCoding/phpfox/phpfoxFramework/module/quiz/include",
+			"/var/www/justCoding/phpfox/phpfoxFramework/module/quiz",
+			"/var/www/justCoding/phpfox/phpfoxFramework/module/quiz/include/service",
+			"/var/www/justCoding/phpfox/phpfoxFramework/module/quiz/include",
+			"/var/www/justCoding/phpfox/phpfoxFramework/module/listing/include",
+			"/var/www/justCoding/phpfox/phpfoxFramework/module/listing/include/component/controller",
+			"/var/www/justCoding/phpfox/OpenInviter/more_examples",
+			"/var/www/justCoding/phpfox/OpenInviter",
+			"/var/www/justCoding/phpfox/phpfoxFramework/module/listing",
+			"/var/www/justCoding/phpfox/phpfoxFramework/module/quiz",
+			"/var/www/justCoding/phpfox/phpfoxFramework/module/quiz/template/default",
+			"/var/www/justCoding/phpfox/phpfoxFramework/module/listing/include",
+			"/var/www/justCoding/phpfox/phpfoxFramework/module/listing/template/default/block",
+			"/var/www/justCoding/phpfox/phpfoxFramework/module/listing/include/component",
+			"/var/www/justCoding/phpfox/phpfoxFramework/module/listing/include",
+			"/var/www/justCoding/phpfox/phpfoxFramework/module/listing/include/component",
+			"/var/www/justCoding/phpfox/phpfoxFramework/module/listing/template/default",
+			"/var/www/justCoding/phpfox/phpfoxFramework/module/listing/template/default/block",
+			"/var/www/justCoding/phpfox/phpfoxFramework/module/listing/template/default",
+			"/var/www/justCoding/phpfox/phpfoxFramework/module/quiz",
+			"/var/www/justCoding/phpfox/phpfoxFramework",
+			"/var/www/justCoding/phpfox/phpfoxFramework/module/listing",
+			"/var/www/justCoding/phpfox/OpenInviter"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"github",
+			".edge",
+			"телефона",
+			"number",
+			"code",
+			"exten",
+			"web/",
+			"anonymous",
+			"urlManager",
+			"backend/web/",
+			"img",
+			"/backend/web/",
+			"dektrium",
+			".main-outer",
+			"content",
+			"content-inner",
+			"header",
+			"getDataDir",
+			"aliases",
+			"ActiveDataProvider",
+			"CActiveDataProvider",
+			"backend",
+			"Yii::app()->hasModule",
+			"getMenuItems",
+			"title",
+			"findUserByUsernameOrEmail",
+			"enableConfirmation",
+			"ModuleTrait",
+			"findModel",
+			"find",
+			"generatePasswordHash",
+			"trackable",
+			"trackabletrackable",
+			"enableGeneratingPassword",
+			"enableConfirmation",
+			"app()",
+			"password",
+			"AppAsset",
+			"app()",
+			"yii",
+			"pageTitle",
+			"CHtml",
+			"UserLogin",
+			"t",
+			"init",
+			"ws-title",
+			",",
+			"margin-top: -9.5px;",
+			"Cambria",
+			"Georgia",
+			"sans-serif",
+			"console.log",
+			"restartToolTipster",
+			"sendbutton20",
+			"name",
+			"i-23-35",
+			"cf-fs3",
+			".login h1 a",
+			"/blog/wp-includes/Logo.png",
+			".login h1 a",
+			"onclick",
+			"onclick.",
+			"onclick",
+			".section-1",
+			"distribution_name",
+			"drupal_install_profile_distribution_name",
+			"price",
+			"alert)",
+			"alert($j(\"#cf20_field_7\").val());",
+			"h2",
+			"sms",
+			"\non line формы",
+			"ON LINE ФОРМЫ",
+			"input",
+			"все новости",
+			"A:hover",
+			"ui-tabs-nav",
+			".ui-widget-content",
+			"#f2f5f7 url(images/ui-bg_highlight-hard_100_f2f5f7_1x100.png) 50% top repeat-x",
+			"ui_tabs",
+			"ui-widget-content",
+			".ui-widget-content",
+			"#f2f5f7 url(images/ui-bg_highlight-hard_100_f2f5f7_1x100.png) 50% top repeat-x",
+			".ui-tabs-nav .ui-tabs",
+			" style=\"color: #808080;\"",
+			"image",
+			"15pt",
+			"clearfloat",
+			"page",
+			"images",
+			"content",
+			".current_page_item a, #home .on",
+			"#nav",
+			"ul_wrapper",
+			"nav",
+			"#page",
+			"style.css",
+			"#page",
+			"&amp;lt;",
+			"&amp;gt;",
+			"character_set_clientF",
+			"django",
+			"textarea",
+			"w",
+			"mode",
+			"init",
+			"ckeditor",
+			"cforms20form",
+			"url(images/",
+			"checkFormu",
+			"checkForme",
+			"Код: ",
+			";",
+			"fieldname2",
+			"_cal",
+			"[id=\"'+eq[i].result+'\"]",
+			"Calculate",
+			"reg",
+			"test",
+			"testReg",
+			"_calculate",
+			"equations",
+			"eq",
+			"\n\neq",
+			"eq",
+			"eq\neq",
+			"eq\n\n",
+			"form_structure"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"",
+			"\\Yii::$app->getModule",
+			"$app",
+			", ",
+			"",
+			"<",
+			">",
+			"url(../images/",
+			"Код: <span class='code'>",
+			"",
+			"fieldname19",
+			"",
+			" руб.);",
+			";",
+			");",
+			";",
+			"",
+			"images",
+			"img",
+			"../images",
+			"myCarousel",
+			"images",
+			"#myCorousel ",
+			"#myCorousel",
+			"",
+			"<div class='info'",
+			"</div",
+			"<div class='info'",
+			"<article",
+			"</article",
+			"<article",
+			"<p><strong>",
+			"</strong><br/>",
+			"</strong>",
+			"",
+			"</strong></p>",
+			"№ <span class='numberNalogovaja'>",
+			"</span> район",
+			"(<span class='district'>",
+			"</strong></article>",
+			"<article><strong>",
+			"",
+			"<article class='item'><span",
+			"<p>$1",
+			"</p>",
+			"17",
+			"20",
+			"$j",
+			"\"",
+			"h4",
+			""
+		],
+		"reverse": true,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 43,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/environments/dev/.env",
+					"settings":
+					{
+						"buffer_size": 731,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								731,
+								731
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/console/yii",
+					"settings":
+					{
+						"buffer_size": 793,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								25,
+								25
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/vendor/autoload.php",
+					"settings":
+					{
+						"buffer_size": 183,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/vendor/vlucas/phpdotenv/src/Dotenv.php",
+					"settings":
+					{
+						"buffer_size": 8554,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								573,
+								573
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/common/env.php",
+					"settings":
+					{
+						"buffer_size": 226,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								74,
+								74
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/.env",
+					"settings":
+					{
+						"buffer_size": 754,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								513,
+								513
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/assets/.htaccess",
+					"settings":
+					{
+						"buffer_size": 219,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								219,
+								219
+							]
+						],
+						"settings":
+						{
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"settings":
+					{
+						"buffer_size": 2489,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								514,
+								514
+							]
+						],
+						"settings":
+						{
+							"auto_name": "##",
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/environments/dev/nginx.conf",
+					"settings":
+					{
+						"buffer_size": 1288,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1288,
+								1288
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/backend/config/web.php",
+					"settings":
+					{
+						"buffer_size": 2955,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1294,
+								1294
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/common/models/Page.php",
+					"settings":
+					{
+						"buffer_size": 1755,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1590,
+								1590
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 270.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/backend/views/page/_form.php",
+					"settings":
+					{
+						"buffer_size": 1261,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								777,
+								777
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/common/models/Article.php",
+					"settings":
+					{
+						"buffer_size": 4641,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1237,
+								1237
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 270.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 13,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/backend/views/article/_form.php",
+					"settings":
+					{
+						"buffer_size": 2433,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								455,
+								455
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 14,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/sftp-config.json",
+					"settings":
+					{
+						"buffer_size": 1259,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								250,
+								250
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/JavaScript/JSON.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 15,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/models/.htaccess",
+					"settings":
+					{
+						"buffer_size": 0,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 16,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/.htaccess",
+					"settings":
+					{
+						"buffer_size": 219,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								219,
+								219
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 17,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/backend/views/layouts/common.php",
+					"settings":
+					{
+						"buffer_size": 13864,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								8699,
+								8699
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1710.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 18,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/views/layouts/_base.php",
+					"settings":
+					{
+						"buffer_size": 9762,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2153,
+								2153
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 126.0,
+						"translation.y": 547.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 19,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/backend/views/layouts/main.php",
+					"settings":
+					{
+						"buffer_size": 254,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 20,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/config/web.php",
+					"settings":
+					{
+						"buffer_size": 2008,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								677,
+								677
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 21,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/config/_urlManager.php",
+					"settings":
+					{
+						"buffer_size": 609,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								140,
+								140
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 22,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/controllers/PageController.php",
+					"settings":
+					{
+						"buffer_size": 603,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								262,
+								262
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 135.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 23,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/controllers/SiteController.php",
+					"settings":
+					{
+						"buffer_size": 4444,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								910,
+								910
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 135.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 24,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/common/config/base.php",
+					"settings":
+					{
+						"buffer_size": 5538,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5502,
+								5502
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1975.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 25,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/common/actions/SetLocaleAction.php",
+					"settings":
+					{
+						"buffer_size": 1993,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1794,
+								1794
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 630.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 26,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/common/config/web.php",
+					"settings":
+					{
+						"buffer_size": 704,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								626,
+								626
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 27,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/views/site/index.php",
+					"settings":
+					{
+						"buffer_size": 607,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								556,
+								556
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 28,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/common/models/WidgetText.php",
+					"settings":
+					{
+						"buffer_size": 1774,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								336,
+								336
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 29,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/controllers/GenerateController.php",
+					"settings":
+					{
+						"buffer_size": 4102,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2783,
+								2783
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 945.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 30,
+					"file": "/var/www/justCoding/YII/callservice2/assets/AppAsset.php",
+					"settings":
+					{
+						"buffer_size": 546,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								444,
+								444
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 31,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/common/models/CallButtons.php",
+					"settings":
+					{
+						"buffer_size": 3747,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2169,
+								2169
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1170.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 32,
+					"file": "/var/www/justCoding/YII/callservice2/controllers/SiteController.php",
+					"settings":
+					{
+						"buffer_size": 5131,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3465,
+								3465
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1125.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 33,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/common/models/CallButtonsSearch.php",
+					"settings":
+					{
+						"buffer_size": 1245,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1245,
+								1245
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 34,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/backend/models/search/CallButtonsSearch.php",
+					"settings":
+					{
+						"buffer_size": 1151,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								38,
+								38
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 35,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/backend/views/page/index.php",
+					"settings":
+					{
+						"buffer_size": 920,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								473,
+								473
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 36,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/views/page/view.php",
+					"settings":
+					{
+						"buffer_size": 217,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								217,
+								217
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 37,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/backend/views/layouts/base.php",
+					"settings":
+					{
+						"buffer_size": 1284,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 38,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/web/call_assets/script.js",
+					"settings":
+					{
+						"buffer_size": 61619,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1580,
+								1580
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 490.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 39,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/backend/controllers/GenerateController.php",
+					"settings":
+					{
+						"buffer_size": 3582,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								105,
+								105
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 45.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 40,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/backend/views/generate/index.php",
+					"settings":
+					{
+						"buffer_size": 1183,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								399,
+								399
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 41,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/views/generate/_form.php",
+					"settings":
+					{
+						"buffer_size": 5824,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1095,
+								1095
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 84.0,
+						"translation.y": 45.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 42,
+					"file": "/tmp/fz3temp-1/style.css",
+					"settings":
+					{
+						"buffer_size": 0,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/CSS/CSS.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3895.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 43,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/modules/api/v1/controllers/UserController.php",
+					"settings":
+					{
+						"buffer_size": 1769,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 90.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 44,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/modules/user/models/AccountForm.php",
+					"settings":
+					{
+						"buffer_size": 1555,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 45,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/modules/user/controllers/SignInController.php",
+					"settings":
+					{
+						"buffer_size": 7962,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3095,
+								3095
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1080.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 46,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/views/generate/index.php",
+					"settings":
+					{
+						"buffer_size": 1159,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								449,
+								449
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 47,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/assets/FrontendAsset.php",
+					"settings":
+					{
+						"buffer_size": 599,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								448,
+								448
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 48,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/vendor/yiisoft/yii2-bootstrap/Nav.php",
+					"settings":
+					{
+						"buffer_size": 8792,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2404,
+								2404
+							],
+							[
+								2975,
+								2975
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 805.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 49,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/modules/user/views/sign-in/signup.php",
+					"settings":
+					{
+						"buffer_size": 1244,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								729,
+								729
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 5,
+			"sheets":
+			[
+				{
+					"buffer": 50,
+					"file": "/var/www/justCoding/YII/rozvesdehod/protected/modules/catalog/views/catItem/commonMenu.php",
+					"settings":
+					{
+						"buffer_size": 1685,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								741,
+								741
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 51,
+					"settings":
+					{
+						"buffer_size": 64,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								64,
+								64
+							]
+						],
+						"settings":
+						{
+							"auto_name": "/var/www/justCoding/YII/yii2-starter-kit/frontend/",
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 52,
+					"file": "/home/timofei/Загрузки/startbootstrap-landing-page-1.0.4/index.html",
+					"settings":
+					{
+						"buffer_size": 6397,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2617,
+								2617
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 390.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 53,
+					"settings":
+					{
+						"buffer_size": 2386,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2386,
+								2386
+							]
+						],
+						"settings":
+						{
+							"auto_name": "<div class=\"jumbotron\" style=\"padding-bottom: 0px;",
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 54,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/views/layouts/main.php",
+					"settings":
+					{
+						"buffer_size": 764,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								677,
+								677
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 55,
+					"file": "/var/www/justCoding/YII/yii2-starter-kit/frontend/views/layouts/index.php",
+					"settings":
+					{
+						"buffer_size": 764,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								764,
+								764
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 34.0
+	},
+	"input":
+	{
+		"height": 33.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			],
+			[
+				1,
+				0,
+				2,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			0.5,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 107.0
+	},
+	"output.git":
+	{
+		"height": 100.0
+	},
+	"output.phpunit":
+	{
+		"height": 100.0
+	},
+	"output.sftp":
+	{
+		"height": 112.0
+	},
+	"replace":
+	{
+		"height": 64.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"usercont",
+				"frontend/modules/api/v1/controllers/UserController.php"
+			],
+			[
+				"usersingup",
+				"frontend/modules/user/views/sign-in/signup.php"
+			],
+			[
+				"",
+				"vendor/vlucas/phpdotenv/src/Dotenv.php"
+			],
+			[
+				"nav",
+				"vendor/yiisoft/yii2-bootstrap/Nav.php"
+			],
+			[
+				"generateindex",
+				"frontend/views/generate/index.php"
+			],
+			[
+				"usermodel",
+				"frontend/modules/user/models/AccountForm.php"
+			],
+			[
+				"sitecont",
+				"frontend/controllers/SiteController.php"
+			],
+			[
+				"call",
+				"common/models/CallButtons.php"
+			],
+			[
+				"c",
+				"common/models/CallButtons.php"
+			],
+			[
+				"callbu",
+				"common/models/CallButtons.php"
+			],
+			[
+				"layoutbase",
+				"frontend/views/layouts/_base.php"
+			],
+			[
+				"callbutt",
+				"common/models/CallButtons.php"
+			],
+			[
+				"frontlayo",
+				"frontend/views/layouts/_base.php"
+			],
+			[
+				"backgenerate",
+				"backend/views/generate/index.php"
+			],
+			[
+				"callbuttonssearch",
+				"common/models/CallButtonsSearch.php"
+			],
+			[
+				"backendlay",
+				"backend/views/layouts/common.php"
+			],
+			[
+				"fronlayo",
+				"/var/www/justCoding/YII/yii2-starter-kit/frontend/views/layouts/_base.php"
+			],
+			[
+				"scrip",
+				"frontend/web/call_assets/script.js"
+			],
+			[
+				"script",
+				"frontend/web/call_assets/script.js"
+			],
+			[
+				"frontsit",
+				"frontend/controllers/SiteController.php"
+			],
+			[
+				"callb",
+				"common/models/CallButtons.php"
+			],
+			[
+				"laybase",
+				"backend/views/layouts/base.php"
+			],
+			[
+				"callbutto",
+				"common/models/CallButtons.php"
+			],
+			[
+				"pageindex",
+				"backend/views/page/index.php"
+			],
+			[
+				"frontlayoba",
+				"frontend/views/layouts/_base.php"
+			],
+			[
+				"backlay",
+				"backend/views/layouts/common.php"
+			],
+			[
+				"frontsiteindex",
+				"frontend/views/site/index.php"
+			],
+			[
+				"sitecon",
+				"frontend/controllers/SiteController.php"
+			],
+			[
+				"geneco",
+				"frontend/controllers/GenerateController.php"
+			],
+			[
+				"commonwidget",
+				"common/models/WidgetText.php"
+			],
+			[
+				"siteinde",
+				"frontend/views/site/index.php"
+			],
+			[
+				"siteindex",
+				"frontend/views/site/index.php"
+			],
+			[
+				"actiossetloca",
+				"common/actions/SetLocaleAction.php"
+			],
+			[
+				"page",
+				"frontend/controllers/PageController.php"
+			],
+			[
+				"frontnlayo",
+				"frontend/views/layouts/_base.php"
+			],
+			[
+				"layoutmain",
+				"backend/views/layouts/main.php"
+			],
+			[
+				"vlucasdot",
+				"vendor/vlucas/phpdotenv/src/Dotenv.php"
+			],
+			[
+				"consoleyii",
+				"console/yii"
+			],
+			[
+				".nv",
+				"environments/dev/.env"
+			],
+			[
+				"viewact",
+				"vendor/yiisoft/yii2/rest/ViewAction.php"
+			],
+			[
+				"siteco",
+				"controllers/SiteController.php"
+			],
+			[
+				"pagesview",
+				"modules/pages/views/default/update.php"
+			],
+			[
+				"defaview",
+				"vendor/yiisoft/yii2-debug/views/default/view.php"
+			],
+			[
+				"updateform",
+				"modules/pages/models/updateForm.php"
+			],
+			[
+				"newfi",
+				"modules/pages/models/NewFile.php"
+			],
+			[
+				"newfile",
+				"modules/pages/models/NewFile.php"
+			],
+			[
+				"pagesdefa",
+				"modules/pages/controllers/DefaultController.php"
+			],
+			[
+				"catiteminde",
+				"modules/catalog/views/catItem/index.php"
+			],
+			[
+				"pagesindex",
+				"modules/pages/views/default/index.php"
+			],
+			[
+				"layout2",
+				"modules/begemot/views/layouts/column2.php"
+			],
+			[
+				"pagescommon",
+				"modules/pages/views/commonMenu.php"
+			],
+			[
+				"pagesde",
+				"modules/pages/views/default/index.php"
+			],
+			[
+				"colum",
+				"modules/begemot/views/layouts/column2.php"
+			],
+			[
+				"catalogdefa",
+				"modules/catalog/controllers/DefaultController.php"
+			],
+			[
+				"pagesdefaultinde",
+				"modules/pages/views/default/index.php"
+			],
+			[
+				"catitem",
+				"modules/catalog/controllers/CatItemController.php"
+			],
+			[
+				"controcal",
+				"modules/catalog/controllers/CatItemController.php"
+			],
+			[
+				"main.php",
+				"modules/begemot/views/layouts/main.php"
+			],
+			[
+				"web.php",
+				"config/web.php"
+			],
+			[
+				"config.php",
+				"modules/begemot/config.php"
+			],
+			[
+				"main.ph",
+				"views/layouts/main.php"
+			],
+			[
+				"defa",
+				"modules/begemot/controllers/DefaultController.php"
+			],
+			[
+				"begemoindex",
+				"modules/begemot/views/default/index.php"
+			],
+			[
+				"configweb",
+				"config/web.php"
+			],
+			[
+				"register",
+				"views/user/registration/register.php"
+			],
+			[
+				"login",
+				"models/LoginForm.php"
+			],
+			[
+				"loginfo",
+				"models/LoginForm.php"
+			],
+			[
+				"lo",
+				"vendor/ezyang/htmlpurifier/art/logo.svg"
+			],
+			[
+				"login.p",
+				"views/user/security/login.php"
+			],
+			[
+				"login.php",
+				"views/user/security/login.php"
+			],
+			[
+				"logi",
+				"models/LoginForm.php"
+			],
+			[
+				"assi",
+				"vendor/mdmsoft/yii2-admin/controllers/AssignmentController.php"
+			],
+			[
+				"modeluser",
+				"vendor/dektrium/yii2-user/models/User.php"
+			],
+			[
+				"modelsuser",
+				"models/User.php"
+			],
+			[
+				"password",
+				"vendor/dektrium/yii2-user/helpers/Password.php"
+			],
+			[
+				"userregis",
+				"views/user/registration/register.php"
+			],
+			[
+				"controregi",
+				"vendor/dektrium/yii2-user/controllers/RegistrationController.php"
+			],
+			[
+				"deuser",
+				"vendor/dektrium/yii2-user/models/User.php"
+			],
+			[
+				"main-local",
+				"advanced/environments/dev/backend/config/main-local.php"
+			],
+			[
+				"logincon",
+				"modules/user/controllers/LoginController.php"
+			],
+			[
+				"usermodule",
+				"modules/user/UserModule.php"
+			],
+			[
+				"useri",
+				"modules/user/components/UserIdentity.php"
+			],
+			[
+				"sitelogin",
+				"views/site/login.php"
+			],
+			[
+				"useriden",
+				"modules/user/components/UserIdentity.php"
+			],
+			[
+				"begemtvico",
+				"modules/begemot/views/layouts/column2.php"
+			],
+			[
+				"controller",
+				"vendor/yiisoft/yii2/base/Controller.php"
+			],
+			[
+				"userlogin",
+				"modules/user/views/user/login.php"
+			],
+			[
+				"slider.css",
+				"RDK/wp-content/themes/rdk/css/slider.css"
+			],
+			[
+				"slider",
+				"RDK/css/slider.css"
+			],
+			[
+				"rdkjs",
+				"RDK/js/script.js"
+			],
+			[
+				"style.css",
+				"RDK/wp-content/themes/rdk/style.css"
+			],
+			[
+				"main.css",
+				"RDK/css/main.css"
+			],
+			[
+				"rdkfooter",
+				"RDK/wp-content/themes/rdk/footer.php"
+			],
+			[
+				"rdkstyle.css",
+				"RDK/wp-content/themes/rdk/style.css"
+			],
+			[
+				"frfr",
+				"RDK/wp-content/themes/rdk/languages/fr_FR.po"
+			],
+			[
+				"uspo",
+				"RDK/wp-content/themes/rdk/languages/en_US.po"
+			],
+			[
+				"usmo",
+				"RDK/wp-content/themes/rdk/languages/en_US.mo"
+			],
+			[
+				"pho",
+				"RDK/photo.html"
+			],
+			[
+				"main.js",
+				"RDK/js/main.js"
+			],
+			[
+				"index",
+				"RDK/index.html"
+			],
+			[
+				"norma",
+				"RDK/css/normalize.css"
+			],
+			[
+				"sendsm",
+				"b-spb.ru/sms/sendSmsSimple.php"
+			],
+			[
+				"scri",
+				"b-spb.ru/script_for_inn_ver2.js"
+			],
+			[
+				"scrio",
+				"b-spb.ru/script_for_inn_ver2.js"
+			],
+			[
+				"clear",
+				"b-spb.ru/clear_smslog.php"
+			],
+			[
+				".",
+				"b-spb.ru/redesign/bd-spb.ru/.htaccess"
+			],
+			[
+				"sing",
+				"PRiNZ_BranfordMagazine_latest/single.php"
+			],
+			[
+				"calculatedfiejqueryui",
+				"calculated-fields-form/css/cupertino/jquery-ui-1.8.20.custom.css"
+			],
+			[
+				"jquery-ui",
+				"calculated-fields-form/css/cupertino/jquery-ui-1.8.20.custom.css"
+			],
+			[
+				"jquery-ui-1.8.20.custom",
+				"calculated-fields-form/css/cupertino/jquery-ui-1.8.20.custom.css"
+			],
+			[
+				"uitabs",
+				"PRiNZ_BranfordMagazine_latest/styles/ui.tabs.css"
+			],
+			[
+				"uita",
+				"PRiNZ_BranfordMagazine_latest/ui.tabs.php"
+			],
+			[
+				"wpconf",
+				"b-spb.ru/redesign/bd-spb.ru/wp-config.php"
+			],
+			[
+				"urls",
+				"/var/www/justCoding/Django/cms/cms/urls.py"
+			],
+			[
+				"url",
+				"/var/www/justCoding/Django/cms/cms/urls.py"
+			],
+			[
+				"sendsmssimple",
+				"b-spb.ru/sms/sendSmsSimple.php"
+			],
+			[
+				"userc",
+				"directAdvert/protected/controllers/UserController.php"
+			],
+			[
+				"workc",
+				"directAdvert/protected/controllers/WorkController.php"
+			],
+			[
+				"regi",
+				"directAdvert/protected/views/user/register.php"
+			],
+			[
+				"user/",
+				"directAdvert/protected/views/user/_form.php"
+			],
+			[
+				"work/",
+				"directAdvert/protected/views/work/_form.php"
+			],
+			[
+				"main",
+				"directAdvert/protected/views/layouts/main.php"
+			],
+			[
+				"ny",
+				"p/NYPizzaStore.php"
+			],
+			[
+				"inviteinde",
+				"invite/template/index.html"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+			[
+				"word",
+				"/var/www/projects/wordpress.sublime-project"
+			],
+			[
+				"",
+				"/var/www/projects/begemot2.0.sublime-project"
+			],
+			[
+				"f",
+				"/var/www/projects/fond.sublime-project"
+			],
+			[
+				"call",
+				"/var/www/projects/callservice.sublime-project"
+			],
+			[
+				"ros",
+				"/var/www/projects/rosvesdehod.sublime-project"
+			],
+			[
+				"rdk",
+				"/var/www/projects/rdk_website.sublime-project"
+			],
+			[
+				"wo",
+				"/var/www/projects/wordpress.sublime-project"
+			],
+			[
+				"calls",
+				"/var/www/projects/callservice.sublime-project"
+			],
+			[
+				"ro",
+				"/var/www/projects/rosvesdehod.sublime-project"
+			],
+			[
+				"codessupo",
+				"/var/www/projects/codessupport.sublime-project"
+			],
+			[
+				"fp",
+				"/var/www/projects/fond.sublime-project"
+			],
+			[
+				"codes",
+				"/var/www/projects/codesgroup.sublime-project"
+			],
+			[
+				"fond",
+				"/var/www/projects/fond.sublime-project"
+			],
+			[
+				"rd",
+				"/var/www/projects/rdk_website.sublime-project"
+			],
+			[
+				"fo",
+				"/var/www/projects/fond.sublime-project"
+			],
+			[
+				"parser",
+				"/var/www/projects/parser_for_10.sublime-project"
+			],
+			[
+				"rp",
+				"/var/www/projects/rosvesdehod.sublime-project"
+			],
+			[
+				"water",
+				"/var/www/projects/watercars.sublime-project"
+			],
+			[
+				"forum",
+				"/var/www/projects/forum.sublime-project"
+			],
+			[
+				"bd",
+				"/var/www/tmp/forum/styles/atvgroup/template/bd-spbSFTP.sublime-project"
+			],
+			[
+				"web",
+				"/var/www/projects/webmoney.sublime-project"
+			],
+			[
+				"face",
+				"/var/www/projects/facebookwallpost-PRestashopPlugin.sublime-project"
+			],
+			[
+				"we",
+				"/var/www/projects/webmoney.sublime-project"
+			],
+			[
+				"bela",
+				"/var/www/projects/belarus.sublime-project"
+			],
+			[
+				"be",
+				"/var/www/projects/belarus.sublime-project"
+			],
+			[
+				"bel",
+				"/var/www/projects/belarus.sublime-project"
+			],
+			[
+				"do",
+				"/var/www/projects/doska.sublime-project"
+			],
+			[
+				"dp",
+				"/var/www/projects/doska.sublime-project"
+			],
+			[
+				"dos",
+				"/var/www/projects/doska.sublime-project"
+			]
+		],
+		"width": 380.0
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 267.0,
+	"status_bar_visible": true
+}

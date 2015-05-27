@@ -83,22 +83,22 @@
 
 <?php $this->endWidget();
         
-        $picturesConfig = array();
-        $configFile = Yii::getPathOfAlias('webroot').'/protected/config/catalog/categoryPictureSettings.php';
-        if (file_exists($configFile)){
+        // $picturesConfig = array();
+        // $configFile = Yii::getPathOfAlias('webroot').'/protected/config/catalog/categoryPictureSettings.php';
+        // if (file_exists($configFile)){
             
-            $picturesConfig = require($configFile);
+        //     $picturesConfig = require($configFile);
             
-            $this->widget(
-                'application.modules.pictureBox.components.PictureBox', array(
-                'id' => 'catalogCategory',
-                'elementId' => $model->id,
-                'config' => $picturesConfig,
-                    )
-            );
-        } else{
-            Yii::app()->user->setFlash('error','Отсутствует конфигурационный файл:'.$configFile);
-        }
+        //     $this->widget(
+        //         'application.modules.pictureBox.components.PictureBox', array(
+        //         'id' => 'catalogCategory',
+        //         'elementId' => $model->id,
+        //         'config' => $picturesConfig,
+        //             )
+        //     );
+        // } else{
+        //     Yii::app()->user->setFlash('error','Отсутствует конфигурационный файл:'.$configFile);
+        // }
 ?>
 
 </div><!-- form -->
