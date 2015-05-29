@@ -126,6 +126,12 @@ class CatItem extends ContentKitModel
         echo "<input type='checkbox' {$checked} class='togglePublished' data-id= '{$this->id}'>";
     }
 
+     public function isTop()
+    {
+        $checked = ($this->top) ? "checked" : "";
+        echo "<input type='checkbox' {$checked} class='toggleTop' data-id= '{$this->id}'>";
+    }
+
     /**
      * @return array customized attribute labels (name=>label)
      */

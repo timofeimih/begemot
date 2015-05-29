@@ -51,6 +51,11 @@ $this->widget('bootstrap.widgets.TbGridView', array(
             'value'=>'$data->item->isPublished()',
         ),
         array(
+            'header' => 'Top',
+            'type'=>'raw',
+            'value'=>'$data->item->isTop()',
+        ),
+        array(
             'class' => 'bootstrap.widgets.TbButtonColumn',
             'viewButtonUrl' => 'Yii::app()->controller->createUrl("/catalog/site/itemView",array("item"=>$data->itemId, "name_t"=>$data->item->name_t, "catId" => $data->item->catId))',
             'updateButtonUrl' => 'Yii::app()->controller->createUrl("catItem/update",array("id"=>$data->itemId))',
@@ -68,7 +73,6 @@ $this->widget('bootstrap.widgets.TbGridView', array(
 ?>
 
 
-
 <script>
     $(function(){
         $(document).on("click", ".togglePublished", function(){
@@ -79,5 +83,15 @@ $this->widget('bootstrap.widgets.TbGridView', array(
                 
             })
         })
+
+        $(document).on("click", ".toggleTop", function(){
+            var button = $(this);
+            $.get('/catalog/catItem/toggleTop/id/' + $(this).attr('data-id'), function(data){
+                button.before("<span class='toDelete'>Сохранено<br/></span>");
+                setTimeout(function() { button.parent().find(".toDelete").remove() }, 500);
+                
+            })
+        })
     })
 </script>
+
