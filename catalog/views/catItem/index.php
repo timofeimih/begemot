@@ -57,6 +57,11 @@ $this->menu = $menu;
             'type'=>'raw',
             'value'=>'$data->isPublished()',
         ),
+        array(
+            'header' => 'Top',
+            'type'=>'raw',
+            'value'=>'$data->isTop()',
+        ),
 
 		array(
 			'class'=>'bootstrap.widgets.TbButtonColumn',
@@ -76,6 +81,15 @@ $this->menu = $menu;
         $(document).on("click", ".togglePublished", function(){
             var button = $(this);
             $.get('/catalog/catItem/togglePublished/id/' + $(this).attr('data-id'), function(data){
+                button.before("<span class='toDelete'>Сохранено<br/></span>");
+                setTimeout(function() { button.parent().find(".toDelete").remove() }, 500);
+                
+            })
+        })
+
+        $(document).on("click", ".toggleTop", function(){
+            var button = $(this);
+            $.get('/catalog/catItem/toggleTop/id/' + $(this).attr('data-id'), function(data){
                 button.before("<span class='toDelete'>Сохранено<br/></span>");
                 setTimeout(function() { button.parent().find(".toDelete").remove() }, 500);
                 
