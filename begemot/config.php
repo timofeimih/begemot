@@ -3,7 +3,6 @@ return array(
     'basePath' => dirname(__FILE__) . DIRECTORY_SEPARATOR . '../..',
 
     'name' => 'My Web Application',
-    'theme' => 'custom',
     // preloading 'log' component
     'preload' => array('log'),
     // autoloading model and component classes
@@ -135,7 +134,7 @@ return array(
                     //config for create link to view model page(page with comments)
                     'pageUrl'=>array(
                         'route'=>'admin/citys/view',
-                        'data'=>array('id'=>'id'),
+                        'data'=>array('item'=>'id'),
                     ),
                 ),
             ),

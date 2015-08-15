@@ -6,6 +6,7 @@
  *
  * @property integer $id
  * @property string $title
+ * @property string $order
  * @property string $text
  */
 
@@ -22,6 +23,14 @@ class Promo extends ContentKitModel
 	{
 		return parent::model($className);
 	}
+
+	 public function behaviors(){
+            return array(
+                    'CBOrderModelBehavior' => array(
+                            'class' => 'begemot.extensions.order.BBehavior.CBOrderModelBehavior',
+                    )
+            );
+    } 
 
 	/**
 	 * @return string the associated database table name
@@ -71,7 +80,6 @@ class Promo extends ContentKitModel
 			'text' => 'Text'),
 		parent::attributeLabels());
 	}
-
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.
 	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
@@ -86,11 +94,14 @@ class Promo extends ContentKitModel
 		$criteria->compare('id',$this->id);
 		$criteria->compare('title',$this->title,true);
 		$criteria->compare('text',$this->text,true);
+		$criteria->order = 't.order';
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
 		));
 	}
+
+	
 
 
 

@@ -19,6 +19,14 @@ class PromoController extends Controller
         );
     }
 
+    public function behaviors(){
+            return array(
+                    'CBOrderControllerBehavior' => array(
+                            'class' => 'begemot.extensions.order.BBehavior.CBOrderControllerBehavior',
+                    )
+            );
+    }
+
     /**
      * Specifies the access control rules.
      * This method is used by the 'accessControl' filter.
@@ -29,7 +37,7 @@ class PromoController extends Controller
         return array(
 
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
-                'actions' => array('delete', 'create', 'update', 'index', 'view', 'admin','deletePromoToCat','deletePromoToPosition'),
+                'actions' => array('delete','orderUp', 'orderDown', 'create', 'update', 'index', 'view', 'admin','deletePromoToCat','deletePromoToPosition'),
                 'expression' => 'Yii::app()->user->canDo("Catalog")'
             ),
             array('deny',  // deny all users
@@ -37,6 +45,19 @@ class PromoController extends Controller
             ),
         );
     }
+
+    public function actionOrderUp($id){
+        $model = $this->loadModel($id);
+
+        $this->orderUp($id);
+
+    }
+    
+    public function actionOrderDown($id){
+        $model = $this->loadModel($id);
+
+        $this->orderDown($id);
+    } 
 
     /**
      * Displays a particular model.
