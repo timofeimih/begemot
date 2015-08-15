@@ -126,6 +126,26 @@ class CatItem extends ContentKitModel
         echo "<input type='checkbox' {$checked} class='togglePublished' data-id= '{$this->id}'>";
     }
 
+     public static function getSale($id){
+        
+
+        if($listOfCategoryDiscounts = DiscountRelation
+            ::model()->with("discount")->findAll(array("condition" => "type=1"))){
+            foreach ($listOfCategoryDiscounts as $categoryDiscount) {
+                if(CatItemsToCat::model()->find('catId=:catId AND itemId=:itemId AND active=1', array(':catId' => $categoryDiscount->targetId, ":itemId" => $id))){
+                    return $categoryDiscount->discount->sale;
+                }
+            }
+        }
+
+        $saleOfItem = DiscountRelation::model()->with("discount")->find(array("condition" => "type=2 AND active=1 AND targetId=" . $id));
+
+        if($saleOfItem) return $saleOfItem->discount->sale;
+
+        return false;
+
+    }
+
      public function isTop()
     {
         $checked = ($this->top) ? "checked" : "";
