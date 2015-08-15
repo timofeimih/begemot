@@ -52,6 +52,19 @@ $menuPart1 = array(
         ),
     ),
     array(
+        'label' => 'Скидки',
+        'items' => array(
+            array(
+                'label' => 'Список скидок',
+                'url' => array('/catalog/discount/admin'),
+            ),
+            array(
+                'label' => 'Создать скидку',
+                'url' => array('/catalog/discount/create'),
+            ),
+        ),
+    ),
+    array(
         'label' => 'Пересборка',
         'url' => array('/catalog/default/renderImages/action'),
     ),

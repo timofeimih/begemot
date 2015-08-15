@@ -48,11 +48,11 @@ class ECommentsListWidget extends ECommentsBaseWidget
 	{
         $newComment = $this->createNewComment();
         $comments = $newComment->getCommentsTree();
-        $this->render('webroot.themes.' . Yii::app()->theme->name . '.ECommentsListWidget', array(
+        $this->render('webroot.themes.' . $this->theme . '.ECommentsListWidget', array(
             'comments' => $comments,
             'newComment' => $newComment,
+            'theme' => $this->theme
         ));
-
         $options = CJavaScript::encode(array(
                 'dialogTitle' => Yii::t('CommentsModule.msg', 'Add comment'),
                 'deleteConfirmString' => Yii::t('CommentsModule.msg', 'Delete this comment?'),

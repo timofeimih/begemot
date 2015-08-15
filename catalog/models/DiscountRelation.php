@@ -1,43 +1,33 @@
 <?php
 
 /**
+ * This is the model class for table "discountRelation".
  *
- * Модель данных для Акций в каталоге.
- *
+ * The followings are the available columns in table 'discountRelation':
  * @property integer $id
- * @property string $title
- * @property string $order
- * @property string $text
+ * @property integer $discountId
+ * @property integer $type
+ * @property integer $targetId
  */
-
-Yii::import('begemot.extensions.contentKit.ContentKitModel');
-
-class Promo extends ContentKitModel
+class DiscountRelation extends CActiveRecord
 {
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @param string $className active record class name.
-	 * @return Promo the static model class
+	 * @return DiscountRelation the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{
 		return parent::model($className);
 	}
 
-	 public function behaviors(){
-            return array(
-                    'CBOrderModelBehavior' => array(
-                            'class' => 'begemot.extensions.order.BBehavior.CBOrderModelBehavior',
-                    )
-            );
-    } 
 
 	/**
 	 * @return string the associated database table name
 	 */
 	public function tableName()
 	{
-		return 'promo';
+		return 'discountRelation';
 	}
 
 	/**
@@ -47,39 +37,37 @@ class Promo extends ContentKitModel
 	{
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
-        $rules = array(
-			array('title', 'length', 'max'=>100),
-			array('text', 'length', 'max'=>1000),
+		return array(
+			array('discountId, type, targetId', 'numerical', 'integerOnly'=>true),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, title, text', 'safe', 'on'=>'search'),
+			array('id, discountId, type, targetId', 'safe', 'on'=>'search'),
 		);
-
-        return array_merge(parent::rules(), $rules);
 	}
 
 	/**
 	 * @return array relational rules.
 	 */
-	public function relations()
-	{
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
-		return array(
-		);
-	}
+    public function relations()
+    {
+        return array(
+            'discount' => array(self::BELONGS_TO, 'Discount', 'discountId'),
+        );
+    }
 
 	/**
 	 * @return array customized attribute labels (name=>label)
 	 */
 	public function attributeLabels()
 	{
-		return array_merge( array(
+		return array(
 			'id' => 'ID',
-			'title' => 'Title',
-			'text' => 'Text'),
-		parent::attributeLabels());
+			'discountId' => 'Discount',
+			'type' => 'Type',
+			'targetId' => 'Target',
+		);
 	}
+
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.
 	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
@@ -92,18 +80,12 @@ class Promo extends ContentKitModel
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id);
-		$criteria->compare('title',$this->title,true);
-		$criteria->compare('text',$this->text,true);
-		$criteria->order = 't.order';
+		$criteria->compare('discountId',$this->discountId);
+		$criteria->compare('type',$this->type);
+		$criteria->compare('targetId',$this->targetId);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
 		));
 	}
-
-	
-
-
-
-
 }

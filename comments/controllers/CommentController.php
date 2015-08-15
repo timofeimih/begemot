@@ -113,16 +113,21 @@ class CommentController extends Controller
 
     public function actionAjaxSubmit()
     {
-        if(isset($_POST['Comment']) && Yii::app()->request->isAjaxRequest)
+        if(isset($_POST['Comment']))
         {
-            echo 'test1';
             $comment = new Comment();
             $comment->attributes = $_POST['Comment'];
 
             if ($comment->validate()){
-                $comment->save();
+                return $comment->save();tc
+ 
+            }else {
+                print_r($comment->getErrors());
             }
         }
+
+
+
     }
         public function actionPostComment()
         {
@@ -134,6 +139,7 @@ class CommentController extends Controller
 
                 if (!$comment->validate()){
                     echo CActiveForm::validate( array( $comment));
+                    
                     Yii::app()->end();
                 } else {
 

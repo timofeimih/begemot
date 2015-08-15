@@ -6,38 +6,30 @@
  *
  * @property integer $id
  * @property string $title
- * @property string $order
- * @property string $text
+ * @property string $sale
+ * @property integer $active
  */
 
 Yii::import('begemot.extensions.contentKit.ContentKitModel');
 
-class Promo extends ContentKitModel
+class Discount extends ContentKitModel
 {
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @param string $className active record class name.
-	 * @return Promo the static model class
+	 * @return Discount the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{
 		return parent::model($className);
 	}
 
-	 public function behaviors(){
-            return array(
-                    'CBOrderModelBehavior' => array(
-                            'class' => 'begemot.extensions.order.BBehavior.CBOrderModelBehavior',
-                    )
-            );
-    } 
-
 	/**
 	 * @return string the associated database table name
 	 */
 	public function tableName()
 	{
-		return 'promo';
+		return 'discount';
 	}
 
 	/**
@@ -49,10 +41,10 @@ class Promo extends ContentKitModel
 		// will receive user inputs.
         $rules = array(
 			array('title', 'length', 'max'=>100),
-			array('text', 'length', 'max'=>1000),
+			array('sale, active', 'numerical', 'integerOnly'=>true),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, title, text', 'safe', 'on'=>'search'),
+			array('id, title, sale', 'safe', 'on'=>'search'),
 		);
 
         return array_merge(parent::rules(), $rules);
@@ -77,9 +69,12 @@ class Promo extends ContentKitModel
 		return array_merge( array(
 			'id' => 'ID',
 			'title' => 'Title',
-			'text' => 'Text'),
+			'sale' => 'Скидка(в цифрах)',
+			'active' => 'Активна'
+		),
 		parent::attributeLabels());
 	}
+
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.
 	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
@@ -93,15 +88,12 @@ class Promo extends ContentKitModel
 
 		$criteria->compare('id',$this->id);
 		$criteria->compare('title',$this->title,true);
-		$criteria->compare('text',$this->text,true);
-		$criteria->order = 't.order';
+		$criteria->compare('sale',$this->sale,true);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
 		));
 	}
-
-	
 
 
 

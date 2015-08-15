@@ -1,6 +1,6 @@
 <?php
 
-class PromoController extends Controller
+class DiscountController extends Controller
 {
     /**
      * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
@@ -19,14 +19,6 @@ class PromoController extends Controller
         );
     }
 
-    public function behaviors(){
-            return array(
-                    'CBOrderControllerBehavior' => array(
-                            'class' => 'begemot.extensions.order.BBehavior.CBOrderControllerBehavior',
-                    )
-            );
-    }
-
     /**
      * Specifies the access control rules.
      * This method is used by the 'accessControl' filter.
@@ -37,7 +29,7 @@ class PromoController extends Controller
         return array(
 
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
-                'actions' => array('delete','orderUp', 'orderDown', 'create', 'update', 'index', 'view', 'admin','deletePromoToCat','deletePromoToPosition'),
+                'actions' => array('delete', 'create', 'update', 'index', 'view', 'admin','deleteDiscountToCat','deleteDiscountToPosition'),
                 'expression' => 'Yii::app()->user->canDo("Catalog")'
             ),
             array('deny',  // deny all users
@@ -45,19 +37,6 @@ class PromoController extends Controller
             ),
         );
     }
-
-    public function actionOrderUp($id){
-        $model = $this->loadModel($id);
-
-        $this->orderUp($id);
-
-    }
-    
-    public function actionOrderDown($id){
-        $model = $this->loadModel($id);
-
-        $this->orderDown($id);
-    } 
 
     /**
      * Displays a particular model.
@@ -76,13 +55,13 @@ class PromoController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Promo;
+        $model = new Discount;
 
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
-        if (isset($_POST['Promo'])) {
-            $model->attributes = $_POST['Promo'];
+        if (isset($_POST['Discount'])) {
+            $model->attributes = $_POST['Discount'];
             if ($model->save())
                 $this->redirect(array('view', 'id' => $model->id));
         }
@@ -106,38 +85,59 @@ class PromoController extends Controller
          * Это обработка первой вкладки
          */
 
-        if (isset($_POST['Promo'])) {
-            $model->attributes = $_POST['Promo'];
+        if (isset($_POST['Discount'])) {
+            $model->attributes = $_POST['Discount'];
             if ($model->save())
                 $this->redirect(array('view', 'id' => $model->id));
         }
 
         /**
-         * Это обработка формы прикрепления раздела к акции
+         * Это обработка формы прикрепления раздела к скидке
          * со вкладки "разделы"
          */
 
-        $promoToCat = new PromoRelation;
-        $promoToCatForm = new CForm('catalog.models.forms.promoToCatForm', $promoToCat);
+        $discountToCat = new DiscountRelation;
+        $discountToCatForm = new CForm('catalog.models.forms.discountToCatForm', $discountToCat);
 
 
-        if ($promoToCatForm->submitted('promoToCatSubmit') && $promoToCatForm->validate()) {
-            $promoToCat->attributes = $_POST['PromoRelation'];
-            $promoToCat->save();
+        if ($discountToCatForm->submitted('discountToCatSubmit') && $discountToCatForm->validate()) {
+            echo "ok";
+            $discountToCat->attributes = $_POST['DiscountRelation'];
+            $discountToCat->save();
             $this->redirect(array('update','id'=>$id,'tab'=>'cat'));
         }
 
         /**
-         * Это обработка прикрепления акции к id позиции в каталоге
+         * Это обработка прикрепления скидки к id позиции в каталоге
          */
-        $promoToItem = new PromoRelation;
-        $promoToItemForm = new CForm('catalog.models.forms.promoToItemForm', $promoToItem);
+        // $discountToItem = new DiscountRelation;
+        // $discountToItemForm = new CForm('catalog.models.forms.discountToItemForm', $discountToItem);
 
-        if ($promoToItemForm->submitted('promoToItemSubmit') && $promoToItemForm->validate()) {
-            $promoToItem->attributes = $_POST['PromoRelation'];
-            $promoToItem->save();
-            $this->redirect(array('update','id'=>$id,'tab'=>'positions'));
+        // if ($discountToItemForm->submitted('discountToItemSubmit') && $discountToItemForm->validate()) {
+        //     $discountToItem->attributes = $_POST['DiscountRelation'];
+        //     $discountToItem->save();
+        //     $this->redirect(array('update','id'=>$id,'tab'=>'positions'));
+        // }
+
+        if (isset($_POST['saveItemsToDiscount'])) {
+            DiscountRelation::model()->deleteAll(array("condition" => "type=2 AND discountId=" . $id));
+
+            if (isset($_POST['items'])) {
+                foreach ($_POST['items'] as $itemId) {
+                    echo "OK";
+                    $item = new DiscountRelation();
+
+                    $item->discountId = $id;
+                    $item->targetId = $itemId;
+                    $item->type= 2;
+
+                    $item->save();
+                    
+                }
+
+            }
         }
+        
 
 
         $this->render('update', array(
@@ -168,12 +168,12 @@ class PromoController extends Controller
      * @param $itemId
      * @throws CHttpException
      */
-    public function actionDeletePromoToCat($catId, $promoId)
+    public function actionDeleteDiscountToCat($catId, $discountId)
     {
 
         if (Yii::app()->request->isAjaxRequest) {
 
-            $model = PromoRelation::model()->find(array('condition'=>'targetId='.$catId.' and promoId='.$promoId.' and type='.PromoTypeEnum::TO_CATEGORY));
+            $model = DiscountRelation::model()->find(array('condition'=>'targetId='.$catId.' and discountId='.$discountId.' and type='.DiscountTypeEnum::TO_CATEGORY));
 
             $model->delete();
 
@@ -184,15 +184,15 @@ class PromoController extends Controller
      * Аякс-запросом удаляем связь между позицией каталога и акцией
      *
      * @param $itemId
-     * @param $promoId
+     * @param $discountId
      * @throws CHttpException
      */
-    public function actionDeletePromoToPosition($itemId, $promoId)
+    public function actionDeleteDiscountToPosition($itemId, $discountId)
     {
 
         if (Yii::app()->request->isAjaxRequest) {
 
-            $model = PromoRelation::model()->find(array('condition'=>'targetId='.$itemId.' and promoId='.$promoId.' and type='.PromoTypeEnum::TO_POSITION));
+            $model = DiscountRelation::model()->find(array('condition'=>'targetId='.$itemId.' and discountId='.$discountId.' and type='.DiscountTypeEnum::TO_POSITION));
 
             $model->delete();
 
@@ -203,7 +203,7 @@ class PromoController extends Controller
      */
     public function actionIndex()
     {
-        $dataProvider = new CActiveDataProvider('Promo');
+        $dataProvider = new CActiveDataProvider('Discount');
         $this->render('index', array(
             'dataProvider' => $dataProvider,
         ));
@@ -214,10 +214,10 @@ class PromoController extends Controller
      */
     public function actionAdmin()
     {
-        $model = new Promo('search');
+        $model = new Discount('search');
         $model->unsetAttributes();  // clear any default values
-        if (isset($_GET['Promo']))
-            $model->attributes = $_GET['Promo'];
+        if (isset($_GET['Discount']))
+            $model->attributes = $_GET['Discount'];
 
         $this->render('admin', array(
             'model' => $model,
@@ -228,12 +228,12 @@ class PromoController extends Controller
      * Returns the data model based on the primary key given in the GET variable.
      * If the data model is not found, an HTTP exception will be raised.
      * @param integer $id the ID of the model to be loaded
-     * @return Promo the loaded model
+     * @return Discount the loaded model
      * @throws CHttpException
      */
     public function loadModel($id)
     {
-        $model = Promo::model()->findByPk($id);
+        $model = Discount::model()->findByPk($id);
         if ($model === null)
             throw new CHttpException(404, 'The requested page does not exist.');
         return $model;
@@ -241,11 +241,11 @@ class PromoController extends Controller
 
     /**
      * Performs the AJAX validation.
-     * @param Promo $model the model to be validated
+     * @param Discount $model the model to be validated
      */
     protected function performAjaxValidation($model)
     {
-        if (isset($_POST['ajax']) && $_POST['ajax'] === 'promo-form') {
+        if (isset($_POST['ajax']) && $_POST['ajax'] === 'discount-form') {
             echo CActiveForm::validate($model);
             Yii::app()->end();
         }

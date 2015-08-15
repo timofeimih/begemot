@@ -64,7 +64,7 @@ class CommentsModule extends CWebModule
             //order direction for comments
             'orderComments'=>'DESC',
             //settings for comments page url
-            'pageUrl'=>null
+            'pageUrl'=> null
         );
     
 	public function init()
