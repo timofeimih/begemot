@@ -26,7 +26,7 @@ class ECommentsFormWidget extends ECommentsBaseWidget
 
             if($this->registeredOnly === false || Yii::app()->user->isGuest === false)
             {
-                $this->render('webroot.themes.' . Yii::app()->theme->name . '.ECommentsFormWidget', array(
+                $this->render('ECommentsFormWidget', array(
                     'newComment' => $this->validatedComment ? $this->validatedComment : $this->createNewComment(),
                 ));
             }

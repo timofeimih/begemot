@@ -89,8 +89,7 @@ class Comment extends CActiveRecord {
         $rules = array(
             array('owner_name, owner_id, comment_text', 'required'),
             array('owner_id, parent_comment_id, creator_id, create_time, update_time, status', 'numerical', 'integerOnly' => true),
-            array('owner_name', 'length', 'max' => 50),
-            array('owner_name, creator_id, creator_name, user_name, user_email, verifyCode', 'checkConfig'),
+            array('user_name, owner_name', 'length', 'max' => 50),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
             array('owner_name, owner_id, comment_id, parent_comment_id, creator_id, user_name, user_email, comment_text, create_time, update_time, status', 'safe', 'on' => 'search'),
@@ -185,13 +184,13 @@ class Comment extends CActiveRecord {
      */
     public function checkConfig($attribute,$params)
     {
-        //if owner_name class exists in configuration
-        if(count($this->config) === 0)
-        {
-            if($attribute === 'owner_name')
-                $this->addError ($attribute, Yii::t('CommentsModule.msg', 'This item cann\'t be commentable'));
-                return;
-        }
+    //if owner_name class exists in configuration
+    if(count($this->config) === 0)
+    {
+        if($attribute === 'owner_name')
+            $this->addError ($attribute, Yii::t('CommentsModule.msg', 'This item cann\'t be commentable'));
+            return;
+    }
         //if only registered users can post comments
         if ($attribute === 'creator_id' && ($this->config['registeredOnly'] === true || Yii::app()->user->isGuest === false))
         {
@@ -251,7 +250,7 @@ class Comment extends CActiveRecord {
         if(isset($this->config['orderComments']) && ($this->config['orderComments'] === 'ASC' || $this->config['orderComments'] === 'DESC'))
             $criteria->order .= $this->config['orderComments'];
         //if premoderation is seted and current user isn't superuser
-        if($this->config['premoderate'] === true && $this->evaluateExpression($this->config['isSuperuser']) === false)
+        if($this->config['premoderate'] === true && Yii::app()->user->isAdmin() === false)
             $criteria->compare('t.status', self::STATUS_APPROWED);
         $relations = $this->relations();
         //if User model has been configured
@@ -402,6 +401,7 @@ class Comment extends CActiveRecord {
         {
             $ownerModel = $this->getOwnerModel();
             $routeData = array();
+
             foreach($config['pageUrl']['data'] as $routeVar=>$modelProperty)
                 $routeData[$routeVar] = $ownerModel->$modelProperty;
             return Yii::app()->urlManager->createUrl($config['pageUrl']['route'], $routeData)."#comment-$this->comment_id";
@@ -414,8 +414,21 @@ class Comment extends CActiveRecord {
      */
     public function beforeSave() {
         //if current user is superuser, then automoderate comment and it's new comment
-        if($this->isNewRecord === true && $this->evaluateExpression($this->config['isSuperuser']) === true)
-            $this->status = self::STATUS_APPROWED;
+        if($this->isNewRecord === true && Yii::app()->user->isAdmin()){
+            $this->status = self::STATUS_APPROWED; 
+        }
+
+        if (isset(Yii::app()->params['adminEmail'])) {
+            if($this->isNewRecord === true && Yii::app()->user->isAdmin() == false){
+                $headers = "From: robot@" . $_SERVER['HTTP_HOST'] . "\r\n";
+                $headers .= "Reply-To: robot@". $_SERVER['HTTP_HOST'] . "\r\n";
+                $headers .= "MIME-Version: 1.0\r\n";
+                $headers .= "Content-Type: text/html;  charset=utf-8\r\n";
+                $content = 'Имя: ' . $this->user_name . "\nЕмайл: " . $this->user_email . "\nТекст: " . $this->comment_text . "\nСсылка: <a href='" . $this->getPageUrl() . "'>" . $this->getPageUrl() ."</a>"; 
+                mail(Yii::app()->params['adminEmail'], 'Новый комментарий на сайте ' . $_SERVER['HTTP_HOST'] . ' от ' . $this->user_name,  $content, $headers);
+            }
+        }
+       
         return parent::beforeSave();
     }
 

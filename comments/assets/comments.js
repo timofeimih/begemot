@@ -6,11 +6,11 @@
 ;
 (function($) {
     /**
-	 * commentsList set function.
-	 * @param options map settings for the comments list. Availablel options are as follows:
-	 * - deleteConfirmString
+     * commentsList set function.
+     * @param options map settings for the comments list. Availablel options are as follows:
+     * - deleteConfirmString
          * - approveConfirmString
-	 */
+     */
     $.fn.commentsList = function(options) {
         return this.each(function(){
             var settings = $.extend({}, $.fn.commentsList.defaults, options || {});
@@ -73,6 +73,10 @@
         
     $.fn.commentsList.initDialog = function(id){
         var $dialog = $('#addCommentDialog-'+id);
+    $dialog.find('form').submit(function(){
+        $.fn.commentsList.postComment($dialog);
+        return false;
+    });
         $dialog.data('widgetID', id);
         $dialog.dialog({
             'title':$.fn.commentsList.settings[id]['dialogTitle'],

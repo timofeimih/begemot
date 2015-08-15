@@ -14,12 +14,13 @@
  */
 Yii::import('zii.widgets.jui.CJuiWidget');
 
-class ECommentsBaseWidget extends CJuiWidget
+class ECommentsBaseWidget extends CWidget
 {       
         /**
          * @var model for displaying comments
          */
         public $model;
+        public $theme;
         
         
         /**
@@ -62,6 +63,9 @@ class ECommentsBaseWidget extends CJuiWidget
                 $this->postCommentAction = isset($this->_config['postCommentAction']) ? $this->_config['postCommentAction'] : $this->postCommentAction;
             }
             $this->registerScripts();
+
+            $this->theme = Yii::app()->theme->name;
+
         }
 
         /**
