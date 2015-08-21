@@ -16,7 +16,7 @@ $this->menu = require dirname(__FILE__).'/../catItem/commonMenu.php';
 		'title',
 		array(
 			'class'=>'bootstrap.widgets.TbButtonColumn',
-                        'updateButtonUrl'=>'"/promo/update/id/".$data->id',
+                        'updateButtonUrl'=>'"/catalog/promo/update/id/".$data->id',
 		),
         array(
                 'class' => 'begemot.extensions.order.gridView.CBOrderColumn',
