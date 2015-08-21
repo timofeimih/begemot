@@ -5892,3 +5892,6 @@ a.badge:hover {
     position: fixed;
 }
 
+.container{
+    width:100% !important;
+}
