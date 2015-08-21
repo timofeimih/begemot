@@ -38,6 +38,7 @@ class PromoWidget extends CWidget {
         }
 
         $criteria->condition = implode(' or ',$conditionArray);
+        $criteria->order = 'promo.order ASC';
 
         $data = PromoRelation::model()->with('promo')->findAll($criteria);
 
