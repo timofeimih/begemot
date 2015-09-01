@@ -7,6 +7,8 @@
  * @property integer $id
  * @property string $title
  * @property string $sale
+ * @property string $maxSale
+ * @property string $minSale
  * @property integer $active
  */
 
@@ -41,7 +43,7 @@ class Discount extends ContentKitModel
 		// will receive user inputs.
         $rules = array(
 			array('title', 'length', 'max'=>100),
-			array('sale, active', 'numerical', 'integerOnly'=>true),
+			array('sale , maxSale, minSale, active', 'numerical', 'integerOnly'=>true),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('id, title, sale', 'safe', 'on'=>'search'),
@@ -70,6 +72,8 @@ class Discount extends ContentKitModel
 			'id' => 'ID',
 			'title' => 'Title',
 			'sale' => 'Скидка(в цифрах)',
+			'minSale' => 'Минимальная скидка(в цифрах)',
+			'maxSale' => 'Максимальная скидка(в цифрах)',
 			'active' => 'Активна'
 		),
 		parent::attributeLabels());

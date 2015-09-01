@@ -14,7 +14,9 @@ $this->menu = require dirname(__FILE__).'/../catItem/commonMenu.php';
 	'attributes'=>array(
 		'id',
 		'title',
+		'minSale',
 		'sale',
+		'maxSale',
 		'active'
 	),
 )); ?>

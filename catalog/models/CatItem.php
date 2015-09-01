@@ -126,11 +126,10 @@ class CatItem extends ContentKitModel
         echo "<input type='checkbox' {$checked} class='togglePublished' data-id= '{$this->id}'>";
     }
 
-     public static function getSale($id){
+    public static function getSale($id, $type = ''){
         
 
-        if($listOfCategoryDiscounts = DiscountRelation
-            ::model()->with("discount")->findAll(array("condition" => "type=1"))){
+        if($listOfCategoryDiscounts = DiscountRelation::model()->with("discount")->findAll(array("condition" => "type=1"))){
             foreach ($listOfCategoryDiscounts as $categoryDiscount) {
                 if(CatItemsToCat::model()->find('catId=:catId AND itemId=:itemId AND active=1', array(':catId' => $categoryDiscount->targetId, ":itemId" => $id))){
                     return $categoryDiscount->discount->sale;
@@ -146,7 +145,39 @@ class CatItem extends ContentKitModel
 
     }
 
-     public function isTop()
+    public static function getMinSale($id){
+        if($listOfCategoryDiscounts = DiscountRelation::model()->with("discount")->findAll(array("condition" => "type=1"))){
+            foreach ($listOfCategoryDiscounts as $categoryDiscount) {
+                if(CatItemsToCat::model()->find('catId=:catId AND itemId=:itemId AND active=1', array(':catId' => $categoryDiscount->targetId, ":itemId" => $id))){
+                    return $categoryDiscount->discount->minSale;
+                }
+            }
+        }
+
+        $saleOfItem = DiscountRelation::model()->with("discount")->find(array("condition" => "type=2 AND active=1 AND targetId=" . $id));
+
+        if($saleOfItem) return $saleOfItem->discount->minSale;
+
+        return false;
+    }
+
+    public static function getMaxSale($id){
+        if($listOfCategoryDiscounts = DiscountRelation::model()->with("discount")->findAll(array("condition" => "type=1"))){
+            foreach ($listOfCategoryDiscounts as $categoryDiscount) {
+                if(CatItemsToCat::model()->find('catId=:catId AND itemId=:itemId AND active=1', array(':catId' => $categoryDiscount->targetId, ":itemId" => $id))){
+                    return $categoryDiscount->discount->maxSale;
+                }
+            }
+        }
+
+        $saleOfItem = DiscountRelation::model()->with("discount")->find(array("condition" => "type=2 AND active=1 AND targetId=" . $id));
+
+        if($saleOfItem) return $saleOfItem->discount->maxSale;
+
+        return false;
+    }
+
+    public function isTop()
     {
         $checked = ($this->top) ? "checked" : "";
         echo "<input type='checkbox' {$checked} class='toggleTop' data-id= '{$this->id}'>";
