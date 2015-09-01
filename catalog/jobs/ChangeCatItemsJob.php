@@ -58,6 +58,9 @@ class ChangeCatItemsJob extends BaseJob{
 		    if (!$items) {
 
 		      $to = Yii::app()->params['adminEmail'];
+		      if(Yii::app()->params['programmerEmail']){
+		      	$to = " ," . Yii::app()->params['programmerEmail'];
+		      }
 
 		      $subject = "Задание не удалось выполнить($filename)";
 

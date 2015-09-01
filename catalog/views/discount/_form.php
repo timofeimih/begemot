@@ -20,14 +20,32 @@
 		<?php echo $form->textField($model,'title',array('size'=>60,'maxlength'=>100)); ?>
 		<?php echo $form->error($model,'title'); ?>
 	</div>
+	
+    <div class="row">
+        <?php echo $form->labelEx($model, 'minSale'); ?>
+        <?php echo $form->textField($model, 'minSale'); ?>
+        <?php echo $form->error($model, 'minSale'); ?>
 
-	<div class="row">
-		<?php echo $form->labelEx($model, 'sale'); ?>
+
+    </div>
+
+    <div class="row">
+        <?php echo $form->labelEx($model, 'sale'); ?>
         <?php echo $form->textField($model, 'sale'); ?>
         <?php echo $form->error($model, 'sale'); ?>
 
 
-	</div>
+    </div>
+
+
+    <div class="row">
+        <?php echo $form->labelEx($model, 'maxSale'); ?>
+        <?php echo $form->textField($model, 'maxSale'); ?>
+        <?php echo $form->error($model, 'maxSale'); ?>
+
+
+    </div>
+    
 
     <div class="row">
         <?php 
