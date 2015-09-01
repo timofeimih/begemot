@@ -287,7 +287,7 @@ class JobManager extends CApplicationComponent{
 
 
 
-						$item['lastExecutedForText'] = mktime(0, 0, 0) + $item['time'] + $item['hour'];
+						$item['lastExecutedForText'] = time();
 
 						$item['lastExecuted'] = mktime(0, 0, 0);
 						
