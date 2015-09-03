@@ -213,7 +213,21 @@ return array(
             // The itemChildTable name (default:authitemchild)
             'itemChildTable' => 'authItemChild',
         ),
+        'log'=>array(
+            'class'=>'CLogRouter',
 
+            'routes'=>array(
+                array(
+                    'class'=>'CFileLogRoute',
+                    'logFile'=>'cronLog.log',
+                    'maxLogFiles'=>2,
+
+                    'categories'=>'cron'
+
+
+                ),
+            ),
+        ),
 //        'request' => array(
 //                        'baseUrl' => 'http://www.buggy-motor.ru',
 //                    ),
