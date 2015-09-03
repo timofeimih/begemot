@@ -17,7 +17,7 @@ class JobManager extends CApplicationComponent{
 			Yii::log($logMessage,'trace','cron');
 			throw new Exception(dirname(Yii::app()->request->scriptFile) . "/files/parsersData/ нету прв для записи" , 503);
 		}
-		
+
 		$this->dir = dirname(Yii::app()->request->scriptFile) . "/files/parsersData/";
 
 		foreach(glob(Yii::app()->basePath . "/modules/*", GLOB_ONLYDIR) as $path) {    
