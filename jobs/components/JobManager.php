@@ -9,10 +9,15 @@ class JobManager extends CApplicationComponent{
 	public function __construct()
 	{
 
+		$logMessage = 'JobManager __construct - зашли в конструктор ';
+		Yii::log($logMessage,'trace','cron');
+
 		if ( ! is_writable(dirname(Yii::app()->request->scriptFile) . "/files/parsersData/")) {
+			$logMessage = 'JobManager __construct -  '.dirname(Yii::app()->request->scriptFile) . "/files/parsersData/ нету прв для записи";
+			Yii::log($logMessage,'trace','cron');
 			throw new Exception(dirname(Yii::app()->request->scriptFile) . "/files/parsersData/ нету прв для записи" , 503);
-			
 		}
+		
 		$this->dir = dirname(Yii::app()->request->scriptFile) . "/files/parsersData/";
 
 		foreach(glob(Yii::app()->basePath . "/modules/*", GLOB_ONLYDIR) as $path) {    
@@ -245,7 +250,9 @@ class JobManager extends CApplicationComponent{
 	}
 
 	public function isTaskSettedUp($name)
-	{	
+	{
+		$logMessage = 'function isTaskSettedUp - проверяем '.$name;
+		Yii::log($logMessage,'trace','cron');
 		return array_key_exists($name, $this->getListCronJob());
 	}
 
@@ -287,7 +294,7 @@ class JobManager extends CApplicationComponent{
 
 
 
-						$item['lastExecutedForText'] = mktime(0, 0, 0) + $item['time'] + $item['hour'];
+						$item['lastExecutedForText'] = time();
 
 						$item['lastExecuted'] = mktime(0, 0, 0);
 						
