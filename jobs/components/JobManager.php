@@ -259,6 +259,8 @@ class JobManager extends CApplicationComponent{
 	public function runAll()
 	{
 
+		$logMessage = 'JobManager runAll - начинаем проверку задач на запуск.';
+		Yii::log($logMessage,'trace','cron');
 
 		foreach(glob(Yii::app()->basePath . "/modules/*", GLOB_ONLYDIR) as $path) {    
 
@@ -291,7 +293,8 @@ class JobManager extends CApplicationComponent{
 						$classItem->runJob();
 						$this->changeTimeOfLastExecuted($filename, time());
 						echo $filename;
-
+						$logMessage = 'JobManager runAll - запускаем '.$filename;
+						Yii::log($logMessage,'trace','cron');
 
 
 						$item['lastExecutedForText'] = time();

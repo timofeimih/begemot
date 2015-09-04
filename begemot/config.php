@@ -221,12 +221,16 @@ return array(
                     'class'=>'CFileLogRoute',
                     'logFile'=>'cronLog.log',
                     'maxLogFiles'=>2,
-
                     'categories'=>'cron'
-
-
+                ),
+                array(
+                    'class'=>'CFileLogRoute',
+                    'logFile'=>'webParser.log',
+                    'maxLogFiles'=>2,
+                    'categories'=>'webParser'
                 ),
             ),
+
         ),
 //        'request' => array(
 //                        'baseUrl' => 'http://www.buggy-motor.ru',

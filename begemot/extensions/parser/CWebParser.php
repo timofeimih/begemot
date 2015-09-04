@@ -81,7 +81,7 @@ class CWebParser
 
     public function CWebParser($parserName, $host, $scenario, $processId)
     {
-
+        Yii::log('Запускаем парсер '.$parserName.' хост: '.$host.' Id процесса:'.$processId,'trace','webParser');
         Yii::import('begemot.extensions.parser.models.*');
         $dir = Yii::getPathOfAlias('begemot.extensions.parser');
         require_once($dir . '/phpQuery-onefile.php');

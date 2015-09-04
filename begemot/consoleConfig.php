@@ -19,7 +19,7 @@ return array(
         'application.jobs.*',
     'application.moodules.parsers.*',
     ),
-
+    'preload' => array('log'),
     'commandMap' => array(
       'parse'=>array(
          'class'=>'application.modules.begemot.commands.ParseCommand',
@@ -49,6 +49,19 @@ return array(
                 'class'=>'CFileLogRoute',
                 'levels'=>'error, warning',
             ),
+            array(
+                'class'=>'CFileLogRoute',
+                'logFile'=>'cronLog.log',
+                'maxLogFiles'=>2,
+                'categories'=>'cron'
+            ),
+            array(
+                'class'=>'CFileLogRoute',
+                'logFile'=>'webParser.log',
+                'maxLogFiles'=>2,
+                'categories'=>'webParser'
+            ),
+
         ),
     ),
                 // usefull for generating links in email etc...

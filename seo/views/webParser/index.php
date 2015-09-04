@@ -17,7 +17,7 @@ $this->menu = require dirname(__FILE__) . '/../commonMenu.php';
 Yii::import('begemot.extensions.parser.*');
 Yii::import('begemot.extensions.parser.models.*');
 
-$site_name = $_SERVER['SERVER_NAME'];
+$site_name = 'buggy-motor.ru';
 
 
 
@@ -58,6 +58,6 @@ foreach ($webParser->doneTasks as $doneTask){
 //echo '</pre>';
 
 echo $webParser->getProcessStatus();
-//if($webParser->getProcessStatus()!='done')
-//echo '<script>location.reload();</script>>';
+if($webParser->getProcessStatus()!='done')
+echo '<script>location.reload();</script>';
 
