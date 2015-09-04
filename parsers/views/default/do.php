@@ -81,6 +81,9 @@ $this->menu = array(
 		"dataProvider"=>$itemList->search(),
 		"filter"=>$itemList,
 	    "type"=>"striped bordered condensed",
+	    'rowCssClassExpression' => function($row, $data){
+	    	return "item-" . $data->id;
+	    },
 		"columns"=>array(
 	    	"id" => array('name' => 'id', 'htmlOptions' => array('class' => 'id')),
 	    	"name" => array('name' => 'name', 'htmlOptions' => array('name')),
@@ -108,6 +111,9 @@ $this->menu = array(
 		"dataProvider"=>$itemList->search(),
 		"filter"=>$itemList,
 	    "type"=>"striped bordered condensed",
+	    'rowCssClassExpression' => function($row, $data){
+	    	return "item-" . $data->id;
+	    },
 		"columns"=>array(
 	    	"id" => array('name' => 'id', 'htmlOptions' => array('class' => 'id')),
 	    	"name" => array('name' => 'name', 'htmlOptions' => array('name')),
