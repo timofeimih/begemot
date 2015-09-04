@@ -234,6 +234,10 @@ class DefaultController extends Controller
     
             }
 
+            if (!$ids) {
+                $ids = ["none"];
+            }
+
             // print_r($ids);
             // return;
 
@@ -277,7 +281,7 @@ class DefaultController extends Controller
     public function getSyncButtons($data, $row){
         $return = "<button type='button'  data-filename='{$data->filename}' class='composite btn btn-info' name='{$data->name}'>Объединить с ...</button>";
         if ($data->findedByArticle()){
-            $return .= "<form action='/parsers/default/syncCard' data-removeAfter='.item-$row' class='ajaxSubmit'>
+            $return .= "<form action='/parsers/default/syncCard' data-removeAfter='.item-{$data->id}' class='ajaxSubmit'>
                 <input type='hidden' name='ParsersLinking[fromId]' id='name' value='{$data->id}'><br/>
                 <input type='hidden' name='ParsersLinking[toId]' id='itemId' value='{$data->findedByArticle()}' >
                 <input type='hidden' name='ParsersLinking[filename]' id='itemId' value='{$data->filename}' >
@@ -356,9 +360,11 @@ class DefaultController extends Controller
             $time = '';
 
             foreach ($timeArray as $key => $value) {
+
                 if ($key == $class->getName()){
                    $time = date("d.m.Y H:i", $value) ."<br/>";
 
+                   break;
                     
                 } else{
                     $time = "Еще не выполнялась<br/>";
