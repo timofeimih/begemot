@@ -78,7 +78,8 @@ class JobManager extends CApplicationComponent{
 
 	public function newTask($parameters)
 	{
-
+        $logMessage = 'JobManager newTask - создаем задачу '.var_export($parameters,true);
+        Yii::log($logMessage,'trace','cron');
         //every day = 86 400 sec
         //every week = 604 800 sec
         //2 days in a week = 302 400 sec
@@ -89,7 +90,8 @@ class JobManager extends CApplicationComponent{
 		$today  = strtotime("00:00:00");
 		$yesterday  = strtotime("-2 day", $today);
 
-        $parameters['lastExecuted'] = $yesterday + $parameters['time'] + $parameters['hour'] + $parameters['minutes'];
+		$parameters['lastExecuted'] = 0;
+        //$parameters['lastExecuted'] = $yesterday + $parameters['time'] + $parameters['hour'] + $parameters['minutes'];
         $parameters['executable'] = true;
         $parameters['lastExecutedForText'] = 0;
 
@@ -284,13 +286,17 @@ class JobManager extends CApplicationComponent{
 				$item = (array) $item;
 
 				if ($item['executable'] == true) {
-						
-					if (($item['lastExecuted'] + $item['time'] + $item['hour'] - 60) < time()) {
+                    $logMessage = 'JobManager runAll - Проверяем задачу '.$filename.' Текущая метка:'.time().', расчетная метка: '.($item['lastExecuted'] + $item['time'] + $item['hour'] - 60);
+                    Yii::log($logMessage,'trace','cron');
+                    $dif = ($item['lastExecuted'] + $item['time'] + $item['hour'] - 60) - time();
+                    $logMessage = 'JobManager runAll - Проверяем задачу '.$filename.' до запуска:'.$dif;
+                    Yii::log($logMessage,'trace','cron');
+                    if (($item['lastExecuted'] + $item['time'] + $item['hour'] - 60) < time()) {
 						
 						$className = $item['filename'];
 						$classItem = new $className;
 						//$classItem->runJob($filename);
-						$classItem->runJob();
+						$classItem->runJob($item);
 						$this->changeTimeOfLastExecuted($filename, time());
 						echo $filename;
 						$logMessage = 'JobManager runAll - запускаем '.$filename;

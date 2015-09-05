@@ -9,7 +9,7 @@ class BaseJob {
 	public function getName() { return $this->name;}
 	public function getTitle() { return $this->title;}
 	public function getDescription() { return $this->description;}
-	public function runJob() {}
+	public function runJob($parameters=null) {}
 
 	public function getParameters(){
 
