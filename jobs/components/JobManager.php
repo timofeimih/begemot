@@ -426,9 +426,13 @@ class JobManager extends CApplicationComponent{
 	}
 
 	/**
-	 * @param $digitForCheck
-	 * @param $interval
-	 * @param null $step
+     *
+     * Преобразуем конечный интервал в массив отдельных чисел
+     * для последующей простой проверки попадания в массив текущего
+     * значения.
+     *
+	 * @param $interval Интервал вида x-y
+	 * @param null $step Шаг, если есть, который пишется через "/"
 	 */
 	private function processInterval($interval,$step=null){
         $intervalArray = explode('-',$interval);
