@@ -329,4 +329,170 @@ class JobManager extends CApplicationComponent{
 	{
 		return true;
 	}
+	/**
+	 * 2-5 - проверит попадание в интервал от 2 до 5 включительно
+	 * 1,2-10/3,7 - проверит на равенство 1,
+	 * попадание в интервал от 2 до 10 с шагом 3
+	 * то есть 2,5,8
+	 * и проверит на 3 и 7
+	 * * - звездочка эмениться на полный интервал, для минут от 0 до 59 и т.д.
+	 *
+	 * Аналог записей crontab. Так же как и в ctontab при указании и дня недели и дня
+	 * месяца возьмет будет проверять пересечение по логическому or. Все остальные
+	 * по логическому and.
+	 */
+	public function checkForStart($cronItem){
+		//print_r($cronItem);
+		//Правильные интервалы значений в соответствии с date()
+		$minInterval = '0-59'; // 'i' - минута
+		$hourInterval = '0-23';// 'H' - час
+		$dayInterval = '1-31';// 'd' - день
+		$monthInterval = '1-12';//'m' - число дня месяца
+		$dayWeekInterval = '0-6';// 'w' - порядковый номер дня недеи, 0 - воскресенье
+
+		//Если чего то нет, то заменяем на общий интервал
+		if (!isset($cronItem['min'])){$cronItem['min']=$minInterval;}
+		if (!isset($cronItem['hour'])){$cronItem['hour']=$hourInterval;}
+		if (!isset($cronItem['day'])){$cronItem['day']=$dayInterval;}
+		if (!isset($cronItem['month'])){$cronItem['month']=$monthInterval;}
+		if (!isset($cronItem['dayWeek'])){$cronItem['dayWeek']=$dayWeekInterval;}
+
+		//Для удобства все звездочки заменяем на правильные интервалы
+		$cronItem['min'] = str_replace ('*',$minInterval,$cronItem['min']);
+		$cronItem['hour'] = str_replace ('*',$hourInterval,$cronItem['hour']);
+		$cronItem['day'] = str_replace ('*',$dayInterval,$cronItem['day']);
+		$cronItem['month'] = str_replace ('*',$monthInterval,$cronItem['month']);
+		$cronItem['dayWeek'] = str_replace ('*',$dayWeekInterval,$cronItem['dayWeek']);
+
+		//Собираем текущие значения. Минуту, час, день, месяц и день недели
+		$actTime = time();
+		$actMin = date('i',$actTime);
+		$actHour = date('H',$actTime);
+		$actDay = date('d',$actTime);
+		$actMonth = date('m',$actTime);
+		$actDayWeek = date('w',$actTime);
+
+		//флаг совпадения для минуты изначально false
+        echo 'Время:'.date('H:i d.m w').'<br>';
+
+
+        $resultMinArray = $this->parseIntervalString($cronItem['min']);
+        $resultHourArray = $this->parseIntervalString($cronItem['hour']);
+        $resultDayArray = $this->parseIntervalString($cronItem['day']);
+        $resultMonthArray = $this->parseIntervalString($cronItem['month']);
+        $resultDayWeekArray = $this->parseIntervalString($cronItem['dayWeek']);
+
+
+
+        $minFlag = false;
+        if (array_search($actMin,$resultMinArray)!==false){
+            $minFlag=true;
+
+        }
+
+        $hourFlag = false;
+        if (array_search($actHour,$resultHourArray)!==false){
+            $hourFlag=true;
+        }
+
+        $dayFlag = false;
+        if (array_search($actDay,$resultDayArray)!==false){
+            $dayFlag=true;
+        }
+
+        $monthFlag = false;
+        if (array_search($actMonth,$resultMonthArray)!==false){
+            $monthFlag=true;
+        }
+
+        $dayWeekFlag = false;
+        if (array_search($actDayWeek,$resultDayWeekArray)!==false){
+            $dayWeekFlag=true;
+        }
+
+        //Дни счетаем из дня недели и дня месяца. Эти флаги надо обрабатывать отдельно
+        $commonDaysFlag = false;
+
+        if (($cronItem['day']===$dayInterval) or ($cronItem['dayWeek']===$dayWeekInterval)){
+          //Если один из интервалов дня *, то делаем and
+            $commonDaysFlag = ($dayWeekFlag and $dayFlag);
+        } else {
+            //Если оба интервала дня отличны от базового, то делаем or
+            $commonDaysFlag = ($dayWeekFlag or $dayFlag);
+        }
+        echo var_export($resultDayWeekArray,true);
+        return $minFlag and $hourFlag and $commonDaysFlag and $monthFlag;
+
+	}
+
+	/**
+	 * @param $digitForCheck
+	 * @param $interval
+	 * @param null $step
+	 */
+	private function processInterval($interval,$step=null){
+        $intervalArray = explode('-',$interval);
+
+        $resultIntervalArray = [];
+
+        $start = $intervalArray[0];
+        $end = $intervalArray[1];
+
+        for ($i=$start;$i<=$end;){
+            $resultIntervalArray[]=$i;
+            $i=$i+$step;
+        }
+
+
+        return $resultIntervalArray;
+        return array();
+	}
+
+    /*
+     * анализируем строку что бы получить массив всех конкретных значений
+     *
+     * если исходная строка 0,1,4-11/3
+     *
+     * то выходной массив должен получиться
+     *
+     * array(
+     * 	0,1,4,7,10
+     * )
+     *
+     * а потом просто перебором проверяем на равенство текущему значению.
+     * По идее так проще будет отлаживать если что пойдет не так.
+     */
+
+    private function parseIntervalString($intervalStr){
+        $resultDigitsArray = array();
+
+        //разбиваем по запятым на набор интервалов
+        $intervalArray = explode (',',$intervalStr);
+       // print_r($intervalArray);
+        //Набиваем этот массив всеми конкретными значениями которые найдем
+
+        foreach ($intervalArray as $key => $intervalOfArray){
+            //Проверяем на наличие "-"
+            if(strstr($intervalOfArray,'-')){
+                //есть дефис, значит интервал вида x-y/z, но шага / может и не быть
+                //проверяем на наличие /
+
+                $step = 1;
+                //Разбиваем по /, если будет элемент с индексом 1, то это шаг
+                $currentIntervalArray = explode('/',$intervalOfArray);
+                if (isset($currentIntervalArray[1])){
+                    $step = $currentIntervalArray[1];
+                }
+
+
+                $resultDigitsArray = array_merge($resultDigitsArray,$this->processInterval($currentIntervalArray[0],$step));
+            } else{
+                //если "-" нет, то просто проверяем на равенство
+                $resultDigitsArray[] = $intervalOfArray;
+            }
+        }
+
+        return array_merge($resultDigitsArray);
+    }
+
 }
