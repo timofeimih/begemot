@@ -36,8 +36,17 @@ class JobManager extends CApplicationComponent{
 		$all = (array) $this->getListCronJob();
 
 		if (array_key_exists($jobIndex, $all)) {
+			$arr = '';
+			$arr .= (isset($all[$jobIndex]['min'])) ? $all[$jobIndex]['min'] . "  " : "";
+			$arr .= (isset($all[$jobIndex]['hour'])) ? $all[$jobIndex]['hour'] . "  " : "";
+			$arr .= (isset($all[$jobIndex]['day'])) ? $all[$jobIndex]['day'] . "  " : "";
+			$arr .= (isset($all[$jobIndex]['month'])) ? $all[$jobIndex]['month'] . "  " : "";
+			$arr .= (isset($all[$jobIndex]['dayWeek'])) ? $all[$jobIndex]['dayWeek'] . "  " : "";
 
-			return $this->timeToString($all[$jobIndex]['period']);
+			return $arr;
+		}
+		else{
+			return "ошибка";
 		}
 	}
 
@@ -84,18 +93,12 @@ class JobManager extends CApplicationComponent{
         //every week = 604 800 sec
         //2 days in a week = 302 400 sec
 
-		$filename = $parameters['filename'];
-		$arrayIndex = $filename . " - " . time() ;
-
-		$today  = strtotime("00:00:00");
-		$yesterday  = strtotime("-2 day", $today);
 
 		$parameters['lastExecuted'] = 0;
         //$parameters['lastExecuted'] = $yesterday + $parameters['time'] + $parameters['hour'] + $parameters['minutes'];
         $parameters['executable'] = true;
-        $parameters['lastExecutedForText'] = 0;
 
-        $parameters['filename'];
+        $arrayIndex = $parameters['filename'] . " - " . time() ;
 
         $arr = array(
 	        $arrayIndex => $parameters
@@ -106,29 +109,31 @@ class JobManager extends CApplicationComponent{
         $arr = array_merge($all, $arr);
 
         $this->saveConfigFile($arr);
-
         return 1;
         
 	}
 
-	public function changeTime($jobIndex, $time = 86400, $hour = '1', $minutes = 0)
+	public function changeTime($parameters)
 	{
 		$all = (array) $this->getListCronJob();
+		$jobIndex = $parameters['name'];
+		unset($parameters['name']);
 
 		if (array_key_exists($jobIndex, $all)) {
 
-			$today  = strtotime("00:00:00");
-			$yesterday  = strtotime("-2 day", $today);
-
-			$all[$jobIndex]['time'] = $time;
-			$all[$jobIndex]['hour'] = $hour;
-			$all[$jobIndex]['minutes'] = $minutes;
-			$all[$jobIndex]['lastExecuted'] = $yesterday + $all[$jobIndex]['time'] + $all[$jobIndex]['hour'] + $all[$jobIndex]['minutes'];
-			$all[$jobIndex]['lastExecutedForText'] = 0;
+			unset($all[$jobIndex]['min']);
+			unset($all[$jobIndex]['hour']);
+			unset($all[$jobIndex]['day']);
+			unset($all[$jobIndex]['month']);
+			unset($all[$jobIndex]['dayWeek']);
+			//Присвоение всех параметров к уже существующим и создание новых если их не было.
+			foreach ($parameters as $key => $param) {
+				$all[$jobIndex][$key] = $param;
+			}
 
 			$this->saveConfigFile((array) $all);
 
-			return $this->timeToString($time);
+			return $this->getPeriodOfItem($jobIndex);
 		} else{
 			return "error: нету такого индекса в заданиях";
 		}
@@ -179,27 +184,6 @@ class JobManager extends CApplicationComponent{
 		print_r($all);
 
     }
-
-	public static function timeToString($time)
-	{
-
-		$string = '';
-
-		if ($time == 86400) {
-			$string = 'Каждый день';
-		} else if ($time == 604800){
-			$string = 'Раз в неделю';
-		} else if ($time == 302400){
-			$string = 'Два раза в неделю';
-		} else if ($time < 86400){
-			$string = $time / 3600;
-		} else{
-			$string = 'Не известно';
-		}
-
-
-		return $string;
-	}
 
 	private function saveConfigFile($arrayToWrite)
 	{
@@ -286,30 +270,29 @@ class JobManager extends CApplicationComponent{
 				$item = (array) $item;
 
 				if ($item['executable'] == true) {
-                    $logMessage = 'JobManager runAll - Проверяем задачу '.$filename.' Текущая метка:'.time().', расчетная метка: '.($item['lastExecuted'] + $item['time'] + $item['hour'] - 60);
+                    $logMessage = 'JobManager runAll - Проверяем задачу '.$filename.' Текущая метка:'.time();
                     Yii::log($logMessage,'trace','cron');
-                    $dif = ($item['lastExecuted'] + $item['time'] + $item['hour'] - 60) - time();
-                    $logMessage = 'JobManager runAll - Проверяем задачу '.$filename.' до запуска:'.$dif;
+                    $logMessage = 'JobManager runAll - Проверяем задачу '.$filename.' до запуска:';
                     Yii::log($logMessage,'trace','cron');
-                    if (($item['lastExecuted'] + $item['time'] + $item['hour'] - 60) < time()) {
+                    if ($this->checkForStart($item)) {
 						
 						$className = $item['filename'];
 						$classItem = new $className;
 						//$classItem->runJob($filename);
 						$classItem->runJob($item);
 						$this->changeTimeOfLastExecuted($filename, time());
-						echo $filename;
 						$logMessage = 'JobManager runAll - запускаем '.$filename;
 						Yii::log($logMessage,'trace','cron');
 
 
-						$item['lastExecutedForText'] = time();
+						$item['lastExecuted'] = time();
 
-						$item['lastExecuted'] = mktime(0, 0, 0);
+						$logMessage = 'Запуск задачи '.$filename;
+                    	Yii::log($logMessage,'trace','cron');
 						
-						echo "run" . time() .  " - " . $filename .  " - " . $item['lastExecuted'];
+						echo "Запуск задачи " . $filename .  " в " . time() . "\n";
 					}
-					else echo 'no run' . time();
+					else echo 'Не запустилась задача ' . $filename . "\n";
 				}
 				
 
