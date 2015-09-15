@@ -12,7 +12,7 @@
 </head>
 
 <body>
-<div class="container" style="margin-top:50px;">
+<div class="container-fluid" style="margin-top:50px;">
 
 
 
@@ -22,6 +22,7 @@
     'brand'=>'Begemot',
     'brandUrl'=>'/begemot',
     'collapse'=>true, // requires bootstrap-responsive.css
+    'fluid' => true,
     'items'=>array(
         array(
             'class'=>'bootstrap.widgets.TbMenu',
