@@ -13,7 +13,23 @@
 $this->menu = require dirname(__FILE__) . '/../commonMenu.php';
 //echo $processId;
 
+Yii::import('jobs.components.JobManager');
 
+$jobManager = new JobManager();
+
+$min = '*';
+$hour = '*';
+$day = '*';
+$month = '*';
+$dayWeek='*';
+
+
+
+if ($jobManager->checkForStart(compact('min','hour','day','month','dayWeek'))){
+    echo 'Подходит!';
+}
+
+return;
 Yii::import('begemot.extensions.parser.*');
 Yii::import('begemot.extensions.parser.models.*');
 

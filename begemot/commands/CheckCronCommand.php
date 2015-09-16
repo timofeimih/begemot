@@ -1,6 +1,6 @@
 <?php
 
-class ParseCommand extends CConsoleCommand
+class CheckCronCommand extends CConsoleCommand
 {
     public function run($args)
     {
