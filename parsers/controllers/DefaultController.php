@@ -189,9 +189,12 @@ class DefaultController extends Controller
 
             if ($combined) {
                 foreach ($combined as $item) {
-                    if ($item->linking->price != $item->item->price || $item->linking->quantity != $item->item->quantity) {
-                        $itemList[] = $item;
+                    if ($item->linking) {
+                        if ($item->linking->price != $item->item->price || $item->linking->quantity != $item->item->quantity) {
+                            $itemList[] = $item;
+                        }
                     }
+                    
                 }
 
             }
