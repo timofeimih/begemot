@@ -82,20 +82,23 @@ class ChangeCatItemsJob extends BaseJob{
 
 		        $changed = array();
 		    foreach ($items as $item) {
-		      if ($item->linking->price != $item->item->price || $item->linking->quantity != $item->item->quantity) {
+		    	if($item->linking){
+		    		if ($item->linking->price != $item->item->price || $item->linking->quantity != $item->item->quantity) {
 
-		        $changed[] = array(
-		          'name' => $item->item->name,
-		          'oldPrice' => $item->item->price,
-		          'newPrice' => $item->linking->price,
-		          'oldQuantity' => $item->item->quantity,
-		          'newQuantity' => $item->linking->quantity,
-		        );
-		        $item->item->price = $item->linking->price;
-		        $item->item->quantity = $item->linking->quantity;
-		        $item->item->save();
-		      }
-		    }
+				        $changed[] = array(
+				          'name' => $item->item->name,
+				          'oldPrice' => $item->item->price,
+				          'newPrice' => $item->linking->price,
+				          'oldQuantity' => $item->item->quantity,
+				          'newQuantity' => $item->linking->quantity,
+				        );
+				        $item->item->price = $item->linking->price;
+				        $item->item->quantity = $item->linking->quantity;
+				        $item->item->save();
+				      }
+				    }
+		    	}
+		      
 
 		    $to = Yii::app()->params['adminEmail'];
 
