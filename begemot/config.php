@@ -156,9 +156,7 @@ return array(
             'loginUrl' => array('/user/login'),
             'returnUrl'=>array('/begemot'),
         ),
-        'bootstrap' => array(
-            'class' => 'begemot.extensions.bootstrap.components.Bootstrap', // assuming you extracted bootstrap under extensions
-        ),
+
         // uncomment the following to enable URLs in path-format
         
         'urlManager' => array(
