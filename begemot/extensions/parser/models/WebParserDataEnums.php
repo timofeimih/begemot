@@ -44,7 +44,7 @@ class WebParserDataEnums {
      * Если ссылка прошла проверку и данные были спарсены, то создаем такую задачу.
      */
     const TASK_TYPE_PROCESS_URL = 'process_url';
-    const TASK_TYPE_DATA = 'navigation';
+    const TASK_TYPE_DATA = 'process_data';
     const TASK_TYPE_IMAGE = 'navigation';
     /**
      * Типы входных данных для задач

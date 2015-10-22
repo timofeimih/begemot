@@ -82,6 +82,22 @@ class ScenarioTask extends CActiveRecord
 
     }
 
+    public function getUrl(){
+
+        $targetType = $this->target_type;
+        $pageUrl='';
+        if ($targetType == WebParserDataEnums::TASK_TARGET_DATA_TYPE_WEBPAGE) {
+            $webPage = new WebParserPage($this->targetId);
+            $pageUrl = $webPage->url;
+        } elseif ($targetType == WebParserDataEnums::TASK_TARGET_DATA_TYPE_URL) {
+            $pageUrl = $this->getTargetData();
+        } elseif ($targetType == WebParserDataEnums::TASK_TARGET_DATA_TYPE_DATA) {
+            $targetData = WebParserData::model()->findByPk($this->target_id);
+            $pageUrl=$targetData->sourcePageUrl;
+        }
+
+        return $pageUrl;
+    }
 
     static public function isExistSomeTask ($processId){
         $sql = "SELECT COUNT(*) FROM webParserScenarioTask WHERE processId=".$processId.' and taskStatus="new"';
@@ -107,8 +123,11 @@ class ScenarioTask extends CActiveRecord
     }
 
     static public function getActiveTaskCount($processId){
+
         $sql ='SELECT count(*) FROM webParserScenarioTask where processId='.$processId.' and taskStatus="new";' ;
+
         $taskCount = Yii::app()->db->createCommand($sql)->queryScalar();
+
         return $taskCount;
     }
 

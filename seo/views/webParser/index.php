@@ -13,49 +13,76 @@
 $this->menu = require dirname(__FILE__) . '/../commonMenu.php';
 //echo $processId;
 
-Yii::import('jobs.components.JobManager');
 
-$jobManager = new JobManager();
-
-$min = '*';
-$hour = '*';
-$day = '*';
-$month = '*';
-$dayWeek='*';
-
-
-
-if ($jobManager->checkForStart(compact('min','hour','day','month','dayWeek'))){
-    echo 'Подходит!';
-}
-
-return;
 Yii::import('begemot.extensions.parser.*');
 Yii::import('begemot.extensions.parser.models.*');
 
-$site_name = 'buggy-motor.ru';
+$site_name = 'pelec.ru';
 
-
+Yii::log('    ЗАШЛИ В ОТОБРАЖЕНИЕ!', 'trace', 'webParser');
 
 $parseScenario = [
-    'allPages'=>[
-        'type' => WebParserDataEnums::TASK_TYPE_START_NAVIGATION,
-        'startUrl' => 'http://www.buggy-motor.ru/catalog/Baggi_79/FC-1100_Sport_430.html',
+    'allPages' => [
+
+        'startUrl' => '/catalog/models',
+
+        'type' => WebParserDataEnums::TASK_TYPE_PROCESS_URL,
         'parser_rules' => [
-            'allPages' => '',
+            'seoData' => 'h2.product-title',
         ],
     ],
-//    'seoData'=>[
-//        'type'=>WebParserDataEnums::TASK_TYPE_DATA
-//    ]
+    'seoData' => [
+        'type' => WebParserDataEnums::TASK_TYPE_DATA,
+        'dataFields' => [
+            WebParserDataEnums::DATA_ID_ARRAY_KEY => WebParserDataEnums::DATA_FILTER_URL,
+            'title' => 'title',
+            '-pageContent' => 'body',
+        ],
+        'parse_data_rules' => [
+            '-pageContent' => ['vehicle_parse', 'options_parse'],
+        ]
+    ],
+    'options_parse' => [
+        'type' => WebParserDataEnums::TASK_TYPE_DATA,
+
+        'dataFields' => [
+            WebParserDataEnums::DATA_ID_ARRAY_KEY => WebParserDataEnums::DATA_FILTER_URL,
+            '-option' => 'div.view-product-options  tr'
+        ],
+        'parse_data_rules' => [
+            '-option' => 'optionData',
+        ]
+    ],
+    'optionData' => [
+        'type' => WebParserDataEnums::TASK_TYPE_DATA,
+
+        'dataFields' => [
+            WebParserDataEnums::DATA_ID_ARRAY_KEY => 'input|val',
+            'optionTitle' => 'td.views-field-title-field',
+            'optionPrice' => 'td.views-field-field-option-cost|text',
+
+        ],
+    ],
+    'vehicle_parse' => [
+        'type' => WebParserDataEnums::TASK_TYPE_DATA,
+
+        'dataFields' => [
+            WebParserDataEnums::DATA_ID_ARRAY_KEY => WebParserDataEnums::DATA_FILTER_URL,
+            'vehTitle' => 'h1',
+            'vehPrice' => 'div.field-name-field-cost|text',
+            '-vehMOdifTable' => 'table#product-modifications',
+        ],
+
+    ],
 ];
 
-$webParser = new CWebParser('seoParser',$site_name ,$parseScenario,$processId);
+$webParser = new CWebParser('seoParser', $site_name, $parseScenario, $processId);
 
 
 $webParser->addUrlFilter('#mailto#i');
 $webParser->addUrlFilter('#\##i');
-$webParser->tasksPerExecute = 5;
+$webParser->tasksPerExecute = 1;
+$webParser->isInterface = true;
 $webParser->parse();
 
 
@@ -63,17 +90,31 @@ $webParser->parse();
 //$webParser->getAllUrlFromPage($pageContent);
 //echo  md5('123', true);
 
-echo 'Количество активных задач:'. $webParser->taskManager->getActiveTaskCount().'!!';
+//echo 'Количество активных задач:'. $webParser->taskManager->getActiveTaskCount().'!!';
 
 echo '<br>';
-foreach ($webParser->doneTasks as $doneTask){
-    echo $doneTask->id.'<br>';
-}
+//foreach ($webParser->doneTasks as $doneTask){
+//    echo $doneTask->id.'<br>';
+//}
 //echo '<pre>';
 //print_r($webParser->filteredUrlArray);
 //echo '</pre>';
 
-echo $webParser->getProcessStatus();
-if($webParser->getProcessStatus()!='done')
-echo '<script>location.reload();</script>';
+Yii::log('    проверяем закончен ли процесс!', 'trace', 'webParser');
+//echo $webParser->getProcessStatus();
+if ($webParser->getProcessStatus() != 'done') {
+    echo '<script>location.reload();</script>';
+} else {
+    $dataManager = new CParserDataManager($processId);
+
+    $dataManager->cutDataTree();
+    $dataTreeArray = $dataManager->getDataTreeArray();
+    echo '<pre>';
+    print_r($dataTreeArray);
+    echo '</pre>';
+
+}
+
+
+
 

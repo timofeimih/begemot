@@ -22,7 +22,7 @@ class BaseParser extends BaseJob{
 
     }
 
-    public function runJob()
+    public function runJob($parameters=null)
     {
         return true;
     }
