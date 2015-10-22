@@ -26,8 +26,13 @@ class ParsersModule extends CWebModule
     {
 
         if ($controller->id != 'site') {
+            $component=Yii::createComponent(array(
 
-            Yii::app()->getComponent('bootstrap');
+                    'class'=>'begemot.extensions.bootstrap.components.Bootstrap'
+
+            ));
+            Yii::app()->setComponent('bootstrap',$component);
+
         }
         return true;
     }
