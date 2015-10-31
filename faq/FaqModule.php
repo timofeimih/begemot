@@ -23,7 +23,12 @@ class FaqModule extends CWebModule
      
      if ($controller->id != 'site') {
 
-        Yii::app()->getComponent('bootstrap');
+         $component=Yii::createComponent(array(
+
+             'class'=>'begemot.extensions.bootstrap.components.Bootstrap'
+
+         ));
+         Yii::app()->setComponent('bootstrap',$component);
      }
      return true;
    }

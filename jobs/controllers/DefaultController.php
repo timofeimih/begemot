@@ -39,11 +39,16 @@ class DefaultController extends Controller
 			unset($_POST['createNew']);
 
 			$JobManager = new JobManager;
-			
-			echo $JobManager->newTask($_POST);
 
+            $logMessage = 'Контроллер actionSetTask '.var_export($_POST,true);
+            Yii::log($logMessage,'trace','cron');
+
+
+			$JobManager->newTask($_POST);
 			
 		} else{
+            $logMessage = 'Ошибка! Задача не создалась.';
+            Yii::log($logMessage,'trace','cron');
 			throw new Exception("Error Processing Request", 1);
 			
 		}

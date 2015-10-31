@@ -29,7 +29,12 @@ class BegemotModule extends CWebModule
 			'begemot.components.*',
 			'jobs.components.*'
 		));
-                 Yii::app()->getComponent('bootstrap');
+        $component=Yii::createComponent(array(
+
+            'class'=>'begemot.extensions.bootstrap.components.Bootstrap'
+
+        ));
+        Yii::app()->setComponent('bootstrap',$component);
 	}
 
 	public function beforeControllerAction($controller, $action)

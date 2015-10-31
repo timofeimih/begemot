@@ -63,11 +63,12 @@ class CatalogModule extends CWebModule
     public function beforeControllerAction($controller, $action)
     {
         if ($controller->id != 'site') {
+            $component=Yii::createComponent(array(
 
-            Yii::app()->setComponent(
-            'bootstrap',array('class'=>'begemot.extensions.bootstrap.components.bootstrap'));
-            $bootstrap = Yii::app()->getComponent('bootstrap');
-            Yii::app()->bootstrap->register();
+                'class'=>'begemot.extensions.bootstrap.components.Bootstrap'
+
+            ));
+            Yii::app()->setComponent('bootstrap',$component);
         }
 
         return true;

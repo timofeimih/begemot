@@ -18,7 +18,8 @@ class JobManager extends CApplicationComponent{
 			throw new Exception(dirname(Yii::app()->request->scriptFile) . "/files/parsersData/ нету прв для записи" , 503);
 		}
 
-		$this->dir = dirname(Yii::app()->request->scriptFile) . "/files/parsersData/";
+		//$this->dir = dirname(Yii::app()->request->scriptFile) . "/files/parsersData/";
+		$this->dir = Yii::getPathOfAlias('webroot') . "/files/parsersData/";
 
 		foreach(glob(Yii::app()->basePath . "/modules/*", GLOB_ONLYDIR) as $path) {    
 
@@ -89,9 +90,6 @@ class JobManager extends CApplicationComponent{
 	{
         $logMessage = 'JobManager newTask - создаем задачу '.var_export($parameters,true);
         Yii::log($logMessage,'trace','cron');
-        //every day = 86 400 sec
-        //every week = 604 800 sec
-        //2 days in a week = 302 400 sec
 
 
 		$parameters['lastExecuted'] = 0;
@@ -99,7 +97,7 @@ class JobManager extends CApplicationComponent{
         $parameters['executable'] = true;
 
         $arrayIndex = $parameters['filename'] . " - " . time() ;
-
+        $parameters['jobIndex'] = $arrayIndex;
         $arr = array(
 	        $arrayIndex => $parameters
         );
@@ -108,7 +106,11 @@ class JobManager extends CApplicationComponent{
 
         $arr = array_merge($all, $arr);
 
+        $logMessage = 'Результат слияния массивов: '.var_export($arr,true);
+        Yii::log($logMessage,'trace','cron');
+
         $this->saveConfigFile($arr);
+
         return 1;
         
 	}
@@ -173,6 +175,9 @@ class JobManager extends CApplicationComponent{
 
 	public function removeTask($filename)
 	{
+        $logMessage = 'JobManager removeTask - удаляем задачу '.$filename;
+        Yii::log($logMessage,'trace','cron');
+
 		$all = $this->getListCronJob();
 
 		if (isset($all[$filename])) {
@@ -187,7 +192,10 @@ class JobManager extends CApplicationComponent{
 
 	private function saveConfigFile($arrayToWrite)
 	{
-
+//        $logMessage = 'Пишем в файл данные, путь: '.$this->dir . 'cronConfig.php';
+//        Yii::log($logMessage,'trace','cron');
+//        $logMessage = 'данные: '.var_export($arrayToWrite,true);
+//        Yii::log($logMessage,'trace','cron');
 		PictureBox::crPhpArr($arrayToWrite, $this->dir . 'cronConfig.php');
 	}
 
@@ -272,37 +280,42 @@ class JobManager extends CApplicationComponent{
 				if ($item['executable'] == true) {
                     $logMessage = 'JobManager runAll - Проверяем задачу '.$filename.' Текущая метка:'.time();
                     Yii::log($logMessage,'trace','cron');
-                    $logMessage = 'JobManager runAll - Проверяем задачу '.$filename.' до запуска:';
-                    Yii::log($logMessage,'trace','cron');
+
                     if ($this->checkForStart($item)) {
 						
 						$className = $item['filename'];
 						$classItem = new $className;
 						//$classItem->runJob($filename);
+
+                        $logMessage = 'JobManager runAll - запускаем '.$filename;
+                        Yii::log($logMessage,'trace','cron');
+
 						$classItem->runJob($item);
 						$this->changeTimeOfLastExecuted($filename, time());
-						$logMessage = 'JobManager runAll - запускаем '.$filename;
-						Yii::log($logMessage,'trace','cron');
 
-
-						$item['lastExecuted'] = time();
-
-						$logMessage = 'Запуск задачи '.$filename;
-                    	Yii::log($logMessage,'trace','cron');
+                        $tmpJobList = $this->getListCronJob();
+                        if (isset($tmpJobList[$filename])){
+                            $tmpJobList[$filename]['lastExecuted'] = time();
+                            $this->saveConfigFile($tmpJobList);
+                        }
 						
 						echo "Запуск задачи " . $filename .  " в " . time() . "\n";
 					}
-					else echo 'Не запустилась задача ' . $filename . "\n";
+					else{
+                        $logMessage = 'Не запускаем '.$filename;
+                        Yii::log($logMessage,'trace','cron');
+                        echo 'Не запустилась задача ' . $filename . "\n";
+                    };
 				}
 				
 
 				$save[$filename] = $item;
 			}
 
-			print_r($save);
 
 
-			$this->saveConfigFile($save);
+
+			//$this->saveConfigFile($save);
 		}
 		
 
@@ -334,11 +347,11 @@ class JobManager extends CApplicationComponent{
 		$dayWeekInterval = '0-6';// 'w' - порядковый номер дня недеи, 0 - воскресенье
 
 		//Если чего то нет, то заменяем на общий интервал
-		if (!isset($cronItem['min'])){$cronItem['min']=$minInterval;}
-		if (!isset($cronItem['hour'])){$cronItem['hour']=$hourInterval;}
-		if (!isset($cronItem['day'])){$cronItem['day']=$dayInterval;}
-		if (!isset($cronItem['month'])){$cronItem['month']=$monthInterval;}
-		if (!isset($cronItem['dayWeek'])){$cronItem['dayWeek']=$dayWeekInterval;}
+		if (!isset($cronItem['min']) || $cronItem['min']==0){$cronItem['min']=$minInterval;}
+		if (!isset($cronItem['hour']) || $cronItem['hour']==0){$cronItem['hour']=$hourInterval;}
+		if (!isset($cronItem['day']) || $cronItem['day']==0){$cronItem['day']=$dayInterval;}
+		if (!isset($cronItem['month']) || $cronItem['month']==0){$cronItem['month']=$monthInterval;}
+		if (!isset($cronItem['dayWeek']) || $cronItem['dayWeek']==0){$cronItem['dayWeek']=$dayWeekInterval;}
 
 		//Для удобства все звездочки заменяем на правильные интервалы
 		$cronItem['min'] = str_replace ('*',$minInterval,$cronItem['min']);
@@ -354,9 +367,6 @@ class JobManager extends CApplicationComponent{
 		$actDay = date('d',$actTime);
 		$actMonth = date('m',$actTime);
 		$actDayWeek = date('w',$actTime);
-
-		//флаг совпадения для минуты изначально false
-        echo 'Время:'.date('H:i d.m w').'<br>';
 
 
         $resultMinArray = $this->parseIntervalString($cronItem['min']);
@@ -403,7 +413,7 @@ class JobManager extends CApplicationComponent{
             //Если оба интервала дня отличны от базового, то делаем or
             $commonDaysFlag = ($dayWeekFlag or $dayFlag);
         }
-        echo var_export($resultDayWeekArray,true);
+
         return $minFlag and $hourFlag and $commonDaysFlag and $monthFlag;
 
 	}
@@ -415,9 +425,9 @@ class JobManager extends CApplicationComponent{
      * значения.
      *
 	 * @param $interval Интервал вида x-y
-	 * @param null $step Шаг, если есть, который пишется через "/"
+	 * @param null $step Шаг который пишется через "/"
 	 */
-	private function processInterval($interval,$step=null){
+	private function processInterval($interval,$step){
         $intervalArray = explode('-',$interval);
 
         $resultIntervalArray = [];
@@ -432,7 +442,7 @@ class JobManager extends CApplicationComponent{
 
 
         return $resultIntervalArray;
-        return array();
+
 	}
 
     /*
