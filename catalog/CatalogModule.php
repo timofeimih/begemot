@@ -23,6 +23,7 @@ class CatalogModule extends CWebModule
 
     public function init()
     {
+
         // this method is called when the module is being created
         // you may place code here to customize the module or the application
 
@@ -62,7 +63,11 @@ class CatalogModule extends CWebModule
     public function beforeControllerAction($controller, $action)
     {
         if ($controller->id != 'site') {
-            Yii::app()->getComponent('bootstrap');
+
+            Yii::app()->setComponent(
+            'bootstrap',array('class'=>'begemot.extensions.bootstrap.components.bootstrap'));
+            $bootstrap = Yii::app()->getComponent('bootstrap');
+            Yii::app()->bootstrap->register();
         }
 
         return true;
