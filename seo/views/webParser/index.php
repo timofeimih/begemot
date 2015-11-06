@@ -50,7 +50,7 @@ $parseScenario = [
             '-option' => 'div.view-product-options  tr'
         ],
         'parse_data_rules' => [
-            '-option' => 'optionData',
+            '-option' => 'optionData'
         ]
     ],
     'optionData' => [
@@ -58,8 +58,9 @@ $parseScenario = [
 
         'dataFields' => [
             WebParserDataEnums::DATA_ID_ARRAY_KEY => 'input|val',
-            'optionTitle' => 'td.views-field-title-field',
-            'optionPrice' => 'td.views-field-field-option-cost|text',
+            'title' => 'td.views-field-title-field',
+            'price' => 'td.views-field-field-option-cost|price',
+            'image' => '@download a|href ',
 
         ],
     ],
@@ -68,8 +69,8 @@ $parseScenario = [
 
         'dataFields' => [
             WebParserDataEnums::DATA_ID_ARRAY_KEY => WebParserDataEnums::DATA_FILTER_URL,
-            'vehTitle' => 'h1',
-            'vehPrice' => 'div.field-name-field-cost|text',
+            'title' => 'h1',
+            'price' => 'div.field-name-field-cost|price',
             '-vehMOdifTable' => 'table#product-modifications',
         ],
 
@@ -107,7 +108,7 @@ if ($webParser->getProcessStatus() != 'done') {
 } else {
     $dataManager = new CParserDataManager($processId);
 
-    $dataManager->cutDataTree();
+
     $dataTreeArray = $dataManager->getDataTreeArray();
     echo '<pre>';
     print_r($dataTreeArray);

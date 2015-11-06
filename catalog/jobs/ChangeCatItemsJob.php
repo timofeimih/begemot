@@ -17,7 +17,8 @@ class ChangeCatItemsJob extends BaseJob{
 
 	public function runJob()
 	{
-
+        $logMessage = 'Зашли!';
+        Yii::log($logMessage, 'trace', 'cron');
 		//if ( ! array_key_exists('parsers', Yii::app()->getModules())){ return false;};
 
 		Yii::import('application.modules.parsers.models.*');
@@ -26,7 +27,7 @@ class ChangeCatItemsJob extends BaseJob{
 
 		foreach(glob(dirname(Yii::app()->request->scriptFile) . "/files/parsersData/*.data") as $file) {	
 			$websiteName = Yii::app()->params['adminEmail'];
-
+            echo $file;
 		    $json = require($file); 
 
 		    $filename = $json['name'];
@@ -36,6 +37,7 @@ class ChangeCatItemsJob extends BaseJob{
 		    $length = count($json['items']);
 
 		    foreach ($json['items'] as $itemParsed) {
+
 		      $new = new ParsersStock;
 		      $itemParsed = (array)$itemParsed;
 		      $itemParsed['filename'] = $filename;
@@ -49,8 +51,10 @@ class ChangeCatItemsJob extends BaseJob{
 		      }
 
 		      $new->attributes = $itemParsed;
-		      
-		      $new->save();
+
+		      if (!$new->save()){
+                  print_r($new->errors);
+              }
 		    }
 
 		    $items = ParsersLinking::model()->findAllByAttributes(array('filename' => $filename), array('order' => 'id ASC'));
@@ -75,9 +79,9 @@ class ChangeCatItemsJob extends BaseJob{
 		      mail($to, $subject, $message, $headers);
 
 		      echo 'no changes';
-		      return true;
+		      //return true;
 
-		      exit();
+		      //exit();
 		    }
 
 		        $changed = array();

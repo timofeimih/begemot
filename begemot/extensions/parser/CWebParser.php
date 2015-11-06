@@ -296,7 +296,7 @@ class CWebParser
         $this->log(' тип:' . ($task->taskType));
 
         $scenarioItem = $this->getScenarioItem($task->scenarioName);
-
+        $taskManager = $this->taskManager;
 
 //        if ($task->taskType == WebParserDataEnums::TASK_TYPE_START_NAVIGATION) {
 //            Yii::log('Определили тип задачи  ' .WebParserDataEnums::TASK_TYPE_START_NAVIGATION , 'trace', 'webParser');
@@ -338,7 +338,7 @@ class CWebParser
 
             $doc = phpQuery::newDocument($pageContent);
             phpQuery::selectDocument($doc);
-            $taskManager = $this->taskManager;
+
 
             if (isset($scenarioItem['parser_rules']) && is_array($scenarioItem['parser_rules'])) {
                 $this->log('Начали перебор $scenarioItem[\'parser_rules\']');
@@ -405,11 +405,11 @@ class CWebParser
             //phpQuery::newDocument($pageContent);
 
             if (isset($scenarioItem['dataFields']) && is_array($scenarioItem['dataFields'])) {
-                $this->log('Все правила сборки данных:');
+                $this->log('Все правила сборки данных $scenarioItem[\'dataFields\']: ');
                 $this->logVar($scenarioItem['dataFields']);
-
-                if ($task->target_type==WebParserDataEnums::TASK_TARGET_DATA_TYPE_DATA){
-                   $targetDataObject = $this->getTargetFromTask($task);
+                $this->log('$task->target_type=' . $task->target_type);
+                if ($task->target_type == WebParserDataEnums::TASK_TARGET_DATA_TYPE_DATA) {
+                    $targetDataObject = $this->getTargetFromTask($task);
                 }
 
 
@@ -420,6 +420,15 @@ class CWebParser
                     if ($fieldName === '@') continue;
                     $this->log('Обрабатываем поле ' . $fieldName . ' с фильтром ' . $fieldFilter);
                     //Вытащили данные. Значений можем получить много, либо одно
+
+                    if ($fieldFilter{0} == '@') {
+                        $filterArray = explode(' ', $fieldFilter);
+                        if ($filterArray[0] == '@download') {
+                            $downloadImageFlag = true;
+                            $fieldFilter = $filterArray[1];
+                        }
+                    }
+
                     $pqData = $this->executeFilter($fieldFilter, $task);
                     //$this->logVar($pqData);
                     //Если получили одно значение, преобразовываем его в массив для простоты обработки
@@ -430,12 +439,47 @@ class CWebParser
                     //Всегда обрабатывается массив значений, в простейшем случае это массив с одним элементом
                     foreach ($pqData as $planeData) {
 
+                        // Проверяем что мы доставли. Если это с флагом @download
+                        // то создаем задачу на скачивание, иначе просто создаем
+                        // элемент данных в БД
+                        if (isset($downloadImageFlag)) {
+                            /*
+                             * Создаем задачу на скачку изображение
+                             * и создаем terget на скачку с id данных
+                             * к которым надо изображение после прикрепить
+                             */
+
+                            $this->log('Создаем объек загрузки.');
+                            $downloadModel = new WebParserDownload();
+                            $downloadModel->processId = $this->processId;
+                            $downloadModel->fileUrl = $planeData;
+
+                            if (isset($scenarioItem['dataFields']['@'][WebParserDataEnums::DATA_ID_ARRAY_KEY])) {
+                                $filterResult = $this->executeFilter($scenarioItem['dataFields']['@'][WebParserDataEnums::DATA_ID_ARRAY_KEY], $task);
+                                if (is_array($filterResult))
+                                    $downloadModel->fieldId = array_shift($filterResult);
+                                else
+                                    $downloadModel->fieldId = $filterResult;
+                            }
+                            $downloadModel->save();
+                            $targetType = WebParserDataEnums::TASK_TARGET_DATA_TYPE_DOWNLOAD;
+                            if (!$this->isTaskExist($downloadModel->id, $targetType, null)) {
+                                $taskType = WebParserDataEnums::TASK_TYPE_DOWNLOAD;
+                                $taskManager->createTask($taskType, $downloadModel->id, $targetType, null);
+
+                            }
+
+                            continue;
+                        }
+
                         $dataFieldModel = new WebParserData();
 
                         $dataFieldModel->sourcePageUrl = $task->getUrl();
 
-                        if (isset($targetDataObject)){
+
+                        if (isset($targetDataObject)) {
                             $dataFieldModel->parentDataId = $targetDataObject->id;
+
                         }
 
                         $dataFieldModel->processId = $this->processId;
@@ -448,6 +492,10 @@ class CWebParser
                         $dataFieldModel->fieldData = $planeData;
 
 
+                        /*
+                         * Если имена фильтров начинались с @, то это массовые фильтры.
+                         * Применяются ко всем данным в текущем Task
+                         */
                         if (isset($scenarioItem['dataFields']['@'])) {
                             foreach ($scenarioItem['dataFields']['@'] as $massFilterKey => $massFilter) {
                                 switch ($massFilterKey) {
@@ -462,11 +510,11 @@ class CWebParser
                             }
                         }
 
-                        if($dataFieldModel->save()){
+                        if ($dataFieldModel->save()) {
 
-                            $this->log('Сохранили данные! '.$dataFieldModel->fieldName);
+                            $this->log('Сохранили данные! ' . $dataFieldModel->fieldName);
                         } else {
-                            $this->logError('Не сохранили данные! Имя поля:'.$dataFieldModel->fieldName.' fieldId:');
+                            $this->logError('Не сохранили данные! Имя поля:' . $dataFieldModel->fieldName . ' fieldId:');
 
                             $this->logVar($dataFieldModel->fieldId);
                             $this->logVar($dataFieldModel->getErrors());
@@ -484,20 +532,35 @@ class CWebParser
                          */
                         if (isset($scenarioItem['parse_data_rules']) && is_array($scenarioItem['parse_data_rules'])) {
 
-                            $taskManager = $this->taskManager;
 
                             foreach ($scenarioItem['parse_data_rules'] as $fieldName => $scenarioTaskNameArray) {
-
+                                $this->log('parse_data_rules:');
+                                $this->logVar($scenarioItem['parse_data_rules']);
                                 if (!is_array($scenarioTaskNameArray)) $scenarioTaskNameArray = [$scenarioTaskNameArray];
 
-                                foreach($scenarioTaskNameArray as $scenarioTaskName){
+
+                                foreach ($scenarioTaskNameArray as $scenarioTaskName) {
+                                    $this->log('Проверяем нужно ли создавать задачу на разбор данных: ' . $scenarioTaskName);
+
+                                    $this->log('Проверяем ' . $dataFieldModel->fieldName . ' = ' . $fieldName);
                                     if ($dataFieldModel->fieldName == $fieldName) {
                                         //Это спарсеное значение нужно передать дальше на обработку другому
                                         //сценарию.
+                                        $this->log('Равно! Создаем задачу на разбор данных: ' . $scenarioTaskName);
 
-                                        $taskType = WebParserDataEnums::TASK_TYPE_DATA;
+                                        $targetScenarioItem = $this->getScenarioItem($scenarioTaskName);
+
+                                        $taskType = $targetScenarioItem['type'];
                                         $targetType = WebParserDataEnums::TASK_TARGET_DATA_TYPE_DATA;
-                                        $taskManager->createTask($taskType, $dataFieldModel->id, $targetType, $scenarioTaskName);
+
+                                        if (!$this->isTaskExist($dataFieldModel->id, $targetType, $scenarioTaskName)) {
+
+                                            $taskManager->createTask($taskType, $dataFieldModel->id, $targetType, $scenarioTaskName);
+
+                                        }
+
+                                    } else {
+                                        $this->log('Не равно!');
                                     }
                                 }
                             }
@@ -513,9 +576,101 @@ class CWebParser
 
 
         }
+
+        /*
+         * Задачи по скачиванию файлов
+         */
+        if ($task->taskType == WebParserDataEnums::TASK_TYPE_DOWNLOAD) {
+            $this->log('Определили тип задачи  ' . WebParserDataEnums::TASK_TYPE_DOWNLOAD);
+            $this->log('Определили тип цели  ' . $task->target_type);
+
+            $targetDownloadObject = $this->getTargetFromTask($task);
+
+            //Проверяем и создаем директории
+            $fieldIdDir = null;
+            $dirArray = [
+                'rootDir' => 'files/webParser/',
+                'processDir' => 'files/webParser/process_' . $this->processId . '/',
+                'fieldIdDir' => 'files/webParser/process_' . $this->processId . '/item_' . $targetDownloadObject->fieldId . '/',
+
+            ];
+
+            $this->checkAndCreateDirs($dirArray);
+
+            extract($dirArray);
+
+            $targetDownloadObject->file = $this->downloadFile($targetDownloadObject->fileUrl, $fieldIdDir);
+            // $this->log('Ломаем'.$file);
+            $targetDownloadObject->save();
+        }
+
+
         $task->completeTask();
         $this->doneTasks[] = $task;
 
+    }
+
+    /**
+     * Все просто. Скачиваем файл.
+     *
+     * @param $fileUrl Что скачиваем.
+     * @param $dir Куда сохраняем.
+     */
+    private function downloadFile($fileUrl, $dir)
+    {
+        if (is_null($dir)) return;
+
+        $urlHost = parse_url($fileUrl, PHP_URL_HOST);
+        if (is_null($urlHost)) {
+            $fileUrl = $this->host . '/' . $fileUrl;
+        }
+        $fileNameWithPath = parse_url($fileUrl, PHP_URL_PATH);
+        $file = Yii::getPathOfAlias('webroot') . '/' . $dir . basename($fileNameWithPath);
+        // открываем файл, на сервере, на запись
+        if (!file_exists($file)) {
+            $dest_file = @fopen($file, "w");
+
+            // открываем cURL-сессию
+            $resource = curl_init();
+            $this->log('Ломаем!!!!' . $fileUrl . ' ' . $dir);
+            // устанавливаем опцию удаленного файла
+            curl_setopt($resource, CURLOPT_URL, $fileUrl);
+
+            // устанавливаем место на сервере, куда будет скопирован удаленной файл
+            curl_setopt($resource, CURLOPT_FILE, $dest_file);
+
+            // заголовки нам не нужны
+            curl_setopt($resource, CURLOPT_HEADER, 0);
+
+            // выполняем операцию
+            curl_exec($resource);
+
+            // закрываем cURL-сессию
+            curl_close($resource);
+
+            // закрываем файл
+            fclose($dest_file);
+        }
+
+        return $file;
+
+    }
+
+    /**
+     * Проверяет массив директорий и создает их если нет
+     */
+
+    private function checkAndCreateDirs($dirsArray)
+    {
+
+        $baseDir = Yii::getPathOfAlias('webroot');
+
+        foreach ($dirsArray as $dir) {
+            $dirName = $baseDir . '/' . $dir;
+            if (!file_exists($dirName)) {
+                mkdir($dirName);
+            }
+        }
     }
 
     public function checkMimeOn()
@@ -597,31 +752,31 @@ class CWebParser
          * Фильтр делиться на левую и правую часть символом "|"
          * в правой части модификаторы и команды
          */
-        $filterCommand='';
-        if (strstr($filter,'|')){
-            $filterParts = explode('|',$filter);
+        $filterCommand = '';
+        if (strstr($filter, '|')) {
+            $filterParts = explode('|', $filter);
             $filter = $filterParts[0];
             $filterCommand = $filterParts[1];
         }
-
-
 
 
         foreach ($doc->find($filter) as $resultElement) {
 
             $resultElement = pq($resultElement);
 
-            if  (strstr($filterCommand,'val' )){
+            if (strstr($filterCommand, 'val')) {
                 $returnArray[] = $resultElement->val();
-            } elseif (strstr($filterCommand,'text' )){
+            } elseif (strstr($filterCommand, 'price')) {
+                $returnArray[] = preg_replace('/[^0-9,]/', '', $resultElement->text());
+            } elseif (strstr($filterCommand, 'text')) {
                 $returnArray[] = $resultElement->text();
-            }else {
+            } elseif (strstr($filterCommand, 'href')) {
+                $returnArray[] = $resultElement->attr('href');
+            } else {
 
                 $returnArray[] = $resultElement->html();
             }
         }
-
-
 
 
         return $returnArray;
@@ -655,7 +810,7 @@ class CWebParser
          * уже само должно решить куда сохранять данный id, что бы при следующем запуске продолжить
          * этот процесс.
          */
-        if ($this->isInterface){
+        if ($this->isInterface) {
             $controller = Yii::app()->getController();
             $redirectUrl = $controller->createUrl('', array('processId' => $webParserProcess->id) + $_GET);
             $this->log('Редирект на страницу- ' . $redirectUrl);
@@ -845,15 +1000,19 @@ class CWebParser
 
     }
 
-    private function isTaskExist($target_id, $target_type, $scenarioItemName)
+    private function isTaskExist($target_id, $target_type, $scenarioItemName = null)
     {
         return ScenarioTask::isExistTask($target_id, $target_type, $scenarioItemName, $this->processId);
     }
 
-    private function getTargetFromTask($task){
-        if ($task->target_type==WebParserDataEnums::TASK_TARGET_DATA_TYPE_DATA){
-            $targetData = WebParserData::model()->findByPk($task->target_id);
-            return $targetData;
+    private function getTargetFromTask($task)
+    {
+        if ($task->target_type == WebParserDataEnums::TASK_TARGET_DATA_TYPE_DATA) {
+            $targetDataObject = WebParserData::model()->findByPk($task->target_id);
+            return $targetDataObject;
+        } elseif ($task->target_type == WebParserDataEnums::TASK_TARGET_DATA_TYPE_DOWNLOAD) {
+            $targetDownloadObject = WebParserDownload::model()->findByPk($task->target_id);
+            return $targetDownloadObject;
         }
     }
 
@@ -906,7 +1065,11 @@ class CWebParser
 
     private function getScenarioItem($name)
     {
-        return $this->parseScenario[$name];
+        if (!is_null($name))
+            $result = $this->parseScenario[$name];
+        else
+            $result = null;
+        return $result;
     }
 
     private function removeHostFromUrl($url)
@@ -964,37 +1127,40 @@ class CWebParser
     /**
      * Очищаем все старые процессы. Оставляем только последние 5
      */
-    private function clearOldData(){
-        $sql = "DELETE FROM webParser WHERE id<".($this->processId-5);
+    private function clearOldData()
+    {
+        $sql = "DELETE FROM webParser WHERE id<" . ($this->processId - 5);
         Yii::app()->db->createCommand($sql)->execute();
 
-        $sql = "DELETE FROM webParserData WHERE processId<".($this->processId-5);
+        $sql = "DELETE FROM webParserData WHERE processId<" . ($this->processId - 5);
         Yii::app()->db->createCommand($sql)->execute();
 
-        $sql = "DELETE FROM webParserPage WHERE procId<".($this->processId-5);
+        $sql = "DELETE FROM webParserPage WHERE procId<" . ($this->processId - 5);
         Yii::app()->db->createCommand($sql)->execute();
 
-        $sql = "DELETE FROM webParserScenarioTask WHERE processId<".($this->processId-5);
+        $sql = "DELETE FROM webParserScenarioTask WHERE processId<" . ($this->processId - 5);
         Yii::app()->db->createCommand($sql)->execute();
 
-        $sql = "DELETE FROM webParserUrl WHERE procId<".($this->processId-5);
+        $sql = "DELETE FROM webParserUrl WHERE procId<" . ($this->processId - 5);
         Yii::app()->db->createCommand($sql)->execute();
     }
 
     private function log($message)
     {
         Yii::log('    ' . $message, 'trace', 'webParser');
+        Yii::getLogger()->flush(true);
     }
 
     private function logError($message)
     {
         Yii::log($message, 'trace', 'webParser');
+        Yii::getLogger()->flush(true);
     }
 
     private function logVar($var)
     {
         Yii::log('
 ' . var_export($var, true), 'trace', 'webParser');
-
+        Yii::getLogger()->flush(true);
     }
 }
