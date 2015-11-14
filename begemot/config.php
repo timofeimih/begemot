@@ -214,11 +214,11 @@ return array(
             // The database component used
             'connectionID' => 'db',
             // The itemTable name (default:authitem)
-            'itemTable' => 'authItem',
+            'itemTable' => 'AuthItem',
             // The assignmentTable name (default:authassignment)
-            'assignmentTable' => 'authAssignment',
+            'assignmentTable' => 'AuthAssignment',
             // The itemChildTable name (default:authitemchild)
-            'itemChildTable' => 'authItemChild',
+            'itemChildTable' => 'AuthItemChild',
         ),
         'log'=>array(
             'class'=>'CLogRouter',
