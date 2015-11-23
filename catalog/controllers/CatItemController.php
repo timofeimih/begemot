@@ -67,6 +67,7 @@ class CatItemController extends Controller
         if (isset($_POST['CatItem'])) {
             $model->attributes = $_POST['CatItem'];
             if ($model->save()) {
+                
                 if (isset($_POST['returnId'])) {
                     echo $model->id;
 

@@ -184,6 +184,65 @@ class DefaultController extends Controller
 
         }
 
+        if ($tab == 'changedImages') {
+            $combined = ParsersLinking::model()->findAllByAttributes(array('filename' => $file), array('order' => 'id ASC'));
+
+
+            $parsedImages = array();
+
+            if ($combined) {
+                foreach ($combined as $item) {
+                    if ($item->linking->images) {
+                        $newImages = array();
+
+                        $images = json_decode($item->linking->images);
+                        
+                        $parsedImages[$item->item->id]['item'] = $item;
+
+                        foreach ($images as $image) {
+
+                            $parsedImages[$item->item->id]['images'][] = [
+
+
+                                'hash' => hash_file('md5', $image),
+                                'image' => $image,
+                                'imageUrl' => str_replace(Yii::getPathOfAlias('webroot'), '', $image)
+                            ];
+                        }
+
+                        $itemData = array();
+                        $datafile = Yii::getPathOfAlias('webroot') . '/files/pictureBox/catalogItem/' . $item->item->id . '/data.php';
+
+                        if(file_exists($datafile)){
+                            $itemData = require($datafile);
+
+
+                            foreach ($itemData['images'] as $image) {
+                                $hash = hash_file('md5', Yii::getPathOfAlias('webroot') . $image['original']);
+
+                                foreach ($parsedImages[$item->item->id]['images'] as $key => $parsedImageOne) {
+                                    if ($parsedImageOne['hash'] == $hash) {
+                                        unset($parsedImages[$item->item->id]['images'][$key]);
+                                    }
+                                }
+                            }
+                        }
+
+                        if (count($parsedImages[$item->item->id]['images']) == 0) {
+                            unset($parsedImages[$item->item->id]);
+                        }
+                            
+
+                        
+                    }
+                    
+                }
+
+            }
+
+            $itemList = $parsedImages;
+        }
+
         if ($tab == 'changed') {
             $combined = ParsersLinking::model()->findAllByAttributes(array('filename' => $file), array('order' => 'id ASC'));
 
@@ -271,7 +330,7 @@ class DefaultController extends Controller
             'filename' => $file,
             'itemList' => $itemList,
             'allItems' => $catItems,
-            'tab' => $tab
+            'tab' => $tab,
         ));
 
     }
@@ -289,37 +348,72 @@ class DefaultController extends Controller
                 <input type='hidden' name='ParsersLinking[toId]' id='itemId' value='{$data->findedByArticle()}' >
                 <input type='hidden' name='ParsersLinking[filename]' id='itemId' value='{$data->filename}' >
                 <button type='submit' class='compositeRightNow btn btn-primary' data-id='{$data->findedByArticle()}' title=''>Привязать сразу по артиклю к (<a style='color:white;text-decoration:underline' href='" . $this->createUrl('/catalog/catItem/update', array('id' => $data->findedByArticle() )) . "'>{$data->findedByArticle()}</a>)</button></td>
-            </form>"; 
-
+            </form>";
         }
+        $images = json_decode($data->images);
+
+        if($images){
+
+                $return .= "<div style='display:none'><table id='images-" . str_replace('/', '', $data->id) . "'>
+                    <thead>
+                        <tr>
+                            <td>Изображение</td>
+                            <td>Сохранить его?</td>
+                        </tr>
+                    </thead>
+                    <tbody>";
+                        foreach ($images as $image){
+                            $imageUrl = str_replace(Yii::getPathOfAlias('webroot'), '', $image);
+                            $return .="<tr>
+                                <td><img src='{$imageUrl}' width: 100px></td>
+                                <td><input type='checkbox' name='images[]' value='{$image}'></td>
+                            </tr>";
+                        }
+                            
+                        
+                    $return .= "</tbody>
+                </table></div>"; 
+            }
 
         return $return;
     }
 
     public function getAddAsNewButton($data){ 
-        return '<button type="button" class="addAsNew" data-filename="{$data->filename}" data-id="{$data->id}" price="{$data->price}" name="{$data->name}" text="{$data->text}">Добавить как новый</button>';
+        return "<button type='button' class='addAsNew' data-filename='{$data->filename}' data-id='{$data->id}' data-price='{$data->price}' data-name='{$data->name}' data-images='{$data->images}' data-text='{$data->text}'>Добавить как новый</button>";
     }
 
     public function actionLinking()
     {
 
-        $model = ParsersLinking::model()->findAll(array('order' => 'id DESC'));
+        $model = ParsersLinking::model()->findAll(array('order' => 'filename ASC'));
+        $buttons = array();
+
+        foreach ($model as $item) {
+            $filename = preg_replace('/\./', '', $item->filename);
+            if (!in_array($filename, $buttons)) {
+                $buttons[] = $filename;
+            }
+        }
 
         $this->render('linking',array(
-
+            'buttons' => $buttons,
             'items' => $model
         ));
     }
 
     public function actionIndex()
     {
+        $timeFile = array();
 
-        $timeFile = require(Yii::app()->basePath.'/../files/parsersData/time.txt');
+        $fileData =  $this->getFiles();
+
+        if(file_exists(Yii::app()->basePath.'/../files/parsersData/time.txt'));
+            $timeFile = require(Yii::app()->basePath.'/../files/parsersData/time.txt');
 
         $this->render('index',array(
             // 'models'=>$models,
             // 'return' => $return,
-            'fileListOfDirectory' => $this->getFiles(),
+            'fileListOfDirectory' => $fileData,
 
             'timeArray' => $timeFile
         ));
@@ -366,17 +460,20 @@ class DefaultController extends Controller
 
             $time = '';
 
-            foreach ($timeArray as $key => $value) {
+            if(count($timeArray)){
+                foreach ($timeArray as $key => $value) {
 
-                if ($key == $class->getName()){
-                   $time = date("d.m.Y H:i", $value) ."<br/>";
+                    if ($key == $class->getName()){
+                       $time = date("d.m.Y H:i", $value) ."<br/>";
 
-                   break;
-                    
-                } else{
-                    $time = "Еще не выполнялась<br/>";
+                       break;
+                        
+                    } else{
+                        $time = "Еще не выполнялась<br/>";
+                    }
                 }
             }
+            
 
 
             array_push ( $fileListOfDirectory, array('name' => $class->getName(), 'time' => $time, 'className' => $className) );

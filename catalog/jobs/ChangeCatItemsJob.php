@@ -50,6 +50,10 @@ class ChangeCatItemsJob extends BaseJob{
 		        $itemParsed['linked'] = 1;
 		      }
 
+		      if(isset( $json['images'][$itemParsed['id']] )){
+		      	$itemParsed['images'] = json_encode($json['images'][$itemParsed['id']]);
+		      }
+
 		      $new->attributes = $itemParsed;
 
 		      if (!$new->save()){

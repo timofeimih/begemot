@@ -18,6 +18,7 @@ $this->menu = array(
     "stacked"=>false, // whether this is a stacked menu
     "items"=>array(
         array("label"=>"Изменились", "url"=>"/parsers/default/do/file/".$filename . "/tab/changed", "active"=>$tab=="changed"),
+        array("label"=>"Новые изображения", "url"=>"/parsers/default/do/file/".$filename . "/tab/changedImages", "active"=>$tab=="changedImages"),
         array("label"=>"Новые", "url"=>"/parsers/default/do/file/".$filename . "/tab/new", "active"=>$tab=="new"),
         array("label"=>"Новые с возможностью связать по ID", "url"=>"/parsers/default/do/file/".$filename . "/tab/newWithId", "active"=>$tab=="newWithId"),
         array("label"=>"Все связи", "url"=>"/parsers/default/do/file/".$filename . "/tab/allSynched", "active"=>$tab=="allSynched" ),
@@ -34,43 +35,115 @@ $this->menu = array(
 
 <form action="/parsers/default/doChecked" method="post">
 
-		<table>
-			<thead>
-				<tr>
-					<td><input type="checkbox" class="checkAll"></td>
-					<td>Изображение</td>
-					<td>Артикул</td>
-					<td>Название</td>
-					<td>Старая цена</td>
-					<td>Новая цена</td>
-					<td>Наличие</td>
-					<td>Обновить</td>
+	<table>
+		<thead>
+			<tr>
+				<td><input type="checkbox" class="checkAll"></td>
+				<td>Изображение</td>
+				<td>Артикул</td>
+				<td>Название</td>
+				<td>Старая цена</td>
+				<td>Новая цена</td>
+				<td>Наличие</td>
+				<td>Обновить</td>
+			</tr>
+		</thead>
+		<tbody>
+		<?php if ($itemList): ?>
+			<?php foreach($itemList as $item): ?>
+				<tr class="<?php echo $item->id?>">
+					<td><input type="checkbox" name="item[<?php echo $item->item->id ?>][id]" value="<?php echo $item->item->id ?>"></td>
+					<td><img src="<?php echo $item->item->getItemMainPicture("innerSmall")?>"></td>
+					<td><?php echo $item->fromId?></td>
+					<td class="name"><?php echo $item->item->name?></td>
+					<td><?php echo $item->item->price?></td>
+					<td><input type="text" value="<?php echo $item->linking->price?>" name="item[<?php echo $item->item->id ?>][price]" class="price input-small"></td>
+					<td><input type="text" value="<?php echo $item->linking->quantity?>" name="item[<?php echo $item->item->id ?>][quantity]" class="quantity input-small"></td>
+					<td><button type="button" class="updatePrice" data-id="<?php echo $item->item->id ?>">Обновить цену и наличие</button></td>
 				</tr>
-			</thead>
-			<tbody>
-			<?php if ($itemList): ?>
-				<?php foreach($itemList as $item): ?>
-					<tr class="<?php echo $item->id?>">
-						<td><input type="checkbox" name="item[<?php echo $item->item->id ?>][id]" value="<?php echo $item->item->id ?>"></td>
-						<td><img src="<?php echo $item->item->getItemMainPicture("innerSmall")?>"></td>
-						<td><?php echo $item->fromId?></td>
-						<td class="name"><?php echo $item->item->name?></td>
-						<td><?php echo $item->item->price?></td>
-						<td><input type="text" value="<?php echo $item->linking->price?>" name="item[<?php echo $item->item->id ?>][price]" class="price input-small"></td>
-						<td><input type="text" value="<?php echo $item->linking->quantity?>" name="item[<?php echo $item->item->id ?>][quantity]" class="quantity input-small"></td>
-						<td><button type="button" class="updatePrice" data-id="<?php echo $item->item->id ?>">Обновить цену и наличие</button></td>
-					</tr>
-						
-				<?php endforeach ?>
-			<?php endif ?>
-			</tbody>
-		</table>
+					
+			<?php endforeach ?>
+		<?php endif ?>
+		</tbody>
+	</table>
 
-		<input type="hidden" name="url" value="<?php echo $_SERVER["REQUEST_URI"]?>">
-		<input type="submit" class="btn btn-primary btn-medium" value="Применить выделенные">
+	<input type="hidden" name="url" value="<?php echo $_SERVER["REQUEST_URI"]?>">
+	<input type="submit" class="btn btn-primary btn-medium" value="Применить выделенные">
 
-	</form>
+</form>
 <?php endif ?>
+
+<?php if ($tab == "changedImages"): ?>
+<table>
+	<thead>
+		<tr>
+			<td>ID карточки</td>
+			<td>Артикул карточки</td>
+			<td>Название карточки</td>
+			<td>ID связи</td>
+			<td>Добавить изображения</td>
+		</tr>
+	</thead>
+	<tbody>
+	<?php if ($itemList): ?>
+		<?php foreach($itemList as $item): ?>
+			<tr class="<?php echo str_replace('/', '', $item['item']->item->id)?>">
+				<td><?php echo $item['item']->id?></td>
+				<td><img src="<?php echo $item['item']->item->getItemMainPicture("innerSmall")?>"></td>
+				<td class="name"><?php echo $item['item']->item->name?>(<a style='text-decoration:underline' target='_blank' href='<?php echo $this->createUrl('/catalog/catItem/update', array('id' => $item['item']->item->id, 'tab' => 'photo'))?>'>Редактировать</a>)</td>
+				<td><?php echo $item['item']->fromId?></td>
+				<td><button type="button" class="updateImages" data-id="<?php echo $item['item']->item->id ?>">Добавить изображения</button></td>
+				<td style='display:none'>
+					<table class='images-<?php echo str_replace('/', '', $item['item']->item->id)?>'>
+						<thead>
+	                        <tr>
+	                            <td>Изображение</td>
+	                            <td>Сохранить его?</td>
+	                        </tr>
+	                    </thead>
+	                    <tbody>
+	                    	<?php foreach ($item['images'] as $image): ?>
+	                    		<tr>
+	                    			<td><img src='<?php echo $image['imageUrl'] ?>' width: 100px></td>
+	                                <td><input type='checkbox' name='images[]' value='<?php echo $image['image']?>'></td>
+	                    		</tr>
+	                    	<?php endforeach ?>
+	                   	</tbody>
+					</table>
+				</td>
+			</tr>
+				
+		<?php endforeach ?>
+	<?php endif ?>
+	</tbody>
+</table>
+<div class="modal fade" id="save-images" style="display:none">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Сохранить изображения</h4>
+		  <div id="error"></div>
+      </div>
+      <form data-hideafter=".modal" data-removeafter="">
+	      <div class="modal-body">
+
+	      	<div class="tab-content">
+			  <div id="table-holder"></div>
+			  <input type="hidden" id='idHolder'>
+			</div>			
+			
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default closeModal" data-dismiss="modal">Закрыть</button>
+	        <button class="syncCard btn btn-primary" type="submit">Сохранить изображения</button>
+	      </div>
+
+      </form>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<?php endif; ?>
 
 <?php if ($tab == "new"): ?>
 	<?php
@@ -86,8 +159,8 @@ $this->menu = array(
 	    },
 		"columns"=>array(
 	    	"id" => array('name' => 'id', 'htmlOptions' => array('class' => 'id')),
-	    	"name" => array('name' => 'name', 'htmlOptions' => array('name')),
-	    	"price" => array('name' => 'price', 'htmlOptions' => array('price')),
+	    	"name" => array('name' => 'name', 'htmlOptions' => array('class' => 'name')),
+	    	"price" => array('name' => 'price', 'htmlOptions' => array('class' => 'price')),
 	    	array(
 	            "header" => "Связать с ...",
 	            "type"=>"raw",
@@ -134,7 +207,7 @@ $this->menu = array(
 
 <?php if ($tab == "allSynched"): ?>
 
-	<?php
+<?php
 	Yii::import('begemot.extensions.grid.EImageColumn');
 
  $this->widget('bootstrap.widgets.TbGridView',array(
@@ -171,7 +244,7 @@ $this->menu = array(
         array(
             'header' => 'Связан с ',
             'type'=>'text',
-            'value'=>'$data-item->name',
+            'value'=>'$data->item->name',
         ),
         array(
         	'header' => 'Удалить связь',
@@ -185,24 +258,35 @@ $this->menu = array(
 <?php endif ?>
 
 <?php if ($tab == "new" | $tab == "newWithId"): ?>
-	<div class="modal fade" style="display:none">
+<div class="modal fade" style="display:none" id='form-modal'>
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         <h4 class="modal-title">Связать элемент с ...</h4>
+        <!-- Nav tabs -->
+		  <ul class="nav nav-tabs" role="tablist">
+		    <li role="presentation" class="active"><a href="#combineWith" aria-controls="combineWith" role="tab" data-toggle="tab">Объединить с ...</a></li>
+		    <li role="presentation"><a href="#images" aria-controls="images" role="tab" data-toggle="tab">Изображения (<span class='imageCount'>0</span>)</a></li>
+		  </ul>
+
+		  <div id="error"></div>
       </div>
       <form action="/parsers/default/syncCard" method="post" class="ajaxSubmit" data-hideafter=".modal" data-removeafter="">
 	      <div class="modal-body">
-	      	<div id="error"></div>
-	      	Нажмите на название карточки когда выберите в списке.<br/>
-	      	<input type="text" id="search" placeholder="Поиск">
-	      	<ul id="search_in_items">
-	      		<?php foreach ($allItems as $item): ?>
-	        		<li data-itemid="<?php echo $item->id ?>"><?php echo $item->name ?> (<?php echo $item->id ?>) <a href="<?php echo $this->createUrl("/catalog/catItem/update", array("id" => $item->id )) ?>">Просмотреть</a></li>
-	       		<?php endforeach ?>
-	      	</ul>
-			
+
+	      	<div class="tab-content">
+			  <div role="tabpanel" class="tab-pane fade in active" id="combineWith">
+			  	Нажмите на название карточки когда выберите в списке.<br/>
+		      	<input type="text" id="search" placeholder="Поиск">
+		      	<ul id="search_in_items">
+		      		<?php foreach ($allItems as $item): ?>
+		        		<li data-itemid="<?php echo $item->id ?>"><?php echo $item->name ?> (<?php echo $item->id ?>) <a href="<?php echo $this->createUrl("/catalog/catItem/update", array("id" => $item->id )) ?>">Просмотреть</a></li>
+		       		<?php endforeach ?>
+		      	</ul>
+			  </div>
+			  <div role="tabpanel" class="tab-pane fade" id="images"><div id="table-holder"></div></div>
+			</div>			
 			
 	      	<input type="hidden" name="ParsersLinking[filename]" id="filename" required >
 	      </div>
@@ -222,6 +306,8 @@ $this->menu = array(
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+
+
 <?php endif ?>
 
 <script>
@@ -233,8 +319,7 @@ $this->menu = array(
 	})
 	$(document).on("click", ".addAsNew", function(){
 		var button = $(this);
-		var params = {"CatItem": {"name": $(this).attr("name"), "price": $(this).attr("price"), "text": $(this).attr("text")}, "returnId": true};
-
+		var params = {"CatItem": {"name": $(this).attr("data-name"), "price": $(this).attr("data-price"), "text": $(this).attr("data-text"), 'images': $(this).attr("data-images")}, "returnId": true};
 
 		$.post("/catalog/catItem/create", params, function(data){
 			button.parents("TR").find(".composite").html("Уже обьединено");
@@ -258,6 +343,17 @@ $this->menu = array(
 					console.log(data);
 				}
 			});
+
+			$.post("/pictureBox/default/uploadArray", {"images":  button.attr("data-images"), 'id': toId}, function(data){
+				//data = $.parseJSON(data);
+				if (data != "") {
+					
+				};
+			}).fail(function(data){
+	            alert(data.responseText);
+	        });
+
+			
 		})
 
 	})
@@ -287,7 +383,58 @@ $this->menu = array(
 				alert("error");
 			}
 			
+		}).fail(function(data){
+            alert(data.responseText);
+        });
+
+	})
+
+	$(document).on("click", '.updateImages', function(){
+		var className = $(this).parents("TR").attr("class");
+		var id = $(this).parents("TR").attr("class");
+
+		$("#save-images").show().addClass("in");
+		$("#save-images").find("#idHolder").val(id);
+		$("#save-images FORM").attr("data-removeafter", "." + className);
+
+		var imageTable = ".images-" + id.replace(/\//g, '');
+		$("#table-holder").html($(imageTable).clone());
+		$(".imageCount").html($("#table-holder TR").length - 1); 
+	});
+
+	$(document).on("submit", "#save-images FORM", function(e){
+		e.preventDefault();
+
+		//save images for synched card
+		var images = [];
+		var hideAfter = $(this).attr("data-hideafter");
+		var removeAfter = $(this).attr("data-removeAfter");
+
+		$("#table-holder INPUT:checked").each(function(){
+			images.push($(this).val());
 		})
+
+		images = JSON.stringify(images);
+
+		console.log(images);
+
+		$.post("/pictureBox/default/uploadArray", {'images': images, 'id': $("#idHolder").val()}, function(data){
+			//data = $.parseJSON(data);
+
+			console.log(data);
+
+			if (data != "") {
+				alert("Сохранено");
+				$(hideAfter).removeClass("in").hide();
+				$(removeAfter).fadeOut(1000);
+				setTimeout(function(){
+					$(removeAfter).remove();
+				}, 1000)
+
+			};
+		}).fail(function(data){
+            alert(data.responseText);
+        });
 
 	})
 
@@ -297,9 +444,21 @@ $this->menu = array(
 		var className = $(this).parents("TR").attr("class");
 		var price = $(this).parents("TR").find(".price").html();
 		var filename = $(this).attr("data-filename");
-		$("#search").val(name);
+
+		var imageTable = "#images-" + id.replace(/\//g, '');
+		if($(imageTable).length){
+			$("#table-holder").html($(imageTable).clone());
+			$(".imageCount").html($("#table-holder TR").length - 1); 
+		} else{
+			$("#table-holder").html("");
+			$(".imageCount").html("0"); 
+		}
+		
 		$("#search").quicksearch("UL#search_in_items li").search(name);
+		$("#search").val(name);
 		$(".error").hide();
+
+
 
 		
 
@@ -312,11 +471,11 @@ $this->menu = array(
 			
 		})
 		
-		$(".modal").show().addClass("in");
-		$(".modal FORM").attr("data-removeafter", "." + className);
-		$(".modal FORM").find(".cardName").html(name);
-		$(".modal FORM").find("#name").val(id);
-		$(".modal FORM").find("#filename").val(filename);
+		$("#form-modal").show().addClass("in");
+		$("#form-modal FORM").attr("data-removeafter", "." + className);
+		$("#form-modal FORM").find(".cardName").html(name);
+		$("#form-modal FORM").find("#name").val(id);
+		$("#form-modal FORM").find("#filename").val(filename);
 	})
 
 	$(document).on("click", "#search_in_items LI", function(){
@@ -350,6 +509,8 @@ $this->menu = array(
 		})
 		if (!status) return false;
 
+		
+
 		$.post(form.attr("action"), form.serialize(), function(data){
 			data = $.parseJSON(data);
 			if (data.code) {
@@ -367,13 +528,33 @@ $this->menu = array(
 				if (data.toAllLinks != "") {
 					$("#combined").find("TBODY").append(data.toAllLinks);
 				}
+
 				console.log(data);
+
+				//save images for synched card
+				var images = [];
+
+				$("#table-holder INPUT:checked").each(function(){
+					images.push($(this).val());
+				})
+
+				images = JSON.stringify(images);
+
+				$.post("/pictureBox/default/uploadArray", {'images': images, 'id': $("#itemIdModal").val()}, function(data){
+					//data = $.parseJSON(data);
+					console.log(data);
+				}).fail(function(data){
+		            alert(data.responseText);
+		        });
+
 			} else{
 				$("#error").html(data.html);
 				$("#error").fadeIn();
 				$(".modal-body").scrollTo(0);
 			}
-		})
+		}).fail(function(data){
+            alert(data.responseText);
+        });
 	})
 
 	$(document).on("click", ".closeModal", function(e){
@@ -399,7 +580,9 @@ $this->menu = array(
 				
 			};
 			
-		})
+		}).fail(function(data){
+            alert(data.responseText);
+        });
 
 	})
 	

@@ -8,9 +8,14 @@ $this->menu = array(
 
 
 <h1>Все связи</h1>
+<ul class="nav nav-tabs buttons" role="tablist">
+	<?php foreach ($buttons as $button): ?>
+		<li role="presentation" class="active"><a href='#<?php echo $button?>' data-class='.<?php echo $button?>'><?php echo $button?></a></li>
+	<?php endforeach ?>
+</ul>
 
 <?php if ($items): ?>
-	<table>
+	<table class='items'>
 		<thead>
 			<tr>
 				<td>id</td>
@@ -21,7 +26,7 @@ $this->menu = array(
 		<tbody>
 
 		<?php foreach($items as $item): ?>
-			<tr>
+			<tr class='<?php echo preg_replace('/\./', '', $item->filename)?>'>
 				<td><?php echo $item->fromId?></td>
 				<td class='name'><?php echo $item->item->name ?></td>
 				<td><input type='button' value='Удалить связь' data-id='<?php echo $item->id?>' class='deteleLinking'></td>
@@ -30,9 +35,8 @@ $this->menu = array(
 		</tbody>
 	</table>
 
-	<input type='submit' class='btn btn-primary btn-medium' value='Применить все'>
 <?php else: ?>
-	Ничего не надо обновлять
+	Нету связей
 <?php endif ?>
 
 <script>
@@ -58,5 +62,15 @@ $this->menu = array(
 			
 		})
 
+	})
+
+	$(function(){
+		$(".items TR").hide();
+		$(".<?php echo $buttons[0] ?>").show();
+	})
+
+	$(".buttons A").click(function(){
+		$(".items TR").hide();
+		$($(this).data("class")).show();
 	})
 </script>
