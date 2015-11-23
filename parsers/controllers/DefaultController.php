@@ -22,19 +22,13 @@ class DefaultController extends Controller
         return array(
 
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
-                'actions'=>array('linking', 'test', 'create','update','index','view', 'do', 'syncCard', 'updateCard', 'doChecked', 'deleteLinking', 'parseChecked', 'parseNew', 'getParsedForCatItem', 'cron'),
+                'actions'=>array('linking', 'create','update','index','view', 'do', 'syncCard', 'updateCard', 'doChecked', 'deleteLinking', 'parseChecked', 'parseNew', 'getParsedForCatItem', 'cron'),
                 'expression'=>'Yii::app()->user->canDo("")'
             ),
             array('deny',  // deny all users
                 'users'=>array('*'),
             ),
         );
-    }
-
-    public function actionTest(){
-        
-        var_dump(PictureBox::getDefaultConfig());
-        echo "Ok";
     }
 
     public function actionParseChecked()

@@ -54,8 +54,6 @@ class ChangeCatItemsJob extends BaseJob{
 		      	$itemParsed['images'] = json_encode($json['images'][$itemParsed['id']]);
 		      }
 
-		      Yii::log($logMessage, 'images_isset', var_dump(isset( $json['images'][$itemParsed['id']] )));
-
 		      $new->attributes = $itemParsed;
 
 		      if (!$new->save()){
