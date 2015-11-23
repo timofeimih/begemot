@@ -48,6 +48,8 @@ class CParserDataManager
 
     public function getDataTreeArray()
     {
+        $this->cutDataTree();
+
         $resultArray = [];
 
         $tempDataCollection = WebParserData::model()->findAll("processId=" . (int)$this->processId);
@@ -68,6 +70,29 @@ class CParserDataManager
                 }
                 $resultArray[$tempData->fieldId]['parents'][] = $tempData->parentDataId;
             }
+
+        }
+
+        return $resultArray;
+    }
+
+    public function getFilesArray(){
+
+
+        $WebParserDownloadArray = WebParserDownload::model()->findAll(array(
+            'condition'=>'processId=:processId',
+            'params'=>array(':processId'=> $this->processId ),
+        ));
+
+        $resultArray = [];
+
+        foreach ($WebParserDownloadArray as $WebParserDownload){
+        
+            if (!isset ($resultArray[$WebParserDownload->fieldId]) || !is_array($resultArray[$WebParserDownload->fieldId]))
+            {
+                $resultArray[$WebParserDownload->fieldId] = [];
+            }
+            $resultArray[$WebParserDownload->fieldId][] = $WebParserDownload->file;
 
         }
 

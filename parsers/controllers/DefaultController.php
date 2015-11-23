@@ -332,28 +332,32 @@ class DefaultController extends Controller
         $timeArray = array();
 
 
+        $parserDataDir = Yii::getPathOfAlias('webroot').'/files/parsersData/';
+        $parserTimeFile = $parserDataDir.'time.txt';
 
-        if ( ! is_writable(dirname(Yii::app()->request->scriptFile).'/files/parsersData/')) {
-            throw new Exception(dirname(Yii::app()->request->scriptFile).'/files/parsersData/' . "не может быть изменена. Недостаточно прав", 503);
+        if ( ! is_writable($parserDataDir)) {
+            throw new Exception($parserDataDir. "не может быть изменена. Недостаточно прав", 503);
             
         }
 
-        if ( ! file_exists(dirname(Yii::app()->request->scriptFile).'/files/parsersData/time.txt')) {
 
-            $myfile = fopen(dirname(Yii::app()->request->scriptFile).'/files/parsersData/time.txt', "w");
+
+        if ( ! file_exists($parserTimeFile)) {
+
+            $myfile = fopen($parserTimeFile, "w");
             fclose($myfile);
 
-            PictureBox::crPhpArr(array(), dirname(Yii::app()->request->scriptFile).'/files/parsersData/time.txt');
+            PictureBox::crPhpArr(array(), $parserTimeFile);
         }
         
-        if (file_exists(dirname(Yii::app()->request->scriptFile).'/files/parsersData/time.txt')) {
-            $timeArray = require(dirname(Yii::app()->request->scriptFile).'/files/parsersData/time.txt');
+        if (file_exists($parserTimeFile)) {
+            $timeArray = require($parserTimeFile);
         }
 
 
         foreach(glob(Yii::app()->basePath.'/jobs/*ParserJob.php') as $path) {  
 
-            $time = 0;
+
 
             $className = basename($path);
             $className = str_replace('.php', '', $className);

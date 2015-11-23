@@ -2,6 +2,7 @@
 /* Для того чтобы экземпляр класса рассмативался как файл для парсинга данных, его название должно заканчиваться на ParserJob.php (Пример названия: ArgoParserJob.php) */
 class BaseParser extends BaseJob{
     protected $items = array();
+    public $itemsImages = array();
     protected $time = 0;
     protected $name = '';
 
@@ -20,6 +21,11 @@ class BaseParser extends BaseJob{
             'quantity' => $quantity,
         );
 
+    }
+
+    public function addImagesArray ($imagesArray)
+    {
+        $this->itemsImages = $imagesArray;
     }
 
     public function runJob($parameters=null)
@@ -41,7 +47,7 @@ class BaseParser extends BaseJob{
     {  
         $this->saveTime();
 
-        $arr = array_merge(array('name' => $this->name), array('items' => $this->items));
+        $arr = array_merge(array('name' => $this->name), array('items' => $this->items,'images'=>$this->itemsImages));
         
         $this->saveParserData($arr);
     }

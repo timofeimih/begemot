@@ -45,7 +45,7 @@ class WebParserDataEnums {
      */
     const TASK_TYPE_PROCESS_URL = 'process_url';
     const TASK_TYPE_DATA = 'process_data';
-    const TASK_TYPE_IMAGE = 'navigation';
+    const TASK_TYPE_DOWNLOAD = '@download';
     /**
      * Типы входных данных для задач
      */
@@ -53,6 +53,7 @@ class WebParserDataEnums {
     const TASK_TARGET_DATA_TYPE_URL = 'url';
     const TASK_TARGET_DATA_TYPE_WEBPAGE = 'web_page';
     const TASK_TARGET_DATA_TYPE_DATA = 'data';
+    const TASK_TARGET_DATA_TYPE_DOWNLOAD = 'download';
 
 
 }

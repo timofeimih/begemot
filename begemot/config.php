@@ -23,6 +23,13 @@ return array(
     ), 
     'language' => 'ru',
     'modules' => array(
+        'gii'=>array(
+            'class'=>'system.gii.GiiModule',
+            'password'=>'123',
+             'ipFilters'=>array('*'),
+            // 'newFileMode'=>0666,
+            // 'newDirMode'=>0777,
+        ),
         'pictureBox',
         'begemot',
         'catalog',
@@ -156,7 +163,9 @@ return array(
             'loginUrl' => array('/user/login'),
             'returnUrl'=>array('/begemot'),
         ),
-
+        'bootstrap' => array(
+            'class' => 'begemot.extensions.bootstrap.components.Bootstrap', // assuming you extracted bootstrap under extensions
+        ),
         // uncomment the following to enable URLs in path-format
         
         'urlManager' => array(
@@ -205,11 +214,11 @@ return array(
             // The database component used
             'connectionID' => 'db',
             // The itemTable name (default:authitem)
-            'itemTable' => 'authItem',
+            'itemTable' => 'AuthItem',
             // The assignmentTable name (default:authassignment)
-            'assignmentTable' => 'authAssignment',
+            'assignmentTable' => 'AuthAssignment',
             // The itemChildTable name (default:authitemchild)
-            'itemChildTable' => 'authItemChild',
+            'itemChildTable' => 'AuthItemChild',
         ),
         'log'=>array(
             'class'=>'CLogRouter',
