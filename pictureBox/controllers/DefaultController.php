@@ -104,7 +104,7 @@ class DefaultController extends Controller
         $config = unserialize($_POST['config']);
         file_put_contents(Yii::getPathOfAlias('webroot') . '/log.log3', var_export($config, true));
 
-        $dir = Yii::getPathOfAlias('wePbroot') . '/files/pictureBox';
+        $dir = Yii::getPathOfAlias('webroot') . '/files/pictureBox';
 
         if (!file_exists($dir))
             mkdir($dir, 0777);
@@ -203,6 +203,7 @@ class DefaultController extends Controller
             
             foreach ($images as $image) {
 
+            
                 $hash = hash_file('md5', $image);
                 if ( !in_array($hash, $hashes) ) {
                     
