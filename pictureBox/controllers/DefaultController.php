@@ -203,6 +203,7 @@ class DefaultController extends Controller
             
             foreach ($images as $image) {
 
+            
                 $hash = hash_file('md5', $image);
                 if ( !in_array($hash, $hashes) ) {
                     
