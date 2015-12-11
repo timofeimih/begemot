@@ -3,6 +3,8 @@
 class BaseParser extends BaseJob{
     protected $items = array();
     public $itemsImages = array();
+    public $itemsChilds = array();
+    public $itemsGroup = array();
     protected $time = 0;
     protected $name = '';
 
@@ -47,7 +49,15 @@ class BaseParser extends BaseJob{
     {  
         $this->saveTime();
 
-        $arr = array_merge(array('name' => $this->name), array('items' => $this->items,'images'=>$this->itemsImages));
+        $arr = array_merge(array('name' => $this->name),
+            array(
+                'items' => $this->items,
+                'images'=>$this->itemsImages,
+                'childs'=>$this->itemsChilds,
+                'groups'=>$this->itemsGroup,
+
+            )
+        );
         
         $this->saveParserData($arr);
     }
