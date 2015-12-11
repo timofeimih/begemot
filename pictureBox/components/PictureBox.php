@@ -20,6 +20,19 @@ class PictureBox extends CWidget {
     }
 
     public function run() {
+        
+        $this->config = array_merge_recursive(PictureBox::getDefaultConfig(),$this->config);
+
+        if (session_id()=='')
+            session_start();
+        
+        $_SESSION['pictureBox']=array($this->id.'_'.$this->elementId=>$this->config);
+        
+        
+        $this->renderContent();
+    }
+
+    public static function getDefaultConfig(){
         $defaultConfig = array(
     
             'nativeFilters'=>array(
@@ -41,15 +54,8 @@ class PictureBox extends CWidget {
                 ),
             )
         );
-        $this->config = array_merge_recursive($defaultConfig,$this->config);
 
-        if (session_id()=='')
-            session_start();
-        
-        $_SESSION['pictureBox']=array($this->id.'_'.$this->elementId=>$this->config);
-        
-        
-        $this->renderContent();
+        return $defaultConfig;
     }
 
     protected function renderContent() {
@@ -65,7 +71,7 @@ class PictureBox extends CWidget {
  " . var_export($array, true) . ";
 ?>";
           file_put_contents($file, $code);
-//          chmod ($file, 0777);
+
 
     }
 

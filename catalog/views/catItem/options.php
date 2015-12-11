@@ -20,7 +20,7 @@
 
                         <?php $checked = in_array($item->id, $arrayOfItems) ? "selected" : "" ?>
 
-                        <option <?php echo $checked?> value="<?php echo $item->id?>"><?php echo $item->name?>(<?php echo number_format($item->price, 0, ',', ' ');?> руб.)<span class='editItem'></span></option>
+                        <option <?php echo $checked?> value="<?php echo $item->id?>">123<?php echo $item->name?>(<?php echo number_format($item->price, 0, ',', ' ');?> руб.)</option>
 
 
                     <?php endforeach;
