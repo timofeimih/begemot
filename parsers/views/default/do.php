@@ -15,7 +15,9 @@ require(dirname(__FILE__).'/../menu.php');
     "items"=>array(
         array("label"=>"Изменились", "url"=>"/parsers/default/do/file/".$filename . "/tab/changed", "active"=>$tab=="changed"),
         array("label"=>"Новые изображения", "url"=>"/parsers/default/do/file/".$filename . "/tab/changedImages", "active"=>$tab=="changedImages"),
+
         array("label"=>"Игнорируемые изображения", "url"=>"/parsers/default/do/file/".$filename . "/tab/ignoredImages", "active"=>$tab=="ignoredImages"),
+
         array("label"=>"Новые", "url"=>"/parsers/default/do/file/".$filename . "/tab/new", "active"=>$tab=="new"),
         array("label"=>"Новые с возможностью связать по ID", "url"=>"/parsers/default/do/file/".$filename . "/tab/newWithId", "active"=>$tab=="newWithId"),
         array("label"=>"Все связи", "url"=>"/parsers/default/do/file/".$filename . "/tab/allSynched", "active"=>$tab=="allSynched" ),
@@ -69,6 +71,7 @@ require(dirname(__FILE__).'/../menu.php');
 	<input type="submit" class="btn btn-primary btn-medium" value="Применить выделенные">
 
 </form>
+
 <?php endif ?>
 
 <?php if ($tab == "changedImages"): ?>
@@ -279,7 +282,80 @@ require(dirname(__FILE__).'/../menu.php');
 			),
 		)); 
 	} else echo "нету игнорируемых изображений";?>
+
 <?php endif ?>
+
+<?php if ($tab == "changedImages"): ?>
+<table>
+	<thead>
+		<tr>
+			<td>ID карточки</td>
+			<td>Артикул карточки</td>
+			<td>Название карточки</td>
+			<td>ID связи</td>
+			<td>Добавить изображения</td>
+		</tr>
+	</thead>
+	<tbody>
+	<?php if ($itemList): ?>
+		<?php foreach($itemList as $item): ?>
+			<tr class="<?php echo str_replace('/', '', $item['item']->item->id)?>">
+				<td><?php echo $item['item']->id?></td>
+				<td><img src="<?php echo $item['item']->item->getItemMainPicture("innerSmall")?>"></td>
+				<td class="name"><?php echo $item['item']->item->name?>(<a style='text-decoration:underline' target='_blank' href='<?php echo $this->createUrl('/catalog/catItem/update', array('id' => $item['item']->item->id, 'tab' => 'photo'))?>'>Редактировать</a>)</td>
+				<td><?php echo $item['item']->fromId?></td>
+				<td><button type="button" class="updateImages" data-id="<?php echo $item['item']->item->id ?>">Добавить изображения</button></td>
+				<td style='display:none'>
+					<table class='images-<?php echo str_replace('/', '', $item['item']->item->id)?>'>
+						<thead>
+	                        <tr>
+	                            <td>Изображение</td>
+	                            <td>Сохранить его?</td>
+	                        </tr>
+	                    </thead>
+	                    <tbody>
+	                    	<?php foreach ($item['images'] as $image): ?>
+	                    		<tr>
+	                    			<td><img src='<?php echo $image['imageUrl'] ?>' width: 100px></td>
+	                                <td><input type='checkbox' name='images[]' value='<?php echo $image['image']?>'></td>
+	                    		</tr>
+	                    	<?php endforeach ?>
+	                   	</tbody>
+					</table>
+				</td>
+			</tr>
+				
+		<?php endforeach ?>
+	<?php endif ?>
+	</tbody>
+</table>
+<div class="modal fade" id="save-images" style="display:none">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Сохранить изображения</h4>
+		  <div id="error"></div>
+      </div>
+      <form data-hideafter=".modal" data-removeafter="">
+	      <div class="modal-body">
+
+	      	<div class="tab-content">
+			  <div id="table-holder"></div>
+			  <input type="hidden" id='idHolder'>
+			</div>			
+			
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default closeModal" data-dismiss="modal">Закрыть</button>
+	        <button class="syncCard btn btn-primary" type="submit">Сохранить изображения</button>
+	      </div>
+
+      </form>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<?php endif; ?>
 
 <?php if ($tab == "new"): ?>
 	<?php
@@ -448,7 +524,9 @@ require(dirname(__FILE__).'/../menu.php');
 	})
 	$(document).on("click", ".addAsNew", function(){
 		var button = $(this);
+
 		var params = {"CatItem": {"name": $(this).attr("data-name"), "price": $(this).attr("data-price"), "text": $(this).attr("data-text")}, "returnId": true};
+
 
 		$.post("/catalog/catItem/create", params, function(data){
 			button.parents("TR").find(".composite").html("Уже обьединено");
@@ -472,6 +550,7 @@ require(dirname(__FILE__).'/../menu.php');
 					console.log(data);
 				}
 			});
+
 
 			if (button.attr("data-images") != "") {
 				$.post("/pictureBox/default/uploadArray", {"images":  button.attr("data-images"), 'id': toId}, function(data){
@@ -499,6 +578,7 @@ require(dirname(__FILE__).'/../menu.php');
 		            alert(data.responseText);
 		        });
 			}
+
 		})
 
 	})
@@ -528,6 +608,29 @@ require(dirname(__FILE__).'/../menu.php');
 				alert("error");
 			}
 			
+		}).fail(function(data){
+            alert(data.responseText);
+        });
+
+
+		images = JSON.stringify(images);
+
+		console.log(images);
+
+		$.post("/pictureBox/default/uploadArray", {'images': images, 'id': $("#idHolder").val()}, function(data){
+			//data = $.parseJSON(data);
+
+			console.log(data);
+
+			if (data != "") {
+				alert("Сохранено");
+				$(hideAfter).removeClass("in").hide();
+				$(removeAfter).fadeOut(1000);
+				setTimeout(function(){
+					$(removeAfter).remove();
+				}, 1000)
+
+			};
 		}).fail(function(data){
             alert(data.responseText);
         });
@@ -606,6 +709,8 @@ require(dirname(__FILE__).'/../menu.php');
 				$(this).addClass("form_error");
 		})
 		if (!status) return false;
+
+		
 
 		$.post(form.attr("action"), form.serialize(), function(data){
 			data = $.parseJSON(data);

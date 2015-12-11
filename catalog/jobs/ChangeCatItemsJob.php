@@ -54,6 +54,7 @@ class ChangeCatItemsJob extends BaseJob{
 
 		      if(isset( $json['images'][$itemParsed['id']] )){
 
+
 		      	$hashes = [];
 		      	$images = [];
 		      	foreach ($json['images'][$itemParsed['id']] as $image) {
@@ -78,6 +79,7 @@ class ChangeCatItemsJob extends BaseJob{
 		      if(isset( $json['groups'][$itemParsed['id']] )){
 
 		      	$itemParsed['groups'] = json_encode($json['groups'][$itemParsed['id']]);
+
 		      }
 
 		      $new->attributes = $itemParsed;

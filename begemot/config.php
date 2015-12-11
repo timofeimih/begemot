@@ -10,8 +10,6 @@ return array(
         'application.models.*',
         'application.components.*',
         'application.modules.begemot.components.NestedDynaTree.*',
-        'application.modules.begemot.extensions.giix.*',
-        'application.modules.begemot.extensions.giix.components.*',
         'application.modules.begemot.extensions.crontab.*',
         'application.modules.catalog.models.CatItem',
         'application.modules.post.models.Posts',
@@ -23,13 +21,6 @@ return array(
     ), 
     'language' => 'ru',
     'modules' => array(
-        'gii'=>array(
-            'class'=>'system.gii.GiiModule',
-            'password'=>'123',
-             'ipFilters'=>array('*'),
-            // 'newFileMode'=>0666,
-            // 'newDirMode'=>0777,
-        ),
         'pictureBox',
         'begemot',
         'catalog',
@@ -163,9 +154,7 @@ return array(
             'loginUrl' => array('/user/login'),
             'returnUrl'=>array('/begemot'),
         ),
-        'bootstrap' => array(
-            'class' => 'begemot.extensions.bootstrap.components.Bootstrap', // assuming you extracted bootstrap under extensions
-        ),
+
         // uncomment the following to enable URLs in path-format
         
         'urlManager' => array(

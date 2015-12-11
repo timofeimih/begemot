@@ -30,7 +30,7 @@
                         //array('label'=>'About', 'url'=>array('/site/page', 'view'=>'about')),
                         array('label'=>'Система', 'url'=>array(''),
                             'items'=>array(
-                                array('label'=>'Пользователи', 'url'=>array('/user'),'visible'=>Yii::app()->hasModule('user')),
+                                array('label'=>'Пользователи', 'url'=>array('/user/admin'),'visible'=>Yii::app()->hasModule('user')),
                                 array('label'=>'Разрешения', 'url'=>array('/srbac'),'visible'=>Yii::app()->hasModule('user')),
                                 array('label'=>'Ипорт ролей', 'url'=>array('/RolesImport'),'visible'=>Yii::app()->hasModule('user')),
                               ),
