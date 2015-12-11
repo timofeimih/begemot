@@ -344,6 +344,7 @@ class CWebParser
                 $this->log('Начали перебор $scenarioItem[\'parser_rules\']');
                 foreach ($scenarioItem['parser_rules'] as $scenarioTaskName => $navigationRule) {
 
+
                     $searchHrefsDocumentPart = pq($navigationRule);
 
                     //Перебираем все части кода которые нашли по правилу сценария
@@ -369,12 +370,7 @@ class CWebParser
                             //Тип цели нам известен, выставляем его сразу
                             $target_type = WebParserDataEnums::TASK_TARGET_DATA_TYPE_URL;
 
-                            //$target_id = $this->getDocumentId($url);
 
-//                            if (!$this->isTaskExist($target_id, $target_type, $scenarioTaskName)) {
-//
-//                                $taskManager->createTask($target_id, $target_type, $scenarioTaskName);
-//                            }
                         }
                     }
 
@@ -384,8 +380,9 @@ class CWebParser
         }
 
         if ($task->taskType == WebParserDataEnums::TASK_TYPE_DATA) {
+
             $this->log('Определили тип задачи  ' . WebParserDataEnums::TASK_TYPE_DATA);
-            $this->log('Определили тип цели  ' . $task->target_type);
+            $this->log('Определили тип цели ' . $task->target_type);
 
 
             /**
@@ -425,7 +422,8 @@ class CWebParser
                         $filterArray = explode(' ', $fieldFilter);
                         if ($filterArray[0] == '@download') {
                             $downloadImageFlag = true;
-                            $fieldFilter = $filterArray[1];
+                            unset($filterArray[0]);
+                            $fieldFilter = implode(' ',$filterArray);
                         }
                     }
 
@@ -448,6 +446,16 @@ class CWebParser
                              * и создаем terget на скачку с id данных
                              * к которым надо изображение после прикрепить
                              */
+
+                            //Сначала декодируем символы %## и проверяем url мы вытащили или нет
+
+                            $planeData = urldecode($planeData);
+
+                            if (!(bool)parse_url($planeData)){
+                                $this->logError('Не является ссылкой  ' . $planeData);
+                                continue;
+                            }
+
 
                             $this->log('Создаем объек загрузки.');
                             $downloadModel = new WebParserDownload();
@@ -505,6 +513,20 @@ class CWebParser
                                             $dataFieldModel->fieldId = array_shift($filterResult);
                                         else
                                             $dataFieldModel->fieldId = $filterResult;
+                                        break;
+                                    case WebParserDataEnums::DATA_PARENT_ID_ARRAY_KEY :
+                                        $filterResult = $this->executeFilter($massFilter, $task);
+                                        if (is_array($filterResult))
+                                            $dataFieldModel->fieldParentId = array_shift($filterResult);
+                                        else
+                                            $dataFieldModel->fieldParentId = $filterResult;
+                                        break;
+                                    case WebParserDataEnums::DATA_GROUP_ID_ARRAY_KEY :
+                                        $filterResult = $this->executeFilter($massFilter, $task);
+                                        if (is_array($filterResult))
+                                            $dataFieldModel->fieldGroupId = array_shift($filterResult);
+                                        else
+                                            $dataFieldModel->fieldGroupId = $filterResult;
                                         break;
                                 }
                             }
@@ -585,24 +607,27 @@ class CWebParser
             $this->log('Определили тип цели  ' . $task->target_type);
 
             $targetDownloadObject = $this->getTargetFromTask($task);
+            $this->log('id  ' . $targetDownloadObject->id);
+
 
             //Проверяем и создаем директории
             $fieldIdDir = null;
             $dirArray = [
                 'rootDir' => 'files/webParser/',
                 'processDir' => 'files/webParser/process_' . $this->processId . '/',
-                'fieldIdDir' => 'files/webParser/process_' . $this->processId . '/item_' . $targetDownloadObject->fieldId . '/',
+                'fieldIdDir' => 'files/webParser/process_' . $this->processId . '/item_' . $targetDownloadObject->id . '/',
 
             ];
 
             $this->checkAndCreateDirs($dirArray);
 
-            extract($dirArray);
 
+            extract($dirArray);
             $targetDownloadObject->file = $this->downloadFile($targetDownloadObject->fileUrl, $fieldIdDir);
             // $this->log('Ломаем'.$file);
             $targetDownloadObject->save();
         }
+
 
 
         $task->completeTask();
@@ -632,7 +657,7 @@ class CWebParser
 
             // открываем cURL-сессию
             $resource = curl_init();
-            $this->log('Ломаем!!!!' . $fileUrl . ' ' . $dir);
+            //$this->log('Ломаем!!!!' . $fileUrl . ' ' . $dir);
             // устанавливаем опцию удаленного файла
             curl_setopt($resource, CURLOPT_URL, $fileUrl);
 
@@ -666,11 +691,13 @@ class CWebParser
         $baseDir = Yii::getPathOfAlias('webroot');
 
         foreach ($dirsArray as $dir) {
+
             $dirName = $baseDir . '/' . $dir;
             if (!file_exists($dirName)) {
                 mkdir($dirName);
             }
         }
+
     }
 
     public function checkMimeOn()
@@ -680,7 +707,8 @@ class CWebParser
 
     private function getContentByTask($task)
     {
-        $this->log('Достаем контент из задачу с типом:' . $task->target_type);
+        $this->log('Достаем контент из задачи с id:' . $task->id);
+        $this->log('Достаем контент из задачи с типом:' . $task->target_type);
         $targetType = $task->target_type;
         if ($targetType == WebParserDataEnums::TASK_TARGET_DATA_TYPE_WEBPAGE) {
             $pageContent = $task->getTargetData();
@@ -691,7 +719,7 @@ class CWebParser
         } elseif ($targetType == WebParserDataEnums::TASK_TARGET_DATA_TYPE_DATA) {
             $webParserData = WebParserData::model()->findByPk($task->target_id);
             $pageContent = $webParserData->fieldData;
-            // $this->log('Вытащили data:' . $pageContent);
+            //$this->log('Вытащили data:' . $pageContent);
 
         }
 
@@ -733,15 +761,21 @@ class CWebParser
     private function executeFilter($filter, $task)
     {
 
+        $this->log('Зашли в executeFilter и выполняем фильтр:'.$filter);
+
+        if ($filter{0} == "!"){
+            return str_replace ('!','',$filter);
+        }
 
         if ($filter{0} == "@") {
             //Процедурный фильтр
-
+            $this->log('Фильтр процедурный.');
             if ($filter == WebParserDataEnums::DATA_FILTER_URL) {
+                $this->log('Фильтр процедурный '.WebParserDataEnums::DATA_FILTER_URL);
                 return $task->getUrl();
             }
         }
-
+        $this->log('Фильтр НЕ процедурный.');
         $content = $this->getContentByTask($task);
 
         $returnArray = [];
