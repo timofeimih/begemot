@@ -26,6 +26,8 @@ class ChangeCatItemsJob extends BaseJob{
 		$arrayOfJobs = array();
 
 		foreach(glob(dirname(Yii::app()->request->scriptFile) . "/files/parsersData/*.data") as $file) {	
+
+			Yii::log("Старт сбора данных с " . $file, 'trace', 'catItemJob');
 			$websiteName = Yii::app()->params['adminEmail'];
             echo $file;
 		    $json = require($file); 
@@ -51,13 +53,42 @@ class ChangeCatItemsJob extends BaseJob{
 		      }
 
 		      if(isset( $json['images'][$itemParsed['id']] )){
-		      	$itemParsed['images'] = json_encode($json['images'][$itemParsed['id']]);
+
+
+		      	$hashes = [];
+		      	$images = [];
+		      	foreach ($json['images'][$itemParsed['id']] as $image) {
+
+		      		if (file_exists($image)) {
+		      			$hash = hash_file('md5', $image);
+			      		if (!in_array($hash, $hashes)) {
+			      			$images[] = $image;
+			      			$hashes[] = $hash;
+			      		}
+		      		}
+		      		
+		      	}
+		      	$itemParsed['images'] = json_encode($images);
+		      }
+
+		      if(isset( $json['childs'][$itemParsed['id']] )){
+
+		      	$itemParsed['parents'] = json_encode($json['childs'][$itemParsed['id']]);
+		      }
+
+		      if(isset( $json['groups'][$itemParsed['id']] )){
+
+		      	$itemParsed['groups'] = json_encode($json['groups'][$itemParsed['id']]);
+
 		      }
 
 		      $new->attributes = $itemParsed;
 
 		      if (!$new->save()){
                   print_r($new->errors);
+                  Yii::log(print_r($new->errors), 'trace', 'cron');
+              } else{
+              	Yii::log("Сохранил в базу запись с ID: " . $itemParsed['id'], 'trace', 'cron');
               }
 		    }
 
@@ -88,9 +119,49 @@ class ChangeCatItemsJob extends BaseJob{
 		      //exit();
 		    }
 
-		        $changed = array();
+	        $changed = array();
+	        Yii::import('application.modules.catalog.models.CatItemsToItems');
+
 		    foreach ($items as $item) {
-		    	if($item->linking){
+		    	if(isset($item->linking) & isset($item->item)){
+
+		    		$changedParents = '';
+
+		    		if (isset($item->linking->parents)) {
+		    			$parents = json_decode($item->linking->parents);
+			            foreach ($parents as $parent) {
+
+			            	$parentModel = ParsersLinking::model()->find(array(
+			                    'condition'=>'fromId=:fromId',
+			                    'params'=>array(':fromId'=>$parent)
+		                    ));
+
+		                    $parentId = $parentModel->toId;
+
+			                if(! CatItemsToItems::model()->find(array(
+			                    'condition'=>'itemId=:itemId',
+			                    'params'=>array(':itemId'=>$parentId))
+			                )){
+			                    $currentItemId = $item->item->id;
+
+			                    $CatItemsToItems = new CatItemsToItems();
+
+			                    $CatItemsToItems->itemId = $parentId;
+			                    $CatItemsToItems->toItemId = $currentItemId;
+
+			                    $CatItemsToItems->save();
+
+			                    $changedParents .= $item->item->name . ", ";
+			                }
+
+			               
+
+			                
+			            }
+
+			        }
+
+
 		    		if ($item->linking->price != $item->item->price || $item->linking->quantity != $item->item->quantity) {
 
 				        $changed[] = array(
@@ -99,13 +170,14 @@ class ChangeCatItemsJob extends BaseJob{
 				          'newPrice' => $item->linking->price,
 				          'oldQuantity' => $item->item->quantity,
 				          'newQuantity' => $item->linking->quantity,
+				          'changedParents' => $changedParents
 				        );
 				        $item->item->price = $item->linking->price;
 				        $item->item->quantity = $item->linking->quantity;
 				        $item->item->save();
-				      }
 				    }
-		    	}
+				}
+		    }
 		      
 
 		    $to = Yii::app()->params['adminEmail'];
@@ -122,7 +194,7 @@ class ChangeCatItemsJob extends BaseJob{
 		    $message .= '<h1>test</h1>';
 		    if ($changed) {
 		      $message .= '<table>';
-		      $message .= '<thead><tr><td>Название</td><td>Старая цена</td><td>Новая цена</td><td>Старое наличие</td><td>Новое наличие</td></tr></thead>';
+		      $message .= '<thead><tr><td>Название</td><td>Старая цена</td><td>Новая цена</td><td>Старое наличие</td><td>Новое наличие</td><td>Эта карточка добавилась как опция для</td></tr></thead>';
 		      
 		      foreach ($changed as $item) {
 		        $message .= "<tr>
@@ -131,6 +203,7 @@ class ChangeCatItemsJob extends BaseJob{
 		          <td>{$item['newPrice']}</td>
 		          <td>{$item['oldQuantity']}</td>
 		          <td>{$item['newQuantity']}</td>
+		          <td>{$item['changedParents']}</td>
 		        </tr>";
 		      }
 		      

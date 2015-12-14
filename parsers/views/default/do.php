@@ -6,11 +6,7 @@ Yii::app()->clientScript->registerScriptFile(
     Yii::app()->assetManager->publish(Yii::app()->getModule("parsers")->basePath . "/assets/jquery.quicksearch.js"), CClientScript::POS_HEAD
 );
 
-
-$this->menu = array(
-    array("label" => "Все парсеры", "url" => array("/parsers/default/index")),
-    array("label" => "Все связи", "url" => array("/parsers/default/linking")),
-);
+require(dirname(__FILE__).'/../menu.php');
  ?>
 
 <?php $this->widget("bootstrap.widgets.TbMenu", array(
@@ -19,9 +15,13 @@ $this->menu = array(
     "items"=>array(
         array("label"=>"Изменились", "url"=>"/parsers/default/do/file/".$filename . "/tab/changed", "active"=>$tab=="changed"),
         array("label"=>"Новые изображения", "url"=>"/parsers/default/do/file/".$filename . "/tab/changedImages", "active"=>$tab=="changedImages"),
+
+        array("label"=>"Игнорируемые изображения", "url"=>"/parsers/default/do/file/".$filename . "/tab/ignoredImages", "active"=>$tab=="ignoredImages"),
+
         array("label"=>"Новые", "url"=>"/parsers/default/do/file/".$filename . "/tab/new", "active"=>$tab=="new"),
         array("label"=>"Новые с возможностью связать по ID", "url"=>"/parsers/default/do/file/".$filename . "/tab/newWithId", "active"=>$tab=="newWithId"),
         array("label"=>"Все связи", "url"=>"/parsers/default/do/file/".$filename . "/tab/allSynched", "active"=>$tab=="allSynched" ),
+
 
     ),
 )); ?>
@@ -71,6 +71,218 @@ $this->menu = array(
 	<input type="submit" class="btn btn-primary btn-medium" value="Применить выделенные">
 
 </form>
+
+<?php endif ?>
+
+<?php if ($tab == "changedImages"): ?>
+		Поиск по ID: <input type="text" class='id'>
+		<button class='search_id'>Поиск по ИД</button>
+		<button class='showAllById'>Показать все</button>
+<table id='changedImages'>
+	<thead>
+		<tr>
+			<td>ID карточки</td>
+			<td>Артикул карточки</td>
+			<td>Название карточки</td>
+			<td>ID связи</td>
+			<td>Новых изображений</td>
+			<td>Добавить изображения</td>
+		</tr>
+	</thead>
+	<tbody>
+	<?php if ($itemList): ?>
+		<?php foreach($itemList as $item): ?>
+			<?php $id = str_replace('/', '', $item['item']->item->id)?>
+			<tr class="<?php echo $id?>">
+				<td><?php echo $item['item']->item->id?></td>
+				<td><img src="<?php echo $item['item']->item->getItemMainPicture("innerSmall")?>"></td>
+				<td class="name"><?php echo $item['item']->item->name?>(<a style='text-decoration:underline' target='_blank' href='<?php echo $this->createUrl('/catalog/catItem/update', array('id' => $item['item']->item->id, 'tab' => 'photo'))?>'>Редактировать</a>)</td>
+				<td><?php echo $item['item']->fromId?></td>
+				<td><?php echo count($item['images']) ?></td>
+				<td><button type="button" class="updateImages" data-id="<?php echo $id ?>">Добавить изображения</button></td>
+				<td style='display:none'>
+					<table class='images-<?php echo $id?>'>
+						<thead>
+	                        <tr>
+	                            <td>Изображение</td>
+	                            <td>Сохранить его?</td>
+	                            <td>Игнорировать изображение</td>
+	                        </tr>
+	                    </thead>
+	                    <tbody>
+	                    	<?php foreach ($item['images'] as $image): ?>
+	                    		<tr class='<?php echo $image['md5']?>-<?php echo $image['sha1']?>'>
+	                    			<td><img src='<?php echo $image['imageUrl'] ?>' style='width: 100px'></td>
+	                                <td><input type='checkbox' name='images[]' value='<?php echo $image['image']?>'></td>
+									<td><a href='#' class="ignoreImage" data-md5='<?php echo $image['md5']?>' data-sha1='<?php echo $image['sha1']?>' data-image='<?php echo $image['image']?>'>Игнорировать изображение</a></td>
+	                    		</tr>
+	                    	<?php endforeach ?>
+	                   	</tbody>
+					</table>
+				</td>
+			</tr>
+				
+		<?php endforeach ?>
+	<?php endif ?>
+	</tbody>
+</table>
+<div class="modal fade" id="save-images" style="display:none">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Сохранить изображения</h4>
+		  <div id="error"></div>
+      </div>
+      <form data-hideafter=".modal" data-removeafter="">
+	      <div class="modal-body">
+
+	      	<div class="tab-content">
+			  <div id="table-holder"></div>
+			  <input type="hidden" id='idHolder'>
+			</div>			
+			
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default closeModal" data-dismiss="modal">Закрыть</button>
+	        <button class="syncCard btn btn-primary" type="submit">Сохранить изображения</button>
+	      </div>
+
+      </form>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script>
+	$(".search_id").click(function(){
+		var id = $(".id").val();
+
+		$("#changedImages").find("TBODY TR").hide();
+		$("#changedImages").find("." + id).show();
+	})
+
+	$(".showAllById").click(function(){
+		$("#changedImages").find("TR").show();
+	})
+
+	$(document).on("click", ".ignoreImage", function(e){
+		e.preventDefault;
+		var link = $(this);
+		var md5 = $(this).attr("data-md5");
+		var sha1 = $(this).attr("data-sha1");
+		var image = $(this).attr("data-image");
+
+
+		$.post("/parsers/ignoreImages/create/", {"md5": md5,"sha1": sha1, "image": image}, function(data){
+			$("." + md5 + "-" + sha1).remove();
+			
+		}).fail(function(data){
+            alert(data.responseText);
+        });
+	})
+
+	$(document).on("click", '.updateImages', function(){
+		var className = $(this).parents("TR").attr("class");
+		var id = $(this).parents("TR").attr("class");
+
+		$("#save-images").show().addClass("in");
+		$("#save-images").find("#idHolder").val(id);
+		$("#save-images FORM").attr("data-removeafter", "." + className);
+
+		var imageTable = ".images-" + id.replace(/\//g, '');
+		$("#table-holder").html("");
+		$("#table-holder").html($(imageTable).clone());
+		$(".imageCount").html($("#table-holder TR").length - 1); 
+	});
+
+	$(document).on("submit", "#save-images FORM", function(e){
+		e.preventDefault();
+
+		//save images for synched card
+		var images = [];
+		var hideAfter = $(this).attr("data-hideafter");
+		var removeAfter = $(this).attr("data-removeAfter");
+
+		$("#table-holder INPUT:checked").each(function(){
+			images.push($(this).val());
+		})
+
+		images = JSON.stringify(images);
+
+		console.log(images);
+
+		$.post("/pictureBox/default/uploadArray", {'images': images, 'id': $("#idHolder").val()}, function(data){
+			//data = $.parseJSON(data);
+
+			console.log(data);
+
+			alert("Сохранено");
+			$(hideAfter).removeClass("in").hide();
+			$(removeAfter).fadeOut(1000);
+			setTimeout(function(){
+				$(removeAfter).remove();
+			}, 1000)
+
+		}).fail(function(data){
+            alert(data.responseText);
+        });
+
+	})
+</script>
+<?php endif; ?>
+
+<?php if ($tab == "ignoredImages"): ?>
+	<?php
+
+	if (count($itemList)) {
+		
+	
+		 Yii::import("begemot.extensions.grid.EImageColumn");
+
+		 $this->widget("bootstrap.widgets.TbGridView",array(
+			"id"=>"test-grid",
+			"dataProvider"=>$itemList->search(),
+			"filter"=>$itemList,
+		    "type"=>"striped bordered condensed",
+		    'rowCssClassExpression' => function($row, $data){
+		    	return "item-" . $data->id;
+		    },
+			"columns"=>array(
+				'md5',
+				'sha1',
+				array(
+		            'class' => 'EImageColumn',
+		            'htmlOptions'=>array('width'=>120),
+		            // see below.
+		            'imagePathExpression' => 'str_replace(Yii::getPathOfAlias("webroot"), "", $data->image)',
+		            // Text used when cell is empty.
+		            // Optional.
+		            'emptyText' => '—',
+		            // HTML options for image tag. Optional.
+		            'imageOptions' => array(
+		                'alt' => 'no',
+		                'width' => 120,
+		                'height' => 120,
+		            ),
+		        ), 
+			    array(
+					'class'=>'bootstrap.widgets.TbButtonColumn',
+					'template'=>'{delete}',
+					'buttons'=>[
+		                'delete' => [
+		                    'label'=>'Удалить',
+		                    'icon'=>'remove',
+		                    'url'=>'Yii::app()->createUrl("/parsers/ignoreImages/delete", array("id"=>$data->id))',
+		                    'options'=>[
+		                        'class'=>'btn btn-small',
+		                    ]
+		                ]
+		            ]
+				),
+			),
+		)); 
+	} else echo "нету игнорируемых изображений";?>
+
 <?php endif ?>
 
 <?php if ($tab == "changedImages"): ?>
@@ -234,13 +446,6 @@ $this->menu = array(
             ),
         ),   
 
-
-        array(
-            'header' => 'Название',
-            'type'=>'text',
-            'value'=>'$data->linking->name',
-            'htmlOptions' => array('class' => 'id'),
-        ),
         array(
             'header' => 'Связан с ',
             'type'=>'text',
@@ -319,12 +524,14 @@ $this->menu = array(
 	})
 	$(document).on("click", ".addAsNew", function(){
 		var button = $(this);
-		var params = {"CatItem": {"name": $(this).attr("data-name"), "price": $(this).attr("data-price"), "text": $(this).attr("data-text"), 'images': $(this).attr("data-images")}, "returnId": true};
+
+		var params = {"CatItem": {"name": $(this).attr("data-name"), "price": $(this).attr("data-price"), "text": $(this).attr("data-text")}, "returnId": true};
+
 
 		$.post("/catalog/catItem/create", params, function(data){
 			button.parents("TR").find(".composite").html("Уже обьединено");
-			button.parents("TR").find("BUTTON").attr("disabled", true);
-			button.parent().html('<a href="/catalog/catItem/update/id/' + data + '" target="_blank">Редактировать</a>');
+			//button.parents("TR").find("BUTTON").attr("disabled", true);
+			//button.parent().html('<a href="/catalog/catItem/update/id/' + data + '" target="_blank">Редактировать</a>');
 			var toId = data;
 
 			$.post("/parsers/default/syncCard", {"ParsersLinking": {"fromId": button.attr("data-id"), "toId": toId, "filename": button.attr("data-filename")}}, function(data){
@@ -344,16 +551,34 @@ $this->menu = array(
 				}
 			});
 
-			$.post("/pictureBox/default/uploadArray", {"images":  button.attr("data-images"), 'id': toId}, function(data){
-				//data = $.parseJSON(data);
-				if (data != "") {
-					
-				};
-			}).fail(function(data){
-	            alert(data.responseText);
-	        });
 
+			if (button.attr("data-images") != "") {
+				$.post("/pictureBox/default/uploadArray", {"images":  button.attr("data-images"), 'id': toId}, function(data){
+					//data = $.parseJSON(data);
+				}).fail(function(data){
+		            alert(data.responseText);
+		        });
+			};
+
+			if (button.attr("data-groups") != "") {
+				$.post("/parsers/default/updateCategories", {"groups":  button.attr("data-groups"), 'id': toId}, function(data){
+					//data = $.parseJSON(data);
+				}).fail(function(data){
+		            alert(data.responseText);
+		        });
+			};
 			
+
+
+			if (button.attr("data-parents") != "") {
+
+				$.post("/parsers/default/updateOptions", {"fromId": button.attr("data-id"), 'id': toId, 'parents': button.attr("data-parents")}, function(data){
+
+				}).fail(function(data){
+		            alert(data.responseText);
+		        });
+			}
+
 		})
 
 	})
@@ -387,32 +612,6 @@ $this->menu = array(
             alert(data.responseText);
         });
 
-	})
-
-	$(document).on("click", '.updateImages', function(){
-		var className = $(this).parents("TR").attr("class");
-		var id = $(this).parents("TR").attr("class");
-
-		$("#save-images").show().addClass("in");
-		$("#save-images").find("#idHolder").val(id);
-		$("#save-images FORM").attr("data-removeafter", "." + className);
-
-		var imageTable = ".images-" + id.replace(/\//g, '');
-		$("#table-holder").html($(imageTable).clone());
-		$(".imageCount").html($("#table-holder TR").length - 1); 
-	});
-
-	$(document).on("submit", "#save-images FORM", function(e){
-		e.preventDefault();
-
-		//save images for synched card
-		var images = [];
-		var hideAfter = $(this).attr("data-hideafter");
-		var removeAfter = $(this).attr("data-removeAfter");
-
-		$("#table-holder INPUT:checked").each(function(){
-			images.push($(this).val());
-		})
 
 		images = JSON.stringify(images);
 
@@ -437,6 +636,8 @@ $this->menu = array(
         });
 
 	})
+
+	
 
 	$(document).on("click", ".composite", function(){
 		var name = $(this).parents("TR").find(".name").html();
@@ -541,6 +742,7 @@ $this->menu = array(
 				images = JSON.stringify(images);
 
 				$.post("/pictureBox/default/uploadArray", {'images': images, 'id': $("#itemIdModal").val()}, function(data){
+
 					//data = $.parseJSON(data);
 					console.log(data);
 				}).fail(function(data){
