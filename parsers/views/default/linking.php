@@ -1,8 +1,5 @@
 <?php 
-$this->menu = array(
-    array('label' => 'Все парсеры', 'url' => array('/parsers/default/index')),
-    array('label' => 'Все связи', 'url' => array('/parsers/default/linking')),
-);
+require(dirname(__FILE__).'/../menu.php');
  ?>
 
 

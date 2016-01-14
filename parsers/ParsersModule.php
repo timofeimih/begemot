@@ -1,3 +1,5 @@
+
+
 <?php
 
 class ParsersModule extends CWebModule
@@ -16,7 +18,8 @@ class ParsersModule extends CWebModule
             'jobs.components.*',
             'application.jobs.*',
             'pictureBox.components.*',
-            'pictureBox.components.PictureBox'
+            'pictureBox.components.PictureBox',
+            'catalog.models.CatCategory'
 
         ));
 
