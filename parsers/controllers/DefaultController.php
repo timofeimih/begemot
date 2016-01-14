@@ -193,11 +193,14 @@ class DefaultController extends Controller
                     $catItemsToCat->save();
 
                     $item = CatItem::model()->findByPk($itemId);
-                    if ($item->catId == 0) {
-                        $item->catId = $group_relation->category_id;
+                    if (isset($item->catId)) {
+                        if ($item->catId == 0) {
+                            $item->catId = $group_relation->category_id;
 
-                        $item->save();
+                            $item->save();
+                        }
                     }
+                   
                 }
 
                
@@ -324,15 +327,12 @@ class DefaultController extends Controller
 
             if ($combined) {
                 foreach ($combined as $item) {
-
                     if (isset($item->linking->images) & isset($item->item->id)) {
                         $newImages = [];
-
 
                         $images = json_decode($item->linking->images);
                         
                         $parsedImages[$item->item->id]['item'] = $item;
-
                         $parsedImages[$item->item->id]['images'] = [];
 
                         $hashesMd5 = [];
@@ -359,7 +359,6 @@ class DefaultController extends Controller
                                 $hashesMd5[] = $hashMd5;
                                 $hashesSha1[] = $hashSha1;
                             }
-
                         }
 
                         $itemData = array();
@@ -370,14 +369,12 @@ class DefaultController extends Controller
 
 
                             foreach ($itemData['images'] as $image) {
-
                                 $hashMd5 = hash_file('md5', Yii::getPathOfAlias('webroot') . $image['original']);
                                 $hashSha1 = hash_file('sha1', Yii::getPathOfAlias('webroot') . $image['original']);
 
 
                                 foreach ($parsedImages[$item->item->id]['images'] as $key => $parsedImageOne) {
                                     if ($parsedImageOne['md5'] == $hashMd5 & $parsedImageOne['sha1'] == $hashSha1) {
-
                                         unset($parsedImages[$item->item->id]['images'][$key]);
                                     }
                                 }
@@ -539,9 +536,7 @@ class DefaultController extends Controller
     }
 
     public function getAddAsNewButton($data){ 
-
         return "<button type='button' class='addAsNew' data-filename='{$data->filename}' data-id='{$data->id}' data-price='{$data->price}' data-name='{$data->name}' data-images='{$data->images}'  data-parents='{$data->parents}' data-groups='{$data->groups}' data-text='{$data->text}'>Добавить как новый</button>";
-
     }
 
     public function actionLinking()

@@ -74,6 +74,10 @@ class CatItemController extends Controller
                 } else $this->redirect(array('view', 'id' => $model->id));
 
             }
+            else{
+                throw new Exception(json_encode($model->getErrors()), 1);
+                
+            }
 
         }
 

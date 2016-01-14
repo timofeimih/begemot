@@ -162,7 +162,6 @@ class DefaultController extends Controller
         $images = json_decode($_POST['images']);
         $return = '';
 
-
         $hashesMd5 = array();
         $hashesSha1 = array();
 
@@ -203,6 +202,8 @@ class DefaultController extends Controller
 
                     if (isset($item['sha1'])) {
 
+                        $hashesSha1[] = $item['sha1'];
+
                     }
                     
                 }
@@ -211,11 +212,9 @@ class DefaultController extends Controller
             
             foreach ($images as $image) {
 
-
                 $hashMd5 = hash_file('md5', $image);
                 $hashSha1 = hash_file('sha1', $image);
                 if ( !in_array($hashMd5, $hashesMd5) & !in_array($hashSha1, $hashesSha1) ) {
-
                     
 
                     Yii::import('application.modules.pictureBox.components.picturebox');
@@ -224,9 +223,7 @@ class DefaultController extends Controller
                     $temp = explode('.', $file);
                     $imageExt = end($temp);
 
-
                     $newImageId = $this->addImage($dir, $image, $imageExt, $id, $elementId, $hashMd5, $hashSha1);
-
 
                     copy($image, $dir . "/" . $newImageId . '.' . $imageExt);
                     //chmod($dir . "/" . $newImageId . '.' . $imageExt, 0777);
@@ -252,7 +249,6 @@ class DefaultController extends Controller
 
                     $hashesMd5[] = $hashMd5;
                     $hashesSha1[] = $hashSha1;
-
                 }
 
             }
@@ -309,9 +305,7 @@ class DefaultController extends Controller
 
     //возвращает новое имя добавленного изображения с
     //с которым его надо сохранить
-
     private function addImage($dir, $fileName, $fileExt, $id, $elementId, $md5 = '', $sha1 = '')
-
     {
 
         $imageId = $this->getNewImageId($dir);
@@ -331,14 +325,12 @@ class DefaultController extends Controller
             'original' => $originalFile
         );
 
-
         if ($md5 != "") {
             $data['images'][$imageId]['md5'] = $md5;
         }
 
         if ($sha1 != "") {
             $data['images'][$imageId]['sha1'] = $sha1;
-
         }
 
         PictureBox::crPhpArr($data, $dir . '/data.php');
