@@ -92,9 +92,15 @@ class ScenarioTask extends CActiveRecord
         } elseif ($targetType == WebParserDataEnums::TASK_TARGET_DATA_TYPE_URL) {
             $pageUrl = $this->getTargetData();
         } elseif ($targetType == WebParserDataEnums::TASK_TARGET_DATA_TYPE_DATA) {
+
             $targetData = WebParserData::model()->findByPk($this->target_id);
+            $message = 'Достаем url из WebParserData с id:'.$targetData->id;
+            Yii::log('    ' . $message, 'trace', 'webParser');
             $pageUrl=$targetData->sourcePageUrl;
         }
+
+        $message = 'Возвращаем url:'.$pageUrl;
+        Yii::log('    ' . $message, 'trace', 'webParser');
 
         return $pageUrl;
     }

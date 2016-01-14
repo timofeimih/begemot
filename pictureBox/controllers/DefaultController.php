@@ -102,9 +102,9 @@ class DefaultController extends Controller
         $elementId = $_POST['elementId'];
 
         $config = unserialize($_POST['config']);
-        file_put_contents(Yii::getPathOfAlias('webroot') . '/log.log3', var_export($config, true));
+       // file_put_contents(Yii::getPathOfAlias('webroot') . '/log.log3', var_export($config, true));
 
-        $dir = Yii::getPathOfAlias('wePbroot') . '/files/pictureBox';
+        $dir = Yii::getPathOfAlias('webroot') . '/files/pictureBox';
 
         if (!file_exists($dir))
             mkdir($dir, 0777);
@@ -122,7 +122,7 @@ class DefaultController extends Controller
             $model = new UploadifyFile;
 
             $model->uploadifyFile = $uploadedFile = CUploadedFile::getInstanceByName('Filedata');
-
+            echo 123123;
             if ($model->validate()) {
 
                 Yii::import('application.modules.pictureBox.components.picturebox');
@@ -165,6 +165,7 @@ class DefaultController extends Controller
         $hashesMd5 = array();
         $hashesSha1 = array();
 
+
         if ($images) {
 
             $id = 'catalogItem';
@@ -194,12 +195,15 @@ class DefaultController extends Controller
                 $data = require $dir . '/data.php';
 
                 foreach ($data['images'] as $item) {
+
                     if (isset($item['md5'])) {
                         $hashesMd5[] = $item['md5'];
                     }
 
                     if (isset($item['sha1'])) {
+
                         $hashesSha1[] = $item['sha1'];
+
                     }
                     
                 }

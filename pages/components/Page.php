@@ -26,6 +26,8 @@ class Page extends CInputWidget{
 
                 $this->render('webroot.files.pages.'.$this->page);
             }
+        } else {
+            file_put_contents ($pageContentPath,'');
         }
         return;
        
