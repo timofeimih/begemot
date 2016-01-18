@@ -21,8 +21,22 @@
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'connect_name'); ?>
-		<?php echo $form->textField($model,'connect_name',array('size'=>60,'maxlength'=>255)); ?>
-		<?php echo $form->error($model,'connect_name'); ?>
+
+		<?php if (isset($groups)): ?>
+			<select name='ParsersCategoryConnection[connect_name]' >
+		       <option value="">Выберите group</option>
+		       <?php foreach ($groups as $group): ?>
+
+		            <option value='<?php echo $group?>'><?php echo $group?></option>
+		      <?php endforeach ?>
+		    </select>
+			
+
+		<?php else: ?>
+			<?php echo $form->textField($model,'connect_name',array('size'=>60,'maxlength'=>255)); ?>
+			<?php echo $form->error($model,'connect_name'); ?>
+		<?php endif ?>
+		
 	</div>
 
 	<?php 
@@ -30,6 +44,7 @@
 		$categories = CatCategory::model()->findAll(array('order' => 'id ASC'));
 	?>
 	<div class="row">
+		<?php echo $form->labelEx($model,'category_id'); ?>
 		<select name='ParsersCategoryConnection[category_id]' id='loadValues' >
 	       <option value="">Выберите раздел</option>
 	       <?php foreach ($categories as $cat): ?>

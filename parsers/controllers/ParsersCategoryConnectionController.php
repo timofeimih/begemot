@@ -16,35 +16,23 @@ class ParsersCategoryConnectionController extends Controller
 	{
 		return array(
 			'accessControl', // perform access control for CRUD operations
-			'postOnly + delete', // we only allow deletion via POST request
 		);
 	}
 
-	/**
-	 * Specifies the access control rules.
-	 * This method is used by the 'accessControl' filter.
-	 * @return array access control rules
-	 */
-	public function accessRules()
-	{
-		return array(
-			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('index','view'),
-				'users'=>array('*'),
-			),
-			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update'),
-				'users'=>array('@'),
-			),
-			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('admin','delete'),
-				'users'=>array('admin'),
-			),
-			array('deny',  // deny all users
-				'users'=>array('*'),
-			),
-		);
-	}
+
+	 public function accessRules()
+    {
+        return array(
+
+            array('allow', // allow admin user to perform 'admin' and 'delete' actions
+                'actions'=>array('index', 'view', 'create', 'update', 'createFor', 'admin', 'delete'),
+                'expression'=>'Yii::app()->user->canDo("")'
+            ),
+            array('deny',  // deny all users
+                'users'=>array('*'),
+            ),
+        );
+    }
 
 	/**
 	 * Displays a particular model.
@@ -77,6 +65,50 @@ class ParsersCategoryConnectionController extends Controller
 
 		$this->render('create',array(
 			'model'=>$model,
+		));
+	}
+
+	public function actionCreateFor($filename, $tab = 'createFor')
+	{
+		$model=new ParsersCategoryConnection;
+
+		// Uncomment the following line if AJAX validation is needed
+		// $this->performAjaxValidation($model);
+
+		if(isset($_POST['ParsersCategoryConnection']))
+		{
+			$model->attributes=$_POST['ParsersCategoryConnection'];
+			if($model->save())
+				$this->refresh();
+		}
+
+		$fileData = require(Yii::getPathOfAlias('webroot')."/files/parsersData/$filename.data");
+
+		$groups = array();
+
+		if (isset($fileData['groups'])) {
+			foreach ($fileData['groups'] as $items) {
+				
+				foreach ($items as $group) {
+					if (!in_array($group, $groups)) {
+						$groups[] = $group;
+					}
+				}
+			}
+		}
+
+		$data=new ParsersCategoryConnection('search');
+		$data->unsetAttributes();  // clear any default values
+		if(isset($_GET['ParsersCategoryConnection']))
+			$data->attributes=$_GET['ParsersCategoryConnection'];
+
+
+		$this->render('createFor',array(
+			'model'=>$model,
+			'groups' => $groups,
+			'data' => $data,
+			'filename' => $filename,
+			'tab' => $tab
 		));
 	}
 
