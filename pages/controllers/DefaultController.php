@@ -106,7 +106,7 @@ class DefaultController extends Controller
                         
                     }
             }
-            $this->render('update',array('model'=>$model));
+            $this->render('update',array('model'=>$model,'file'=>$file));
 	}
 
     private function getDataDir(){

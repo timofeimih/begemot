@@ -37,3 +37,22 @@ $this->menu = require dirname(__FILE__).'/../commonMenu.php';
 <?php $this->endWidget(); ?>
 
 </div><!-- form -->
+
+<?php
+$picturesConfig = array();
+$configFile = Yii::getPathOfAlias('webroot').'/protected/config/catalog/categoryItemPictureSettings.php';
+if (file_exists($configFile)){
+
+	$picturesConfig = require($configFile);
+	$file = str_replace('.','',$file);
+	$this->widget(
+		'application.modules.pictureBox.components.PictureBox', array(
+			'id' => 'htmlPage',
+			'elementId' => '"'.str_replace('*','',$file).'"',
+			'config' => $picturesConfig,
+		)
+	);
+} else{
+	Yii::app()->user->setFlash('error','Отсутствует конфигурационный файл:'.$configFile);
+}
+?>
