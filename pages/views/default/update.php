@@ -3,6 +3,36 @@
 /* @var $model updateForm */
 /* @var $form CActiveForm */
 $this->menu = require dirname(__FILE__).'/../commonMenu.php';
+
+
+function crPhpArr($array, $file) {
+
+
+	$code = "<?php
+  return
+ " . var_export($array, true) . ";
+?>";
+	file_put_contents($file, $code);
+}
+
+function getFileId($file){
+	if (file_exists($file)){
+		$id = require $file;
+		if (is_int($id)){
+			crPhpArr(1+$id,$file);
+			return $id;
+
+		} else {
+			return -1;
+		}
+	} else {
+		$id = 0 ;
+		crPhpArr(1+$id,$file);
+		return $id;
+	}
+}
+
+
 ?>
 
 <div class="form">
@@ -39,6 +69,27 @@ $this->menu = require dirname(__FILE__).'/../commonMenu.php';
 </div><!-- form -->
 
 <?php
+//Достаем id файла html
+
+$filesIndexPath =  Yii::getPathOfAlias('webroot').'/files/pages/pagesList.php';
+if (file_exists($filesIndexPath)){
+	$pagesFilesList = require $filesIndexPath;
+} else {
+	$pagesFilesList = array();
+	crPhpArr($pagesFilesList,$filesIndexPath);
+}
+
+if (isset($pagesFilesList[$file])){
+	$fileId = $pagesFilesList[$file];
+} else {
+	$idHtmlFile = Yii::getPathOfAlias('webroot').'/files/pages/filesId.php';
+	$fileId = getFileId($idHtmlFile);
+	$pagesFilesList[$file] = $fileId;
+
+	crPhpArr($pagesFilesList,$filesIndexPath);
+
+}
+
 $picturesConfig = array();
 $configFile = Yii::getPathOfAlias('webroot').'/protected/config/catalog/categoryItemPictureSettings.php';
 if (file_exists($configFile)){
@@ -48,7 +99,7 @@ if (file_exists($configFile)){
 	$this->widget(
 		'application.modules.pictureBox.components.PictureBox', array(
 			'id' => 'htmlPage',
-			'elementId' => '"'.str_replace('*','',$file).'"',
+			'elementId' =>$fileId,
 			'config' => $picturesConfig,
 		)
 	);

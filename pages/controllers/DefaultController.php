@@ -30,7 +30,7 @@ class DefaultController extends Controller
             $dataPath = $this->getDataDir();
 
             $fileHelper = new CFileHelper();
-            $files = $fileHelper->findFiles('./files/pages',array('exclude'=>array('data')));
+            $files = $fileHelper->findFiles('./files/pages',array('exclude'=>array('data','filesId.php','pagesList.php')));
             $filesArray=array();
             foreach($files as $id=>$filePath){
                 $fileItem=array();
