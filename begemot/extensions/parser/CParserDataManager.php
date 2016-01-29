@@ -30,20 +30,12 @@ class CParserDataManager
          LIMIT 1";
         $searchParams = array(':search' => '-%','processId'=>$this->processId);
 
-
         while ($tempDataCollection = WebParserData::model()->findBySql($sql, $searchParams)){
 
             $tempData = $tempDataCollection;
 
-
             $tempData->delete();
         }
-
-
-
-
-
-
     }
 
     public function getDataTreeArray()
@@ -60,15 +52,13 @@ class CParserDataManager
             }
 
             $resultArray[$tempData->fieldId][$tempData->fieldName] = $tempData->fieldData;
-
-            if (!is_null($tempData->parentDataId)) {
-                $parentFieldId = $this->getFieldNameByDataId($tempData->parentDataId);
-
+            $parentFieldId = $tempData->fieldParentId;
+            if (!is_null($parentFieldId)) {
 
                 if (!isset($resultArray[$tempData->fieldId]['parents'])) {
                     $resultArray[$tempData->fieldId]['parents'] = [];
                 }
-                $resultArray[$tempData->fieldId]['parents'][] = $tempData->parentDataId;
+                $resultArray[$tempData->fieldId]['parents'][] = $parentFieldId;
             }
 
         }
@@ -93,6 +83,64 @@ class CParserDataManager
                 $resultArray[$WebParserDownload->fieldId] = [];
             }
             $resultArray[$WebParserDownload->fieldId][] = $WebParserDownload->file;
+
+        }
+
+        return $resultArray;
+    }
+
+    public function getChildsArray (){
+
+        $WebParserDataArray = WebParserData::model()->findAll(array(
+            'condition'=>'processId=:processId',
+            'params'=>array(':processId'=> $this->processId ),
+            'select'=>'fieldId,fieldParentId',
+            'distinct'=>true,
+        ));
+
+
+        $resultArray = [];
+
+        foreach ($WebParserDataArray as $WebParserData){
+
+
+
+            if ($WebParserData->fieldParentId!==null){
+                if (!isset ($resultArray[$WebParserData->fieldId]) || !is_array($resultArray[$WebParserData->fieldId]))
+                {
+                    $resultArray[$WebParserData->fieldId] = [];
+                }
+                $resultArray[$WebParserData->fieldId][] = $WebParserData->fieldParentId;
+            }
+
+        }
+
+        return $resultArray;
+    }
+
+    public function getChildsGroupsArray (){
+
+        $WebParserDataArray = WebParserData::model()->findAll(array(
+            'condition'=>'processId=:processId',
+            'params'=>array(':processId'=> $this->processId ),
+            'select'=>'fieldId,fieldGroupId',
+            'distinct'=>true,
+        ));
+
+
+        $resultArray = [];
+
+        foreach ($WebParserDataArray as $WebParserData){
+
+
+
+            if ($WebParserData->fieldGroupId!==null){
+                if (!isset ($resultArray[$WebParserData->fieldId]) || !is_array($resultArray[$WebParserData->fieldId]))
+                {
+                    $resultArray[$WebParserData->fieldId] = [];
+                }
+                $resultArray[$WebParserData->fieldId][] = $WebParserData->fieldGroupId;
+            }
 
         }
 

@@ -59,7 +59,7 @@ class DefaultController extends Controller
 				}
 				
 
-				if($results == false && $_GET['file'] != "all"){
+				if($results == false){
 					$return = $_GET['file'] . " не поддерживает данной функции";
 				}
 				else{
@@ -72,7 +72,7 @@ class DefaultController extends Controller
 				$results = $model->$_GET['go']();
 
 				if($results == false){
-					$return = $_GET['file'] . " не поддерживает данной функции";
+					$return = "Данное действие уже выполнялось";
 				}
 				else{
 					$return =  "Выполнено";

@@ -45,6 +45,37 @@ $assetsDir = Yii::app()->getAssetManager()->publish(Yii::getPathOfAlias('applica
 Yii::app()->clientScript->registerCssFile($assetsDir.'/css/pictureBox.css');
 Yii::app()->clientScript->registerCssFile($assetsDir.'/js/jquery.imgareaselect/css/imgareaselect-default.css');
 
+
+
+    $dropZoneAssetDir =Yii::app()->getAssetManager()->publish(Yii::getPathOfAlias('begemot.extensions.dropzone.assets'));
+
+    Yii::app()->clientScript->registerCssFile($dropZoneAssetDir.'/dropzone.css');
+    Yii::app()->clientScript->registerScriptFile($dropZoneAssetDir.'/dropzone.js',1);
+
+$dropzoneInit = "
+$(document).ready(
+    function (){
+        var myDropzone = new Dropzone('div#myId',
+            {
+                url: '/pictureBox/default/upload',
+                acceptedFiles:'image/*',
+                paramName :'Filedata',
+                params: {
+                id:'".$id."',
+                elementId: '".$elementId."',
+                config:'".serialize($_SESSION['pictureBox'][$id.'_'.$elementId])."'
+                }
+            });
+
+
+    }
+);
+";
+
+Yii::app()->clientScript->registerScript('dropzone',$dropzoneInit,4);
+
+
+
 $script = "
 
 var resizeData = {
@@ -266,10 +297,11 @@ Yii::app()->clientScript->registerScript('pictureBox-js-'.$config['divId'], $thi
 
 ?>
 
-<div id="<?php echo $config['divId']?>" style="height:400px;width:100%;">
-    
+<div id="<?php echo $config['divId']?>" style="width:100%;">
+
 </div>
 
+<div id="myId" class="mydropzone" style="text-align: center;color:green;font-size:30px;"><span>Нажми, или перетащи сюда файлы!</span></div>
 
 
 

@@ -87,8 +87,8 @@ $this->menu = require dirname(__FILE__).'/commonMenu.php';
                         echo ($cat->catId != $cat->item->catId) 
                             ? ' <a href="?setMainCat='.$cat->catId.'">'.CatCategory::model()->getCatName( $cat->catId).'</a>' 
                             : ' '.CatCategory::model()->getCatName( $cat->catId).'  [<strong>основной раздел</strong>]'; 
-                    
-                        if ($cat->cat->pid != -1)
+
+                        if ($cat->cat!=null && $cat->cat->pid != -1)
                             echo "<a title='Сквозное отображение - $linkTitle' class='$active td-link' data-value='".$cat->catId."'><span class='icon icon-white icon-retweet'></span></a>";
                     echo "</div>";
                     echo "<br>";

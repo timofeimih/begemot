@@ -31,7 +31,8 @@ class CatalogModule extends CWebModule
         $this->setImport(array(
             'catalog.models.*',
             'catalog.components.*',
-            'reviews.models.*'
+            'reviews.models.*',
+            'parsers.models.*'
         ));
 
         $this->registerScripts();

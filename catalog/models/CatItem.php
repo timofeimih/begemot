@@ -57,7 +57,7 @@ class CatItem extends ContentKitModel
         $rules = array(
             array('name', 'required'),
             array('status, quantity', 'numerical', 'integerOnly' => true),
-            array('name, name_t, article', 'length', 'max' => 100),
+            array('name, name_t, article', 'length', 'max' => 255),
             array('seo_title', 'length', 'max' => 255),
             // The following rule is used by search().
             array('id, name, name_t, status, data, price, text, name, delivery_date, quantity, authorId', 'safe'),
@@ -245,7 +245,6 @@ class CatItem extends ContentKitModel
 
         return true;
     }
-
 
     /**
      * Retrieves a list of models based on the current search/filter conditions.

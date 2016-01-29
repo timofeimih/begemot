@@ -1,43 +1,46 @@
 <?php 
-$this->menu = array(
-    array('label' => 'Все парсеры', 'url' => array('/parsers/default/index')),
-    array('label' => 'Все связи', 'url' => array('/parsers/default/linking')),
-);
+require(dirname(__FILE__).'/../menu.php');
  ?>
 <h1>Парсеры</h1>
 
-<form action="/parsers/default/parseChecked" method='get'>
-	<table>
-		<thead>
-			<tr>
-				<td>Название файла</td>
-				<td>Дата парсинга</td>
-				<td>Применять?</td>
-				<td>Применить</td>
-			</tr>
-		</thead>
-		<tbody>
-		<?php foreach($fileListOfDirectory as $item): ?>
-			<tr>
+<?php if ($fileListOfDirectory): ?>
+	
 
-				<td><?php echo $item['name']?></td>
-				<td class='date'><?php echo $item['time'] ?></td>
-				
+	<form action="/parsers/default/parseChecked" method='get'>
+		<table>
+			<thead>
+				<tr>
+					<td>Название файла</td>
+					<td>Дата парсинга</td>
+					<td>Применять?</td>
+					<td>Применить</td>
+				</tr>
+			</thead>
+			<tbody>
+			<?php foreach($fileListOfDirectory as $item): ?>
+				<tr>
 
-				<td><input type="checkbox" value='<?php echo $item['name']?>' name='parse[]'/></td>
-				
-				<td><input type='button' class='parseNew' data-file='<?php echo $item['className']?>' value='Спарсить новые данные'></td>
-				<td><a href='<?php echo $this->createUrl("/parsers/default/do", array('file' => $item['name'])) ?>' class="btn btn-info btn-mini">Работать с текущими данными</a></td>
-				
-			</tr>
-				
-		<?php endforeach ?>
-		</tbody>
-	</table>
+					<td><?php echo $item['name']?></td>
+					<td class='date'><?php echo $item['time'] ?></td>
+					
 
-	<input type='submit' class='btn btn-primary btn-medium' value='Применить выделенные'>
+					<td><input type="checkbox" value='<?php echo $item['name']?>' name='parse[]'/></td>
+					
+					<td><input type='button' class='parseNew' data-file='<?php echo $item['className']?>' value='Спарсить новые данные'></td>
+					<td><a href='<?php echo $this->createUrl("/parsers/default/do", array('file' => $item['name'])) ?>' class="btn btn-info btn-mini">Работать с текущими данными</a></td>
+					
+				</tr>
+					
+			<?php endforeach ?>
+			</tbody>
+		</table>
 
-</form>
+		<input type='submit' class='btn btn-primary btn-medium' value='Применить выделенные'>
+
+	</form>
+<?php else: ?>
+	Ни одного парсера не найдено
+<?php endif ?>
 
 
 <script>

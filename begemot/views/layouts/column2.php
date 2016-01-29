@@ -1,6 +1,6 @@
 <?php $this->beginContent('begemot.views.layouts.main'); ?>
 
-<div class="row">
+<div class="row-fluid">
   <div class="span3">
       	<?php
 

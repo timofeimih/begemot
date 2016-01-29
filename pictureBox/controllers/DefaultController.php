@@ -102,7 +102,7 @@ class DefaultController extends Controller
         $elementId = $_POST['elementId'];
 
         $config = unserialize($_POST['config']);
-        file_put_contents(Yii::getPathOfAlias('webroot') . '/log.log3', var_export($config, true));
+       // file_put_contents(Yii::getPathOfAlias('webroot') . '/log.log3', var_export($config, true));
 
         $dir = Yii::getPathOfAlias('webroot') . '/files/pictureBox';
 
@@ -122,7 +122,7 @@ class DefaultController extends Controller
             $model = new UploadifyFile;
 
             $model->uploadifyFile = $uploadedFile = CUploadedFile::getInstanceByName('Filedata');
-
+            echo 123123;
             if ($model->validate()) {
 
                 Yii::import('application.modules.pictureBox.components.picturebox');
@@ -131,7 +131,7 @@ class DefaultController extends Controller
                 $temp = explode('.', $file);
                 $imageExt = end($temp);
 
-                $newImageId = $this->addImage($dir, $model->uploadifyFile->name, $imageExt);
+                $newImageId = $this->addImage($dir, $model->uploadifyFile->name, $imageExt, $id, $elementId);
 
                 move_uploaded_file($model->uploadifyFile->tempName, $dir . "/" . $newImageId . '.' . $imageExt);
                 //chmod($dir . "/" . $newImageId . '.' . $imageExt, 0777);
@@ -156,6 +156,110 @@ class DefaultController extends Controller
                 }
             }
         }
+    }
+
+    public function actionUploadArray(){
+        $images = json_decode($_POST['images']);
+        $return = '';
+
+        $hashesMd5 = array();
+        $hashesSha1 = array();
+
+
+        if ($images) {
+
+            $id = 'catalogItem';
+            $elementId = $_POST['id'];;
+
+            $catalogItemConfig = require Yii::getPathOfAlias('application') . '/config/catalog/categoryItemPictureSettings.php';
+
+            $config = array_merge_recursive(PictureBox::getDefaultConfig(), $catalogItemConfig);
+
+            file_put_contents(Yii::getPathOfAlias('webroot') . '/log.log3', var_export($config, true));
+
+            $dir = Yii::getPathOfAlias('webroot') . '/files/pictureBox';
+
+            if (!file_exists($dir))
+                mkdir($dir, 0777);
+
+            $dir = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/';
+
+            if (!file_exists($dir))
+                mkdir($dir, 0777);
+            $dir = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/';
+
+            if (!file_exists($dir))
+                mkdir($dir, 0777);
+
+            if (file_exists($dir . '/data.php')) {
+                $data = require $dir . '/data.php';
+
+                foreach ($data['images'] as $item) {
+
+                    if (isset($item['md5'])) {
+                        $hashesMd5[] = $item['md5'];
+                    }
+
+                    if (isset($item['sha1'])) {
+
+                        $hashesSha1[] = $item['sha1'];
+
+                    }
+                    
+                }
+            }
+            
+            
+            foreach ($images as $image) {
+
+                $hashMd5 = hash_file('md5', $image);
+                $hashSha1 = hash_file('sha1', $image);
+                if ( !in_array($hashMd5, $hashesMd5) & !in_array($hashSha1, $hashesSha1) ) {
+                    
+
+                    Yii::import('application.modules.pictureBox.components.picturebox');
+
+                    $file = $image;
+                    $temp = explode('.', $file);
+                    $imageExt = end($temp);
+
+                    $newImageId = $this->addImage($dir, $image, $imageExt, $id, $elementId, $hashMd5, $hashSha1);
+
+                    copy($image, $dir . "/" . $newImageId . '.' . $imageExt);
+                    //chmod($dir . "/" . $newImageId . '.' . $imageExt, 0777);
+
+
+                    $resultFiltersStack = array();
+
+                    foreach ($config['nativeFilters'] as $filterName => $toggle) {
+                        if ($toggle && isset($config['imageFilters'][$filterName])) {
+                            $resultFiltersStack[$filterName] = $config['imageFilters'][$filterName];
+                        }
+                    }
+
+                    $config['imageFilters'] = $resultFiltersStack;
+
+                    $filterManager = new FiltersManager($dir . "/" . $newImageId . '.' . $imageExt, $config);
+                    $filters = $filterManager->getFilteredImages();
+
+                    foreach ($filters as $filterName => $filteredImageFile) {
+                        $this->addFilteredImage($newImageId, $filterName, '/files/pictureBox/' . $id . '/' . $elementId . '/' . $filteredImageFile, $dir);
+                        //chmod(Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/' . $filteredImageFile, 0777);
+                    }
+
+                    $hashesMd5[] = $hashMd5;
+                    $hashesSha1[] = $hashSha1;
+                }
+
+            }
+
+        } else{
+            throw new Exception("Нету изображений", 1);
+            
+        }
+        
+        echo $return;
+        return $return;
     }
 
     public function actionAjaxLayout($id, $elementId, $imageNumber = 1)
@@ -201,11 +305,8 @@ class DefaultController extends Controller
 
     //возвращает новое имя добавленного изображения с
     //с которым его надо сохранить
-    private function addImage($dir, $fileName, $fileExt)
+    private function addImage($dir, $fileName, $fileExt, $id, $elementId, $md5 = '', $sha1 = '')
     {
-
-        $id = $_POST['id'];
-        $elementId = $_POST['elementId'];
 
         $imageId = $this->getNewImageId($dir);
 
@@ -221,8 +322,16 @@ class DefaultController extends Controller
         $originalFile = '/files/pictureBox/' . $id . '/' . $elementId . '/' . $imageId . '.' . $fileExt;
 
         $data['images'][$imageId] = array(
-            'original' => $originalFile,
+            'original' => $originalFile
         );
+
+        if ($md5 != "") {
+            $data['images'][$imageId]['md5'] = $md5;
+        }
+
+        if ($sha1 != "") {
+            $data['images'][$imageId]['sha1'] = $sha1;
+        }
 
         PictureBox::crPhpArr($data, $dir . '/data.php');
 
@@ -314,6 +423,8 @@ class DefaultController extends Controller
                 unset($data['images'][$pictureId]);
                 PictureBox::crPhpArr($data, $dataFile);
             }
+
+
         }
     }
 
