@@ -25,6 +25,21 @@ class WebParserDataEnums {
      * должен быть артикулом, по которому идет связывание с позициями каталога.
      */
      const DATA_ID_ARRAY_KEY = '@data_id';
+    /**
+     * Зарезервированное имя фильтра. По этому фильтру достаем данные и сохраняем их в поле "fieldParentId"
+     * в БД. Это ключевой параметр, по которому определяется иерархия данных. Например принадлежность одного товара
+     * к другому в качестве сопутствующего или опции к вездеходу.
+     */
+     const DATA_PARENT_ID_ARRAY_KEY = '@parent_data_id';
+
+    /**
+     * Зарезервированное имя фильтра. По этому фильтру достаем данные и сохраняем их в поле "fieldGroupId"
+     * в БД. Это ключевой параметр, по которому определяется группа данных. По этому параметру в последствии
+     * можно например связать определенную группу данный с нужным разделом. Или над некоторой группой данных делать
+     * дополнительные обработки. 
+     */
+     const DATA_GROUP_ID_ARRAY_KEY = '@group_data_id';
+
 
     /**
      * Возвращаем url текущего документа
@@ -44,8 +59,8 @@ class WebParserDataEnums {
      * Если ссылка прошла проверку и данные были спарсены, то создаем такую задачу.
      */
     const TASK_TYPE_PROCESS_URL = 'process_url';
-    const TASK_TYPE_DATA = 'navigation';
-    const TASK_TYPE_IMAGE = 'navigation';
+    const TASK_TYPE_DATA = 'process_data';
+    const TASK_TYPE_DOWNLOAD = '@download';
     /**
      * Типы входных данных для задач
      */
@@ -53,6 +68,6 @@ class WebParserDataEnums {
     const TASK_TARGET_DATA_TYPE_URL = 'url';
     const TASK_TARGET_DATA_TYPE_WEBPAGE = 'web_page';
     const TASK_TARGET_DATA_TYPE_DATA = 'data';
-
+    const TASK_TARGET_DATA_TYPE_DOWNLOAD = 'download';
 
 }

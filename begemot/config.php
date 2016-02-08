@@ -10,8 +10,6 @@ return array(
         'application.models.*',
         'application.components.*',
         'application.modules.begemot.components.NestedDynaTree.*',
-        'application.modules.begemot.extensions.giix.*',
-        'application.modules.begemot.extensions.giix.components.*',
         'application.modules.begemot.extensions.crontab.*',
         'application.modules.catalog.models.CatItem',
         'application.modules.post.models.Posts',
@@ -20,14 +18,21 @@ return array(
         'application.modules.vars.*',
         'application.modules.jobs.components.*', // components for jobs
         'application.jobs.*',
-    ), 
+    ),
     'language' => 'ru',
     'modules' => array(
         'pictureBox',
         'begemot',
         'catalog',
         'jobs',
-        'pages',
+        'pages'=>[
+            'tidyConfig'=>array(
+                'Three'=>array(
+                    'imageTag'=>'innerBig',
+                    'templateFile'=>'application.config.tidyThreeTamplate',
+                ),
+            )
+        ],
         'parsers',
         'elfinder',
         'gallery',
@@ -156,11 +161,9 @@ return array(
             'loginUrl' => array('/user/login'),
             'returnUrl'=>array('/begemot'),
         ),
-        'bootstrap' => array(
-            'class' => 'begemot.extensions.bootstrap.components.Bootstrap', // assuming you extracted bootstrap under extensions
-        ),
+
         // uncomment the following to enable URLs in path-format
-        
+
         'urlManager' => array(
 
             'urlFormat' => 'path',
@@ -168,8 +171,8 @@ return array(
             'caseSensitive' =>true,
             'urlSuffix' => '.html',
             'rules' => array(
-                
-                
+
+
                 '/admin' => '/begemot',
                 //модуль gallery
                 '/photo' => array('gallery/siteGallery/index'),
@@ -193,9 +196,9 @@ return array(
                 'video' => '/site/video'
             )
 
-        ), 
-        
-        
+        ),
+
+
 //        'errorHandler' => array(
 //            // use 'site/error' action to display errors
 //            'errorAction' => 'site/error',
@@ -213,12 +216,33 @@ return array(
             // The itemChildTable name (default:authitemchild)
             'itemChildTable' => 'authItemChild',
         ),
+        'log'=>array(
+            'class'=>'CLogRouter',
+            'routes'=>array(
+                array(
+                    'class'=>'CFileLogRoute',
+                    'levels'=>'error, warning',
+                ),
+                array(
+                    'class'=>'CFileLogRoute',
+                    'logFile'=>'cronLog.log',
+                    'maxLogFiles'=>2,
+                    'categories'=>'cron'
+                ),
+                array(
+                    'class'=>'CFileLogRoute',
+                    'logFile'=>'webParser.log',
+                    'maxLogFiles'=>2,
+                    'categories'=>'webParser'
+                ),
 
+            ),
+        ),
 //        'request' => array(
 //                        'baseUrl' => 'http://www.buggy-motor.ru',
 //                    ),
         /*'cache' => array(
-            'class' => 'system.caching.CDbCache', 
+            'class' => 'system.caching.CDbCache',
         ),*/
 
     ),

@@ -6,10 +6,10 @@ class BaseJob {
 	protected $title = null;
 	protected $parameters = array();
 
-	public function getName() { return $this->name;}
-	public function getTitle() { return $this->title;}
-	public function getDescription() { return $this->description;}
-	public function runJob() {}
+	public function getName() { return $this->name; }
+	public function getTitle() { return $this->title; }
+	public function getDescription() { return $this->description; }
+	public function runJob($parameters=null) { return true; }
 
 	public function getParameters(){
 

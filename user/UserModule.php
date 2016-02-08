@@ -129,7 +129,12 @@ class UserModule extends CWebModule
 
 
         if (!method_exists(Yii::app(),'commandPath')){
-            Yii::app()->getComponent('bootstrap');
+            $component=Yii::createComponent(array(
+
+                'class'=>'begemot.extensions.bootstrap.components.Bootstrap'
+
+            ));
+            Yii::app()->setComponent('bootstrap',$component);
             Yii::app()->theme = 'bootstrap';
         }
     }

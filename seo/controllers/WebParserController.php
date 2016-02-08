@@ -124,9 +124,6 @@ class WebParserController extends Controller
 	{
 
 
-
-
-
 		$this->render('index',array(
 			'processId'=>$processId,
 		));

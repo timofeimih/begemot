@@ -33,12 +33,23 @@ class DefaultController extends Controller
 
 	public function actionSetTask()
 	{
-		if (isset($_POST['time']) AND isset($_POST['hour'])) {
+		if (isset($_POST['filename'])) {
+
+			unset($_POST['listname']);
+			unset($_POST['createNew']);
 
 			$JobManager = new JobManager;
-			
-			echo $JobManager->newTask($_POST);
 
+            $logMessage = 'Контроллер actionSetTask '.var_export($_POST,true);
+            Yii::log($logMessage,'trace','cron');
+
+
+			$JobManager->newTask($_POST);
+			
+		} else{
+            $logMessage = 'Ошибка! Задача не создалась.';
+            Yii::log($logMessage,'trace','cron');
+			throw new Exception("Error Processing Request", 1);
 			
 		}
 	}
@@ -102,12 +113,18 @@ class DefaultController extends Controller
 
 	public function actionChangeTime()
 	{
-		if (isset($_POST['time']) AND isset($_POST['name'])) {
+		if (isset($_POST['name'])) {
+
+			unset($_POST['item']);
+			unset($_POST['changeTime']);
 
 			$JobManager = new JobManager;
 			
-			echo $JobManager->changeTime($_POST['name'], (int) $_POST['time'], (int) $_POST['hour'], (int) $_POST['minutes']);
+			echo $JobManager->changeTime($_POST);
 
+			
+		} else{
+			throw new Exception("Error Processing Request", 1);
 			
 		}
 	}

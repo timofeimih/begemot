@@ -19,14 +19,14 @@ class CatItemsToItems extends CActiveRecord
 		return parent::model($className);
 	}
         
-        public function behaviors(){
-                return array(
-                        'CBOrderModelBehavior' => array(
-                                'class' => 'begemot.extensions.order.BBehavior.CBOrderModelBehavior',
+        // public function behaviors(){
+        //         return array(
+        //                 'CBOrderModelBehavior' => array(
+        //                         'class' => 'begemot.extensions.order.BBehavior.CBOrderModelBehavior',
                                
-                        )
-                );
-        }   
+        //                 )
+        //         );
+        // }   
         
         public function relations()
         {

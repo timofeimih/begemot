@@ -12,7 +12,7 @@
 </head>
 
 <body>
-<div class="container" style="margin-top:50px;">
+<div class="container-fluid" style="margin-top:50px;">
 
 
 
@@ -22,6 +22,7 @@
     'brand'=>'Begemot',
     'brandUrl'=>'/begemot',
     'collapse'=>true, // requires bootstrap-responsive.css
+    'fluid' => true,
     'items'=>array(
         array(
             'class'=>'bootstrap.widgets.TbMenu',
@@ -29,7 +30,7 @@
                         //array('label'=>'About', 'url'=>array('/site/page', 'view'=>'about')),
                         array('label'=>'Система', 'url'=>array(''),
                             'items'=>array(
-                                array('label'=>'Пользователи', 'url'=>array('/user'),'visible'=>Yii::app()->hasModule('user')),
+                                array('label'=>'Пользователи', 'url'=>array('/user/admin'),'visible'=>Yii::app()->hasModule('user')),
                                 array('label'=>'Разрешения', 'url'=>array('/srbac'),'visible'=>Yii::app()->hasModule('user')),
                                 array('label'=>'Ипорт ролей', 'url'=>array('/RolesImport'),'visible'=>Yii::app()->hasModule('user')),
                               ),
@@ -69,7 +70,12 @@
                             ),
                         ),   
                 
-                        array('label'=>'SEO', 'url'=>array('/seo/seoPages/admin'),'visible'=>Yii::app()->hasModule('seo')),
+                        array('label'=>'SEO',
+                            'items'=>array (
+                                ['url'=>array('/seo/seoPages/admin'),'visible'=>Yii::app()->hasModule('seo'),'label'=>'Анализ страниц'],
+                                ['url'=>array('/seo/title/index'),'visible'=>Yii::app()->hasModule('seo'),'label'=>'Редактор мета-тегов']
+                            )
+                        ),
                         array('label'=>'Login', 'url'=>array('/begemot'), 'visible'=>Yii::app()->user->isGuest),
                         array('label'=>'Logout ('.Yii::app()->user->name.')', 'url'=>array('/begemot/default/logout'), 'visible'=>!Yii::app()->user->isGuest)
                 ),

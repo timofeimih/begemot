@@ -13,7 +13,6 @@ $this->menu = array(
             <td>Название файла</td>
             <td>Включенно</td>
             <td>Период исполнения</td>
-            <td>Исполняется в</td>
             <td>Последний раз выполнялось</td>
             <td>Действия</td>
         </tr>
@@ -25,24 +24,18 @@ $this->menu = array(
             <?php foreach($itemList as $key => $item): ?>
                 <tr class='item-<?php echo $number ?>'>
                     <td><?php echo $key?></td>
-                    <td><?php echo (isset($item['executable']) & $item['executable'] == true) ? "Да" : "Нет"?></td>
-                    <td class='period'><?php if(isset($item['time'])) echo JobManager::timeToString($item['time']);?></td>
-                    <td class='time'>
-                        <?php $minutes = ($item['minutes'] / 60);
-                        if($minutes < 10){
-                            $minutes = "0" . $minutes;
-                        } ?>
-                        <?php if(isset($item['hour'])) echo ($item['hour'] / 3600) . ":" . $minutes;?></td>
+                    <td><?php if(isset($item['executable'])) echo ($item['executable'] == true) ? "Да" : "Нет"?></td>
+                    <td class='period'><?php $jobManager = new JobManager(); echo $jobManager->getPeriodOfItem($key);?></td>
 
                     <td>
-                        <?php if ($item['lastExecutedForText'] == 0) {
+                        <?php if ($item['lastExecuted'] == 0) {
                              echo "Еще не выполнялась<br/>";
-                        } else  echo date("d.m.Y H:i", $item['lastExecutedForText']) ."<br/>"; ?>
+                        } else  echo date("d.m.Y H:i", $item['lastExecuted']) ."<br/>"; ?>
                     </td>
                     <td>
                         <input type="button"
                                class='btn btn-primary turnOnOff'
-                          P     data-name='<?php echo $key?>'
+                               data-name='<?php echo $key?>'
                                data-turn='1'
                                value='Включить'
                                style='display: <?php echo ($item['executable'] == true) ? 'none' : 'inline'?>'>
@@ -57,9 +50,11 @@ $this->menu = array(
                                data-name='<?php echo $key?>'
                                value='Удалить задачу'>
                         <input type="button" name='<?php echo $key?>' class='btn btn-info changeTime' value='Поменять период'>
-                        <input type="hidden" name='hour' value='<?php echo $item['hour']?>'>
-                        <input type="hidden" name='time' value='<?php echo $item['time']?>'>
-                        <input type="hidden" name='minutes' value='<?php echo $item['minutes']?>'>
+                        <input type="hidden" name='min' value='<?php echo (isset($item['min'])) ? $item['min'] : ""?>'>
+                        <input type="hidden" name='hour' value='<?php echo (isset($item['hour'])) ? $item['hour'] : ""?>'>
+                        <input type="hidden" name='day' value='<?php echo (isset($item['day'])) ? $item['day'] : ""?>'>
+                        <input type="hidden" name='month' value='<?php echo (isset($item['month'])) ? $item['month'] : ""?>'>
+                        <input type="hidden" name='dayWeek' value='<?php echo (isset($item['dayWeek'])) ? $item['dayWeek'] : ""?>'>
                     </td>
                 </tr>
                 <?php $number++; ?>
@@ -85,59 +80,38 @@ $this->menu = array(
                     <div id="error"></div>
                     <div id="success" style='color: green'></div>
                     <h3>Изменение периода для <span class='name'></span></h3>
-
-                    Временой период: <select name="time">
-                        <option value="604800">Раз в неделю в понедельник</option>
-                        <option value="302400">Два раза в неделю(в понедельник и четверг)</option>
-                        <option value="86400">Каждый день</option>
-                    </select><br/>
-                    Точное время выполнения: <select name="hour">
-                        <option value='3600'>1</option>
-                        <option value='7200'>2</option>
-                        <option value='10800'>3</option>
-                        <option value='14400'>4</option>
-                        <option value='18000'>5</option>
-                        <option value='21600'>6</option>
-                        <option value='25200'>7</option>
-                        <option value='28800'>8</option>
-                        <option value='32400'>9</option>
-                        <option value='36000'>10</option>
-                        <option value='39600'>11</option>
-                        <option value='43200'>12</option>
-                        <option value='46800'>13</option>
-                        <option value='50400'>14</option>
-                        <option value='54000'>15</option>
-                        <option value='57600'>16</option>
-                        <option value='61200'>17</option>
-                        <option value='64800'>18</option>
-                        <option value='68400'>19</option>
-                        <option value='72000'>20</option>
-                        <option value='75600'>21</option>
-                        <option value='79200'>22</option>
-                        <option value='82800'>23</option>
-                    </select> час 
-
-                    <select name="minutes">
-                        <option value='0'>00</option>
-                        <option value='300'>05</option>
-                        <option value='600'>10</option>
-                        <option value='900'>15</option>
-                        <option value='1200'>20</option>
-                        <option value='1500'>25</option>
-                        <option value='1800'>30</option>
-                        <option value='2100'>35</option>
-                        <option value='2400'>40</option>
-                        <option value='2700'>45</option>
-                        <option value='3000'>50</option>
-                        <option value='3300'>55</option>
-                    </select> минут<br/>
-
+                    Примеры значений: <br/>
+                    *<br/>
+                    1,2,3,4,5<br/>
+                    10/3<br/>
+                    <table>
+                        <tr>
+                            <td>Минуты(0-59): </td>
+                            <td><input type='text' name='min'/</td>
+                        </tr>
+                        <tr>
+                            <td>Часы(0-23): </td>
+                            <td><input type='text' name='hour'/></td>
+                        </tr>
+                        <tr>
+                            <td>Дни(1-31):</td>
+                            <td><input type='text' name='day'/></td>
+                        </tr>
+                        <tr>
+                            <td>Месяца(1-12):</td>
+                            <td><input type='text' name='month'/></td>
+                        </tr>
+                        <tr>
+                            <td>Дни недели(0-6):</td>
+                            <td><input type='text' name='dayWeek'/></td>
+                        </tr>
+                    </table>
                     <input type="hidden" name='name' value='' class='name'>
                     <input type="hidden" class='item' />
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default closeModal" data-dismiss="modal">Закрыть</button>
-                    <button class='syncCard btn btn-primary' type='submit'>Сохранить</button>
+                    <button class='syncCard btn btn-primary' type='submit' name='changeTime'>Сохранить</button>
 
 
                 </div>
@@ -194,9 +168,11 @@ $this->menu = array(
         //$(".modal .name").html($(this).attr("name"));
         $(".modal .item").val(button.parents("TR").attr("class"));
 
-        $(".modal SELECT[name='minutes']").val($(this).parents("TR").find("INPUT[name='minutes']").val());
-        $(".modal SELECT[name='hour']").val($(this).parents("TR").find("INPUT[name='hour']").val());
-        $(".modal SELECT[name='time']").val($(this).parents("TR").find("INPUT[name='time']").val());
+        $(".modal INPUT[name='min']").val($(this).parents("TR").find("INPUT[name='min']").val());
+        $(".modal INPUT[name='hour']").val($(this).parents("TR").find("INPUT[name='hour']").val());
+        $(".modal INPUT[name='day']").val($(this).parents("TR").find("INPUT[name='day']").val());
+        $(".modal INPUT[name='month']").val($(this).parents("TR").find("INPUT[name='month']").val());
+        $(".modal INPUT[name='dayWeek']").val($(this).parents("TR").find("INPUT[name='dayWeek']").val());
     })
 
     $(document).on("submit", ".ajaxSubmit", function(e){

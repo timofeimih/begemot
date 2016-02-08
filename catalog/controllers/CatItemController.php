@@ -67,11 +67,16 @@ class CatItemController extends Controller
         if (isset($_POST['CatItem'])) {
             $model->attributes = $_POST['CatItem'];
             if ($model->save()) {
+                
                 if (isset($_POST['returnId'])) {
                     echo $model->id;
 
                 } else $this->redirect(array('view', 'id' => $model->id));
 
+            }
+            else{
+                throw new Exception(json_encode($model->getErrors()), 1);
+                
             }
 
         }
@@ -207,7 +212,7 @@ class CatItemController extends Controller
 
             }
 
-             if (isset($_POST['items'])) {
+            if (isset($_POST['items'])) {
                 foreach ($_POST['items'] as $itemId) {
                     $item = new CatItemsToItems();
 
@@ -319,6 +324,19 @@ class CatItemController extends Controller
 
         foreach ($CatItemsRelations as $catItemToCat){
             $catItemToCat->delete();
+        }
+
+        //Удаляем привязки к категориям
+        $ParsersLinkingRelations = ParsersLinking::model()->findAll('toId = '.$id);
+
+        foreach ($ParsersLinkingRelations as $parsersLinking){
+            
+
+            $parsersStock = $parsersLinking->linking;
+            $parsersStock->linked = 0;
+            $parsersStock->save();
+
+            $parsersLinking->delete();
         }
 
         if (!isset($_GET['ajax']))

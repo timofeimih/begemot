@@ -22,7 +22,7 @@ class DefaultController extends Controller
         return array(
 
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
-                'actions'=>array('linking', 'create','update','index','view', 'do', 'syncCard', 'updateCard', 'doChecked', 'deleteLinking', 'parseChecked', 'parseNew', 'getParsedForCatItem', 'cron'),
+                'actions'=>array('linking', 'ignoreImage', 'updateCategories', 'updateOptions', 'create','update','index','view', 'do', 'syncCard', 'updateCard', 'doChecked', 'deleteLinking', 'parseChecked', 'parseNew', 'getParsedForCatItem', 'cron'),
                 'expression'=>'Yii::app()->user->canDo("")'
             ),
             array('deny',  // deny all users
@@ -30,6 +30,45 @@ class DefaultController extends Controller
             ),
         );
     }
+
+    public function actionIgnoreImage()
+    {
+
+        if (isset($_POST['md5']) & isset($_POST['sha1']) & isset($_POST['image'])) {
+            $md5 = $_POST['md5'];
+            $sha1 = $_POST['sha1'];
+            $image = $_POST['image'];
+        
+            $dir = Yii::getPathOfAlias('webroot') . '/files/pictureBox/ignoredImages';
+
+            if (!file_exists($dir))
+                mkdir($dir, 0777);
+
+            $file = $image;
+            $temp = explode('.', $file);
+            $imageExt = end($temp);
+
+            $filePath = $dir . "/" . $md5 . '_' . $sha1 . '.' . $imageExt;
+
+            copy($image, $filePath);
+
+            $model = new ParsersIgnoreImages;
+            $model->md5 = $md5;
+            $model->sha1 = $sha1;
+            $model->image = $filePath;
+
+            if ($model->save()) {
+                echo "1";
+            }
+            else{
+                throw new Exception('errors', 1);
+                
+            }
+        } else throw new Exception("Присланы не все параметры", 1);
+        
+    }
+
+
 
     public function actionParseChecked()
     {
@@ -80,6 +119,102 @@ class DefaultController extends Controller
 
 
         ob_clean();
+        echo json_encode($return);
+
+
+    }
+
+    public function actionUpdateOptions()
+    {
+
+        $itemId = $_POST['id'];
+
+        $_POST['parents'] = json_decode($_POST['parents']);
+
+        if (isset($_POST['parents'])) {
+            foreach ($_POST['parents'] as $parent) {
+
+                if($parentModel = ParsersLinking::model()->find(array(
+                    'condition'=>'fromId=:fromId',
+                    'params'=>array(':fromId'=>$parent))
+                )){
+                    $parentId = $parentModel->toId;
+
+                    Yii::import('application.modules.catalog.models.CatItemsToItems');
+
+                    $item = new CatItemsToItems();
+
+                    $item->itemId = $parentId;
+                    $item->toItemId = $itemId;
+
+                    $item->save();
+                }
+
+               
+
+                
+            }
+
+        }else throw new Exception("Нету родительских опций", 1);
+        
+        
+
+        $return = array('code'=> true);
+
+
+        //ob_clean();
+        echo json_encode($return);
+
+
+    }
+
+    public function actionUpdateCategories()
+    {
+
+        $itemId = $_POST['id'];
+
+        $_POST['groups'] = json_decode($_POST['groups']);
+
+        if (isset($_POST['groups'])) {
+            foreach ($_POST['groups'] as $group_name) {
+
+                if($group_relation = ParsersCategoryConnection::model()->find(array(
+                    'condition'=>'connect_name=:connect_name',
+                    'params'=>array(':connect_name'=>$group_name))
+                )){
+
+                    Yii::import('application.modules.catalog.models.CatItemsToCat');
+
+                    $catItemsToCat = new CatItemsToCat();
+
+                    $catItemsToCat->itemId = $itemId;
+                    $catItemsToCat->catId = $group_relation->category_id;
+
+                    $catItemsToCat->save();
+
+                    $item = CatItem::model()->findByPk($itemId);
+                    if (isset($item->catId)) {
+                        if ($item->catId == 0) {
+                            $item->catId = $group_relation->category_id;
+
+                            $item->save();
+                        }
+                    }
+                   
+                }
+
+               
+
+                
+            }
+
+        }else throw new Exception("Нету категорий", 1);
+        
+
+        $return = array('code'=> true);
+
+
+        //ob_clean();
         echo json_encode($return);
 
 
@@ -184,17 +319,101 @@ class DefaultController extends Controller
 
         }
 
+        if ($tab == 'changedImages') {
+            $combined = ParsersLinking::model()->findAllByAttributes(array('filename' => $file), array('order' => 'id ASC'));
+
+
+            $parsedImages = array();
+
+            if ($combined) {
+                foreach ($combined as $item) {
+                    if (isset($item->linking->images) & isset($item->item->id)) {
+                        $newImages = [];
+
+                        $images = json_decode($item->linking->images);
+                        
+                        $parsedImages[$item->item->id]['item'] = $item;
+                        $parsedImages[$item->item->id]['images'] = [];
+
+                        $hashesMd5 = [];
+                        $hashesSha1 = [];
+
+                        foreach ($images as $image) {
+
+                            $hashMd5 = hash_file('md5', $image);
+                            $hashSha1 = hash_file('sha1', $image);
+
+                            if (ParsersIgnoreImages::model()->findByAttributes(["md5" => $hashMd5, 'sha1' => $hashSha1])) {
+                                continue;
+                            }
+
+                            if (!in_array($hashMd5, $hashesMd5) & !in_array($hashSha1, $hashesSha1)) {
+                            
+                                $parsedImages[$item->item->id]['images'][] = [
+                                    'md5' => $hashMd5,
+                                    'sha1' => $hashSha1,
+                                    'image' => $image,
+                                    'imageUrl' => str_replace(Yii::getPathOfAlias('webroot'), '', $image)
+                                ];
+
+                                $hashesMd5[] = $hashMd5;
+                                $hashesSha1[] = $hashSha1;
+                            }
+                        }
+
+                        $itemData = array();
+                        $datafile = Yii::getPathOfAlias('webroot') . '/files/pictureBox/catalogItem/' . $item->item->id . '/data.php';
+
+                        if(file_exists($datafile)){
+                            $itemData = require($datafile);
+
+
+                            foreach ($itemData['images'] as $image) {
+                                $hashMd5 = hash_file('md5', Yii::getPathOfAlias('webroot') . $image['original']);
+                                $hashSha1 = hash_file('sha1', Yii::getPathOfAlias('webroot') . $image['original']);
+
+
+                                foreach ($parsedImages[$item->item->id]['images'] as $key => $parsedImageOne) {
+                                    if ($parsedImageOne['md5'] == $hashMd5 & $parsedImageOne['sha1'] == $hashSha1) {
+                                        unset($parsedImages[$item->item->id]['images'][$key]);
+                                    }
+                                }
+                            }
+                        }
+
+                        if (count($parsedImages[$item->item->id]['images']) == 0) {
+                            unset($parsedImages[$item->item->id]);
+                        }
+                            
+
+                        
+                    }
+                    
+                }
+
+            }
+
+            $itemList = $parsedImages;
+        }
+
         if ($tab == 'changed') {
             $combined = ParsersLinking::model()->findAllByAttributes(array('filename' => $file), array('order' => 'id ASC'));
 
             if ($combined) {
                 foreach ($combined as $item) {
-                    if ($item->linking->price != $item->item->price || $item->linking->quantity != $item->item->quantity) {
-                        $itemList[] = $item;
+                    if (isset($item->linking) & isset($item->item)) {
+                        if ($item->linking->price != $item->item->price || $item->linking->quantity != $item->item->quantity) {
+                            $itemList[] = $item;
+                        }
                     }
+                    
                 }
 
             }
+        }
+
+        if ($tab == 'ignoredImages') {
+            $itemList = new ParsersIgnoreImages;
         }
 
         if ($tab == 'new' | $tab == 'newWithId') {
@@ -234,6 +453,10 @@ class DefaultController extends Controller
     
             }
 
+            if (!$ids) {
+                $ids = ["none"];
+            }
+
             // print_r($ids);
             // return;
 
@@ -264,7 +487,7 @@ class DefaultController extends Controller
             'filename' => $file,
             'itemList' => $itemList,
             'allItems' => $catItems,
-            'tab' => $tab
+            'tab' => $tab,
         ));
 
     }
@@ -277,42 +500,77 @@ class DefaultController extends Controller
     public function getSyncButtons($data, $row){
         $return = "<button type='button'  data-filename='{$data->filename}' class='composite btn btn-info' name='{$data->name}'>Объединить с ...</button>";
         if ($data->findedByArticle()){
-            $return .= "<form action='/parsers/default/syncCard' data-removeAfter='.item-$row' class='ajaxSubmit'>
+            $return .= "<form action='/parsers/default/syncCard' data-removeAfter='.item-{$data->id}' class='ajaxSubmit'>
                 <input type='hidden' name='ParsersLinking[fromId]' id='name' value='{$data->id}'><br/>
                 <input type='hidden' name='ParsersLinking[toId]' id='itemId' value='{$data->findedByArticle()}' >
                 <input type='hidden' name='ParsersLinking[filename]' id='itemId' value='{$data->filename}' >
                 <button type='submit' class='compositeRightNow btn btn-primary' data-id='{$data->findedByArticle()}' title=''>Привязать сразу по артиклю к (<a style='color:white;text-decoration:underline' href='" . $this->createUrl('/catalog/catItem/update', array('id' => $data->findedByArticle() )) . "'>{$data->findedByArticle()}</a>)</button></td>
-            </form>"; 
-
+            </form>";
         }
+        $images = json_decode($data->images);
+
+        if($images){
+
+                $return .= "<div style='display:none'><table id='images-" . str_replace('/', '', $data->id) . "'>
+                    <thead>
+                        <tr>
+                            <td>Изображение</td>
+                            <td>Сохранить его?</td>
+                        </tr>
+                    </thead>
+                    <tbody>";
+                        foreach ($images as $image){
+                            $imageUrl = str_replace(Yii::getPathOfAlias('webroot'), '', $image);
+                            $return .="<tr>
+                                <td><img src='{$imageUrl}' width: 100px></td>
+                                <td><input type='checkbox' name='images[]' value='{$image}'></td>
+                            </tr>";
+                        }
+                            
+                        
+                    $return .= "</tbody>
+                </table></div>"; 
+            }
 
         return $return;
     }
 
     public function getAddAsNewButton($data){ 
-        return '<button type="button" class="addAsNew" data-filename="{$data->filename}" data-id="{$data->id}" price="{$data->price}" name="{$data->name}" text="{$data->text}">Добавить как новый</button>';
+        return "<button type='button' class='addAsNew' data-filename='{$data->filename}' data-id='{$data->id}' data-price='{$data->price}' data-name='{$data->name}' data-images='{$data->images}'  data-parents='{$data->parents}' data-groups='{$data->groups}' data-text='{$data->text}'>Добавить как новый</button>";
     }
 
     public function actionLinking()
     {
 
-        $model = ParsersLinking::model()->findAll(array('order' => 'id DESC'));
+        $model = ParsersLinking::model()->findAll(array('order' => 'filename ASC'));
+        $buttons = array();
+
+        foreach ($model as $item) {
+            $filename = preg_replace('/\./', '', $item->filename);
+            if (!in_array($filename, $buttons)) {
+                $buttons[] = $filename;
+            }
+        }
 
         $this->render('linking',array(
-
+            'buttons' => $buttons,
             'items' => $model
         ));
     }
 
     public function actionIndex()
     {
+        $timeFile = array();
 
-        $timeFile = require(Yii::app()->basePath.'/../files/parsersData/time.txt');
+        $fileData =  $this->getFiles();
+
+        if(file_exists(Yii::app()->basePath.'/../files/parsersData/time.txt'));
+            $timeFile = require(Yii::app()->basePath.'/../files/parsersData/time.txt');
 
         $this->render('index',array(
             // 'models'=>$models,
             // 'return' => $return,
-            'fileListOfDirectory' => $this->getFiles(),
+            'fileListOfDirectory' => $fileData,
 
             'timeArray' => $timeFile
         ));
@@ -325,28 +583,32 @@ class DefaultController extends Controller
         $timeArray = array();
 
 
+        $parserDataDir = Yii::getPathOfAlias('webroot').'/files/parsersData/';
+        $parserTimeFile = $parserDataDir.'time.txt';
 
-        if ( ! is_writable(dirname(Yii::app()->request->scriptFile).'/files/parsersData/')) {
-            throw new Exception(dirname(Yii::app()->request->scriptFile).'/files/parsersData/' . "не может быть изменена. Недостаточно прав", 503);
+        if ( ! is_writable($parserDataDir)) {
+            throw new Exception($parserDataDir. "не может быть изменена. Недостаточно прав", 503);
             
         }
 
-        if ( ! file_exists(dirname(Yii::app()->request->scriptFile).'/files/parsersData/time.txt')) {
 
-            $myfile = fopen(dirname(Yii::app()->request->scriptFile).'/files/parsersData/time.txt', "w");
+
+        if ( ! file_exists($parserTimeFile)) {
+
+            $myfile = fopen($parserTimeFile, "w");
             fclose($myfile);
 
-            PictureBox::crPhpArr(array(), dirname(Yii::app()->request->scriptFile).'/files/parsersData/time.txt');
+            PictureBox::crPhpArr(array(), $parserTimeFile);
         }
         
-        if (file_exists(dirname(Yii::app()->request->scriptFile).'/files/parsersData/time.txt')) {
-            $timeArray = require(dirname(Yii::app()->request->scriptFile).'/files/parsersData/time.txt');
+        if (file_exists($parserTimeFile)) {
+            $timeArray = require($parserTimeFile);
         }
 
 
         foreach(glob(Yii::app()->basePath.'/jobs/*ParserJob.php') as $path) {  
 
-            $time = 0;
+
 
             $className = basename($path);
             $className = str_replace('.php', '', $className);
@@ -355,15 +617,20 @@ class DefaultController extends Controller
 
             $time = '';
 
-            foreach ($timeArray as $key => $value) {
-                if ($key == $class->getName()){
-                   $time = date("d.m.Y H:i", $value) ."<br/>";
+            if(count($timeArray)){
+                foreach ($timeArray as $key => $value) {
 
-                    
-                } else{
-                    $time = "Еще не выполнялась<br/>";
+                    if ($key == $class->getName()){
+                       $time = date("d.m.Y H:i", $value) ."<br/>";
+
+                       break;
+                        
+                    } else{
+                        $time = "Еще не выполнялась<br/>";
+                    }
                 }
             }
+            
 
 
             array_push ( $fileListOfDirectory, array('name' => $class->getName(), 'time' => $time, 'className' => $className) );
@@ -379,8 +646,11 @@ class DefaultController extends Controller
         $model=ParsersLinking::model()->findByPk($id);
 
         $stockModel = ParsersStock::model()->findByPk($model->fromId);
-        $stockModel->linked = 0;
-        $stockModel->save();
+        if (isset($stockModel)) {
+            $stockModel->linked = 0;
+            $stockModel->save();
+        }
+       
 
 
         ob_clean();

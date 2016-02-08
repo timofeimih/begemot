@@ -8,6 +8,7 @@ class m160000_123919_promo_order_set extends Migrations
 
 
         $tableData = Yii::app()->db->createCommand("SELECT * FROM promo ORDER BY id")->queryAll();
+
         foreach ($tableData as $key => $data) {
             $sql = "UPDATE promo SET `order`='" . $data['id'] ."' WHERE `id`='" . $data['id'] . "'";
             $this->execute($sql);
@@ -31,9 +32,17 @@ class m160000_123919_promo_order_set extends Migrations
 
     public function isConfirmed($returnBoolean = false){
         Yii::app()->db->schema->refresh();
-        $table = Yii::app()->db->createCommand("SELECT * FROM promo LIMIT 1")->queryRow();
+        $table = Yii::app()->db->createCommand("SHOW TABLES LIKE 'promo';")->queryRow();
 
-        $result = ($table['order'] > 0) ? true : false;
+        $result = false;
+        if($table){
+            $tableData = Yii::app()->db->createCommand("SELECT * FROM promo LIMIT 1")->queryRow();
+            $result = ($tableData['order'] > 0) ? true : false;
+            if(!$tableData){
+                $result = true;
+            }
+        }
+
         
 
         if($returnBoolean){

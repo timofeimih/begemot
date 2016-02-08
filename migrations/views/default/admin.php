@@ -1,7 +1,6 @@
 
 <h1>Миграция базы данных</h1>
-<?php echo $time?>
-<div class="center-block"><?php echo $return?></div>
+<div class="center-block"><?php echo $return?>(Переключатели меняются не сразу, а в течении нескольких секунд)</div>
 <table>
 	<thead>
 		<tr>
@@ -19,9 +18,9 @@
 			<td><?php echo $model->getDescription();?></td>
 			<td><?php echo $model->isConfirmed()?></td>
 			<td>
-				<?php if (is_bool($model->isConfirmed(true)) && !$model->isConfirmed(true)): ?>
+				<?php if ($model->isConfirmed(true) == false): ?>
 					<a href='?file=<?php echo get_class($model)?>&go=up' class="btn btn-primary btn-mini">Применить</a>
-				<?php elseif(is_bool($model->isConfirmed(true)) && $model->isConfirmed(false)): ?>
+				<?php elseif($model->isConfirmed(true) == true): ?>
 					<a href='?file=<?php echo get_class($model)?>&go=down' class="btn btn-warning btn-mini">Откатить</a>
 				<?php else: ?>
 					<a href='?file=<?php echo get_class($model)?>&go=up' class="btn btn-primary btn-mini">Применить</a>
