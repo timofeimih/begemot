@@ -30,7 +30,7 @@ class CatItemController extends Controller
         return array(
 
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
-                'actions' => array('delete', 'create', 'update', 'togglePublished','toggleTop','index', 'view', 'deleteItemToCat', 'tidyItemText', 'getItemsFromCategory', 'options', 'test'),
+                'actions' => array('delete', 'create', 'update','removeFromCat', 'togglePublished','toggleTop','index', 'view', 'deleteItemToCat', 'tidyItemText', 'getItemsFromCategory', 'options', 'test'),
                 'expression' => 'Yii::app()->user->canDo("Catalog")'
             ),
             array('deny',  // deny all users
@@ -73,10 +73,6 @@ class CatItemController extends Controller
 
                 } else $this->redirect(array('view', 'id' => $model->id));
 
-            }
-            else{
-                throw new Exception(json_encode($model->getErrors()), 1);
-                
             }
 
         }
@@ -212,7 +208,7 @@ class CatItemController extends Controller
 
             }
 
-            if (isset($_POST['items'])) {
+             if (isset($_POST['items'])) {
                 foreach ($_POST['items'] as $itemId) {
                     $item = new CatItemsToItems();
 
@@ -326,19 +322,6 @@ class CatItemController extends Controller
             $catItemToCat->delete();
         }
 
-        //Удаляем привязки к категориям
-        $ParsersLinkingRelations = ParsersLinking::model()->findAll('toId = '.$id);
-
-        foreach ($ParsersLinkingRelations as $parsersLinking){
-            
-
-            $parsersStock = $parsersLinking->linking;
-            $parsersStock->linked = 0;
-            $parsersStock->save();
-
-            $parsersLinking->delete();
-        }
-
         if (!isset($_GET['ajax']))
             $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
     }
@@ -379,6 +362,8 @@ class CatItemController extends Controller
         }
     }
 
+
+
     public function actionToggleTop($id)
     {
         $model = CatItem::model()->findByPk($id);
@@ -392,6 +377,14 @@ class CatItemController extends Controller
         }
     }
 
+    public function actionRemoveFromCat($id,$catId)
+    {
+        $model = $this->loadModel($id);
+        CatalogModule::checkEditAccess($model->authorId);
+        if (Yii::app()->request->isAjaxRequest) {
+            CatItemsToCat::model()->deleteAll(array('condition' => '`catId`=' . $catId . ' and `itemId`=' . $id));
+        }
+    }
 
     public function actionDeleteItemToCat($catId, $itemId)
     {

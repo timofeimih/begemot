@@ -126,6 +126,13 @@ class CatItem extends ContentKitModel
         echo "<input type='checkbox' {$checked} class='togglePublished' data-id= '{$this->id}'>";
     }
 
+    public function removeFromCategory()
+    {
+
+//        echo "<input type='checkbox' {$checked} class='togglePublished' data-id= '{$this->id}'>";
+        echo "<a  data-id= '{$this->id}'  class='removeBtn btn btn-primary btn-mini'>Убрать из раздела</a>";
+    }
+
     public static function getSale($id, $type = ''){
         
 
