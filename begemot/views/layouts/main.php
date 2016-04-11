@@ -70,7 +70,12 @@
                             ),
                         ),   
                 
-                        array('label'=>'SEO', 'url'=>array('/seo/seoPages/admin'),'visible'=>Yii::app()->hasModule('seo')),
+                        array('label'=>'SEO',
+                            'items'=>array (
+                                ['url'=>array('/seo/seoPages/admin'),'visible'=>Yii::app()->hasModule('seo'),'label'=>'Анализ страниц'],
+                                ['url'=>array('/seo/title/index'),'visible'=>Yii::app()->hasModule('seo'),'label'=>'Редактор мета-тегов']
+                            )
+                        ),
                         array('label'=>'Login', 'url'=>array('/begemot'), 'visible'=>Yii::app()->user->isGuest),
                         array('label'=>'Logout ('.Yii::app()->user->name.')', 'url'=>array('/begemot/default/logout'), 'visible'=>!Yii::app()->user->isGuest)
                 ),

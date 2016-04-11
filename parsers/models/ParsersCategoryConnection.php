@@ -42,7 +42,7 @@ class ParsersCategoryConnection extends CActiveRecord
     {
         return array(
             'id' => 'ID',
-            'connect_name' => 'Названия категория из парсера',
+            'connect_name' => 'Название group для парсера',
             'category_id' => 'Id настоящей категории',
         );
     }

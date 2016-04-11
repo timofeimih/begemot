@@ -371,10 +371,12 @@ $this->menu = require dirname(__FILE__).'/commonMenu.php';
 Алгоритм работы таков. После добавления изображения, надо указывать в парамметрах "video_url" урл для видео и нажимать на сохранить зоголовок каждый раз. Парамметр видео урл находится на месте "alt", то есть если сохранил заголовок, то там и должно быть урл видео.
 <br/>
 Сама ссылка должна содержать только сам код ролика(Например: Ghnz9pLsAc)
-<?php 
+<br/>
+ Пусть к файлу с конфигом: /protected/config/catalog/categoryItemVideoSettings.php
+<?php
         
     $picturesConfig = array();
-    $configFile = Yii::getPathOfAlias('webroot').'/protected/config/catalog/categoryItemPictureSettings.php';
+    $configFile = Yii::getPathOfAlias('webroot').'/protected/config/catalog/categoryItemVideoSettings.php';
     if (file_exists($configFile)){
 
         $picturesConfig = require($configFile);

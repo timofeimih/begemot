@@ -18,14 +18,21 @@ return array(
         'application.modules.vars.*',
         'application.modules.jobs.components.*', // components for jobs
         'application.jobs.*',
-    ), 
+    ),
     'language' => 'ru',
     'modules' => array(
         'pictureBox',
         'begemot',
         'catalog',
         'jobs',
-        'pages',
+        'pages'=>[
+            'tidyConfig'=>array(
+                'Three'=>array(
+                    'imageTag'=>'innerBig',
+                    'templateFile'=>'application.config.tidyThreeTamplate',
+                ),
+            )
+        ],
         'parsers',
         'elfinder',
         'gallery',
@@ -156,7 +163,7 @@ return array(
         ),
 
         // uncomment the following to enable URLs in path-format
-        
+
         'urlManager' => array(
 
             'urlFormat' => 'path',
@@ -164,8 +171,8 @@ return array(
             'caseSensitive' =>true,
             'urlSuffix' => '.html',
             'rules' => array(
-                
-                
+
+
                 '/admin' => '/begemot',
                 //модуль gallery
                 '/photo' => array('gallery/siteGallery/index'),
@@ -189,9 +196,9 @@ return array(
                 'video' => '/site/video'
             )
 
-        ), 
-        
-        
+        ),
+
+
 //        'errorHandler' => array(
 //            // use 'site/error' action to display errors
 //            'errorAction' => 'site/error',
@@ -235,7 +242,7 @@ return array(
 //                        'baseUrl' => 'http://www.buggy-motor.ru',
 //                    ),
         /*'cache' => array(
-            'class' => 'system.caching.CDbCache', 
+            'class' => 'system.caching.CDbCache',
         ),*/
 
     ),

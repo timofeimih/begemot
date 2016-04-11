@@ -9,11 +9,11 @@ class MaxSizeFilter extends BaseFilter{
         $height = $im->getImageHeight();
 
         if ($width > $this->param['width']){
-            $im->resizeImage($this->param['width'],null,2,0.9);
+            $im->resizeImage($this->param['width'],null,Imagick::FILTER_TRIANGLE,0.9);
         }
 
         if ($height > $this->param['height']){
-            $im->resizeImage(null,$this->param['height'],2,0.9);
+            $im->resizeImage(null,$this->param['height'],Imagick::FILTER_TRIANGLE,0.9);
 
         }
 

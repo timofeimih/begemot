@@ -15,7 +15,7 @@ class ChangeCatItemsJob extends BaseJob{
 
 
 
-	public function runJob()
+	public function runJob($parameters=null)
 	{
         $logMessage = 'Зашли!';
         Yii::log($logMessage, 'trace', 'cron');
@@ -40,56 +40,54 @@ class ChangeCatItemsJob extends BaseJob{
 
 		    foreach ($json['items'] as $itemParsed) {
 
-		      $new = new ParsersStock;
-		      $itemParsed = (array)$itemParsed;
-		      $itemParsed['filename'] = $filename;
-		      $itemParsed['name'] = substr($itemParsed['name'], 0, 99);
+				$new = new ParsersStock;
+				$itemParsed = (array)$itemParsed;
+				$itemParsed['filename'] = $filename;
+				$itemParsed['name'] = substr($itemParsed['name'], 0, 255);
 
-		      if (ParsersLinking::model()->find(array(
-		        'condition'=>'fromId=:fromId',
-		          'params'=>array(':fromId'=>$itemParsed['id'])))
-		      ) {
-		        $itemParsed['linked'] = 1;
-		      }
+				if (ParsersLinking::model()->find(array(
+				'condition'=>'fromId=:fromId',
+				  'params'=>array(':fromId'=>$itemParsed['id'])))
+				) {
+				$itemParsed['linked'] = 1;
+				}
 
-		      if(isset( $json['images'][$itemParsed['id']] )){
+				if(isset( $json['images'][$itemParsed['id']] )){
 
+					$hashes = [];
+					$images = [];
+					foreach ($json['images'][$itemParsed['id']] as $image) {
 
-		      	$hashes = [];
-		      	$images = [];
-		      	foreach ($json['images'][$itemParsed['id']] as $image) {
+						if (file_exists($image)) {
+							$hash = hash_file('md5', $image);
+				  		if (!in_array($hash, $hashes)) {
+				  			$images[] = $image;
+				  			$hashes[] = $hash;
+				  		}
+						}
+						
+					}
+					$itemParsed['images'] = json_encode($images);
+				}
 
-		      		if (file_exists($image)) {
-		      			$hash = hash_file('md5', $image);
-			      		if (!in_array($hash, $hashes)) {
-			      			$images[] = $image;
-			      			$hashes[] = $hash;
-			      		}
-		      		}
-		      		
-		      	}
-		      	$itemParsed['images'] = json_encode($images);
-		      }
+				if(isset( $json['childs'][$itemParsed['id']] )){
 
-		      if(isset( $json['childs'][$itemParsed['id']] )){
+					$itemParsed['parents'] = json_encode($json['childs'][$itemParsed['id']]);
+				}
 
-		      	$itemParsed['parents'] = json_encode($json['childs'][$itemParsed['id']]);
-		      }
+				if(isset( $json['groups'][$itemParsed['id']] )){
 
-		      if(isset( $json['groups'][$itemParsed['id']] )){
+					$itemParsed['groups'] = json_encode($json['groups'][$itemParsed['id']]);
+				}
 
-		      	$itemParsed['groups'] = json_encode($json['groups'][$itemParsed['id']]);
+				$new->attributes = $itemParsed;
 
-		      }
-
-		      $new->attributes = $itemParsed;
-
-		      if (!$new->save()){
-                  print_r($new->errors);
-                  Yii::log(print_r($new->errors), 'trace', 'cron');
-              } else{
-              	Yii::log("Сохранил в базу запись с ID: " . $itemParsed['id'], 'trace', 'cron');
-              }
+				if (!$new->save()){
+				  print_r($new->errors);
+				  Yii::log(print_r($new->errors), 'trace', 'cron');
+				} else{
+					Yii::log("Сохранил в базу запись с ID: " . $itemParsed['id'], 'trace', 'cron');
+				}
 		    }
 
 		    $items = ParsersLinking::model()->findAllByAttributes(array('filename' => $filename), array('order' => 'id ASC'));
