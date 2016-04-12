@@ -9,6 +9,7 @@ return array(
     'import' => array(
         'application.models.*',
         'application.components.*',
+        'application.modules.begemot.extensions.giix.components.*',
         'application.modules.begemot.components.NestedDynaTree.*',
         'application.modules.begemot.extensions.crontab.*',
         'application.modules.catalog.models.CatItem',
