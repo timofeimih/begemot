@@ -49,39 +49,48 @@ class DefaultController extends Controller
         $this->flipFiles($file1, $file2);
 
         //Перекидываем title и alt
-        $title1 = (isset($images[$pictureid1]['title']) ? $images[$pictureid1]['title'] : '');
-        $alt1 = (isset($images[$pictureid1]['alt']) ? $images[$pictureid1]['alt'] : '');
+        $titleTmp = (isset($images[$pictureid1]['title']) ? $images[$pictureid1]['title'] : '');
+        $altTmp = (isset($images[$pictureid1]['alt']) ? $images[$pictureid1]['alt'] : '');
 
         $images[$pictureid1]['title'] = isset($images[$pictureid2]['title']) ? $images[$pictureid2]['title'] : '';
         $images[$pictureid1]['alt'] = isset($images[$pictureid2]['alt']) ? $images[$pictureid2]['alt'] : '';
 
-        $images[$pictureid2]['title'] = $title1;
-        $images[$pictureid2]['alt'] = $alt1;
+        $images[$pictureid2]['title'] = $titleTmp;
+        $images[$pictureid2]['alt'] = $altTmp;
 
 
         foreach ($filters as $filterName => $filterUselessData) {
+            echo '<br>';
+            echo '<br>';
+            echo 'Имя фильтра:'.$filterName.'<br>';
 
             if (isset($images[$pictureid1][$filterName])) {
+                echo 'Существует!<br>';
+                $fileNameArray = explode('.', $images[$pictureid1]['original']);
 
-                $ext = end(explode('.', $images[$pictureid1]['original']));
+                $ext = end($fileNameArray);
                 $file1 = $dir . '/files/pictureBox/' . $id . '/' . $elementId . '/' . $pictureid1 . '_' . $filterName . '.' . $ext;
                 $file2 = $dir . '/files/pictureBox/' . $id . '/' . $elementId . '/' . $pictureid2 . '_' . $filterName . '.' . $ext;
 
                 if (isset($images[$pictureid2][$filterName])) {
-                    $tmp = $images[$pictureid2][$filterName];
+
                     $images[$pictureid2][$filterName] = '/files/pictureBox/' . $id . '/' . $elementId . '/' . $pictureid2 . '_' . $filterName . '.' . $ext;
                     $images[$pictureid1][$filterName] = '/files/pictureBox/' . $id . '/' . $elementId . '/' . $pictureid1 . '_' . $filterName . '.' . $ext;
                 } else {
                     $images[$pictureid2][$filterName] = '/files/pictureBox/' . $id . '/' . $elementId . '/' . $pictureid2 . '_' . $filterName . '.' . $ext;
                     unset($images[$pictureid1][$filterName]);
                 }
-            } else if (isset($images[$pictureid2]['original'])) {
-                $ext = end(explode('.', $images[$pictureid2]['original']));
+            } else if (isset($images[$pictureid2][$filterName])) {
+                echo 'Не cуществует!<br>';
+                $fileNameArray = explode('.', $images[$pictureid2]['original']);
+
+                $ext = end($fileNameArray);
                 $file1 = $dir . '/files/pictureBox/' . $id . '/' . $elementId . '/' . $pictureid2 . '_' . $filterName . '.' . $ext;
                 $file2 = $dir . '/files/pictureBox/' . $id . '/' . $elementId . '/' . $pictureid1 . '_' . $filterName . '.' . $ext;
 
                 $images[$pictureid1][$filterName] = '/files/pictureBox/' . $id . '/' . $elementId . '/' . $pictureid1 . '_' . $filterName . '.' . $ext;
                 unset($images[$pictureid2][$filterName]);
+
             } else {
                 continue;
             }
@@ -441,9 +450,10 @@ class DefaultController extends Controller
                 //die($fullFilePath);
                 if (file_exists($fullFilePath)) {
                     unlink($fullFilePath);
-                    unset($data['images'][$pictureId][$filterName]);
-                    PictureBox::crPhpArr($data, Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/data.php');
-                }
+                 }
+                unset($data['images'][$pictureId][$filterName]);
+                PictureBox::crPhpArr($data, Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/data.php');
+
             }
         }
     }
@@ -653,25 +663,37 @@ class DefaultController extends Controller
 
     private function flipFiles($file1, $file2)
     {
-        if (file_exists($file1)) {
-            rename($file1, $file1 . '_tmp');
-        } else {
+        echo 'Меняем файлы:<br>';
+        echo $file1.'<br>';
+        echo $file2.'<br>';
 
+        if (!file_exists($file1) && !file_exists($file2)) {
+            echo 'Оба файла не существует. Нечего менять местами'.'<br>';
             return;
-            throw new Exception(__FILE__ . ' функция flipFiles. Отсутствует первый файл для переименования.');
         }
 
-        if (file_exists($file2)) {
-            rename($file2, $file1);
+        if (file_exists($file1)) {
+            echo 'Первый файл существует. Переименовываем его во временный '.$file1 . '_tmp'.'<br>';
+            rename($file1, $file1 . '_tmp');
+
+            if (file_exists($file2)) {
+                rename($file2, $file1);
+                rename($file1. '_tmp', $file2);
+            } else {
+                rename($file1. '_tmp', $file2);
+            }
+
         } else {
-            throw new Exception(__FILE__ . ' функция flipFiles. Отсутствует второй файл для переименования.');
+            echo 'Первый файл НЕ существует.'.'<br>';
+            if (file_exists($file2)){
+                echo 'Второй файл существует, поэтому просто.'.'<br>';
+                rename($file2,$file1);
+                return;
+            }
+  
         }
 
-        if (file_exists($file1 . '_tmp')) {
-            rename($file1 . '_tmp', $file2);
-        } else {
-            throw new Exception(__FILE__ . ' функция flipFiles. Отсутствует второй файл для переименования.');
-        }
+
     }
 
 }
