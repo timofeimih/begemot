@@ -2,10 +2,7 @@
 /* @var $this CatItemController */
 /* @var $model CatItem */
 
-$this->breadcrumbs = array(
-    'Cat Items' => array('index'),
-    'Manage',
-);
+
 
 $this->menu = require dirname(__FILE__) . '/../catItem/commonMenu.php';
 ?>

@@ -139,7 +139,7 @@ class SiteController extends Controller {
 
        // $criteria->group = 'item.id';
         $criteria->distinct = true;
-        $criteria->order = 't.order ASC';
+        $criteria->order = 't.order DESC';
 
         if (isset($_GET['sort'])) {
            $sort = ($_GET['sort'] == 'asc') ? 'asc' : 'desc';
