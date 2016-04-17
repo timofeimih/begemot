@@ -132,8 +132,10 @@ class CWebParser
         $processId = $this->processId;
 
         $webParserProcess = WebParserProcess::model()->findByPk($processId);
-
-        return $webParserProcess->status;
+        if (!is_null($webParserProcess))
+            return $webParserProcess->status;
+        else
+            return 'Процесса не существует!';
 
     }
 
