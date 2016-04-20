@@ -471,7 +471,7 @@ class DefaultController extends Controller
 
         if ($tab == 'allSynched') {
             $itemList = new ParsersLinking;
-
+            
             $itemList->filename = $file;
         }
 
