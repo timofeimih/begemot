@@ -86,6 +86,8 @@ class CWebParser
 
     public function CWebParser($parserName, $host, $scenario, $processId)
     {
+        $this->log('==================================================================================================');
+        $this->log('==================================================================================================');
         $this->log('Запускаем парсер ' . $parserName . ' хост: ' . $host . ' Id процесса:' . $processId);
         Yii::import('begemot.extensions.parser.models.*');
 
@@ -350,9 +352,13 @@ class CWebParser
                     $searchHrefsDocumentPart = pq($navigationRule);
 
                     //Перебираем все части кода которые нашли по правилу сценария
+                    $this->log('Правило:'.$navigationRule);
+                    $this->log('Вернуло массив данных с количеством элементов:'.count($searchHrefsDocumentPart));
                     foreach ($searchHrefsDocumentPart as $navigationPart) {
                         //Создаем ScenarioTask для каждого найденного урл
+
                         $urlArray = $this->getAllUrlFromContent($navigationPart);
+                        $this->log('Ищем url в полученных данных. Нашли:'.count($urlArray));
                         foreach ($urlArray as $url) {
 
                             $target_type = WebParserDataEnums::TASK_TARGET_DATA_TYPE_URL;
@@ -964,7 +970,7 @@ class CWebParser
             $url_data = parse_url($url);
 
             if (isset($url_data['host'])) {
-                if ($url_data['host'] != $this->host) {
+                if ($url_data['host'] != $this->host && $url_data['host'] != 'www.'.$this->host) {
                     unset ($urlArray[$key]);
                 } else {
                     $urlArray[$key] = $this->removeHostFromUrl($url);

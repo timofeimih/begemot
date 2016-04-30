@@ -190,7 +190,7 @@ class JobManager extends CApplicationComponent{
 
     }
 
-	private function saveConfigFile($arrayToWrite)
+	public function saveConfigFile($arrayToWrite)
 	{
 //        $logMessage = 'Пишем в файл данные, путь: '.$this->dir . 'cronConfig.php';
 //        Yii::log($logMessage,'trace','cron');
@@ -278,6 +278,13 @@ class JobManager extends CApplicationComponent{
 				$item = (array) $item;
 
 				if ($item['executable'] == true) {
+					if (isset($item['type'])&&$item['type']=='manual'){
+						$logMessage = 'JobManager runAll - Проверяем задачу '.$filename.' Текущая метка:'.time();
+						Yii::log($logMessage,'trace','cron');
+						$logMessage = 'JobManager runAll - Пропускаем. Задача для ручного режима!';
+						Yii::log($logMessage,'trace','cron');
+						continue;
+					}
                     $logMessage = 'JobManager runAll - Проверяем задачу '.$filename.' Текущая метка:'.time();
                     Yii::log($logMessage,'trace','cron');
 

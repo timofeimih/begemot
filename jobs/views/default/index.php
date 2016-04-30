@@ -24,32 +24,53 @@ $this->menu = array(
             <?php foreach($itemList as $key => $item): ?>
                 <tr class='item-<?php echo $number ?>'>
                     <td><?php echo $key?></td>
-                    <td><?php if(isset($item['executable'])) echo ($item['executable'] == true) ? "Да" : "Нет"?></td>
-                    <td class='period'><?php $jobManager = new JobManager(); echo $jobManager->getPeriodOfItem($key);?></td>
+                    <td><?php
+                        if (isset($item['executable']))
+                            echo ($item['executable'] == true) ? "Да" : "Нет"?></td>
+                    <td class='period'><?php
+
+                        if (isset($item['type'])&&$item['type']=='manual'){
+                            echo 'Ручной режим';
+                        } else {
+                            $jobManager = new JobManager(); echo $jobManager->getPeriodOfItem($key);
+                        }
+
+
+                        ?></td>
 
                     <td>
-                        <?php if ($item['lastExecuted'] == 0) {
+                        <?php
+                        if ($item['lastExecuted'] == 0) {
                              echo "Еще не выполнялась<br/>";
                         } else  echo date("d.m.Y H:i", $item['lastExecuted']) ."<br/>"; ?>
                     </td>
                     <td>
                         <input type="button"
-                               class='btn btn-primary turnOnOff'
+                               class='btn-mini btn-primary turnOnOff'
                                data-name='<?php echo $key?>'
                                data-turn='1'
                                value='Включить'
                                style='display: <?php echo ($item['executable'] == true) ? 'none' : 'inline'?>'>
                         <input type="button"
-                               class='btn btn-danger turnOnOff'
+                               class='btn-mini btn-danger turnOnOff'
                                data-name='<?php echo $key?>'
                                data-turn='0'
                                value='Отключить'
                                style='display: <?php echo ($item['executable'] == true) ? 'inline' : 'none'?>'>
                         <input type="button"
-                               class='btn btn-danger removeTask'
+                               class='btn-mini btn-danger removeTask'
                                data-name='<?php echo $key?>'
                                value='Удалить задачу'>
-                        <input type="button" name='<?php echo $key?>' class='btn btn-info changeTime' value='Поменять период'>
+                        <input type="button" name='<?php echo $key?>' class='btn-mini btn-info changeTime' value='Поменять период'>
+
+                        <?php
+                        if (isset($item['type'])&&$item['type']=='manual'):?>
+                            <input type="button"
+                                   class='btn-mini btn-primary manualStart'
+                                   data-name='<?php echo $key?>'
+                                   data-turn='1'
+                                   value='Принудительный запуск'>
+                        <?php endif;?>
                         <input type="hidden" name='min' value='<?php echo (isset($item['min'])) ? $item['min'] : ""?>'>
                         <input type="hidden" name='hour' value='<?php echo (isset($item['hour'])) ? $item['hour'] : ""?>'>
                         <input type="hidden" name='day' value='<?php echo (isset($item['day'])) ? $item['day'] : ""?>'>
@@ -122,6 +143,8 @@ $this->menu = array(
 </div><!-- /.modal -->
 
 <script>
+
+
     $(document).on("click", ".turnOnOff", function(){
         var button = $(this);
         var params = {'name': $(this).attr("data-name"), 'turn': $(this).attr("data-turn")};
@@ -137,7 +160,25 @@ $this->menu = array(
         });
 
     })
+    $(document).on("click", ".manualStart", function(){
+        var button = $(this);
+        var params = {'name': $(this).attr("data-name")};
 
+        button.val('Выполняется...');
+
+        $.post('/jobs/default/manualRunJob/', params,  function(data){
+            $(".success").html("Задача запустилась").fadeIn();
+            button.val('Задача запустилась');
+            $(".doing").fadeOut();
+
+            setTimeout(function(){$(".success").fadeOut()}, 10000);
+            location.reload();
+        }).fail(function(){
+            alert("Не вышло");
+        });
+
+
+    })
     $(document).on("click", ".removeTask", function(){
         var button = $(this);
         var params = {'name': $(this).attr("data-name")};

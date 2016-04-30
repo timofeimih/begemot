@@ -301,7 +301,7 @@ class DefaultController extends Controller
         $tempfile = require(dirname(Yii::app()->request->scriptFile) . "/files/parsersData/time.txt");
 
 
-        echo date("d.m.Y H:i", $tempfile[$class->getName()]);
+     //   echo date("d.m.Y H:i", $tempfile[$class->getName()]);
 
 
     }

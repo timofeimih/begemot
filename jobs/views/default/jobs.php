@@ -28,6 +28,10 @@ $this->menu = array(
                        data-name='<?php echo $item?>'
                        value='Запустить'>
                 <input type="button"
+                       class='btn btn-inverse manualStart'
+                       data-name='<?php echo $item?>'
+                       value='Ручной режим'>
+                <input type="button"
                        class='btn btn-primary setTask'
                        data-name='<?php echo $item?>'
                        data-turn='0'
@@ -103,6 +107,30 @@ $this->menu = array(
 </div><!-- /.modal -->
 
 <script>
+
+    $(document).on("click", ".manualStart", function(){
+
+        var button = $(this);
+        var params =
+        {
+            'name': $(this).attr("data-name"),
+            'type':'manual'
+        };
+        button.val('Делается...')
+
+        $(".doing").html("делается").fadeIn();
+        $.post('/jobs/default/runJob/', params,  function(data){
+            $(".success").html("Задача запустилась").fadeIn();
+            button.val('Запустить')
+            $(".doing").fadeOut();
+
+            setTimeout(function(){$(".success").fadeOut()}, 10000);
+        }).fail(function(){
+            alert("Не вышло");
+        });
+
+    })
+
     $(document).on("click", ".removeTask", function(){
         var button = $(this);
         var params = {'name': $(this).attr("data-name")};

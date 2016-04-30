@@ -83,8 +83,8 @@ class ChangeCatItemsJob extends BaseJob{
 				$new->attributes = $itemParsed;
 
 				if (!$new->save()){
-				  print_r($new->errors);
-				  Yii::log(print_r($new->errors), 'trace', 'cron');
+
+				  Yii::log(print_r($new->getErrors(),true), 'trace', 'cron');
 				} else{
 					Yii::log("Сохранил в базу запись с ID: " . $itemParsed['id'], 'trace', 'cron');
 				}
