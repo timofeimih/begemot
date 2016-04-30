@@ -101,10 +101,9 @@ class PBox {
             return '<img src=""/>';
         }
         
-    }  
+    }
 
-    public function getFirstImage ($tag){
-
+    public function getFirstImage($tag){
         if (is_null($this->favPictures )){
             $array = $this->pictures;
         } else{
@@ -112,14 +111,14 @@ class PBox {
         }
         if (is_array($array)){
             $id = key($array);
+          //  return 'http://www.moshovercraft.ru/files/pictureBox/catalogItem/68/20_innerSmall.JPG?tmp=22';
 
             return $this->getImage($id, $tag);
         } else{
-            return '';
+            return 'no images';
         }
 
     }
-
 
     public function getImageCount(){
         return count($this->pictures);
