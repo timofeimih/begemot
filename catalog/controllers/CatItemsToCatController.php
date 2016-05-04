@@ -96,7 +96,7 @@ class CatItemsToCatController extends Controller
     	));
 
     	$parent_id = CatCategory::model()->findByPk($cat_id)->pid;
-    	$root_id = CatCategory::model()->findByPk($parent_id)->pid;
+    	//$root_id = CatCategory::model()->findByPk($parent_id)->pid;
 		$table = CatItemsToCat::model()->tableName();
 		$maxOrderValue = (Yii::app()->db->createCommand()
 					->select('max(`order`) as max')
@@ -104,12 +104,29 @@ class CatItemsToCatController extends Controller
 					->queryScalar()) + 1;
 
     	while (true) {
+
+			$attr = [
+				'itemId'=>$item_id,
+				'catId'=>$parent_id
+			];
+			$throughCatItemToCat = CatItemsToCat::model()->findByAttributes($attr);
+            echo $item_id.' '.$parent_id;
 			// CHECKED
 			if ($value == 1) {
 
-				$sql = "INSERT INTO $table (itemId, catId, `order`, is_through_display_child) VALUES (:itemId, :catId, :order, 1)";
-				$parameters = array(":itemId"=>$item_id, ":catId"=>$parent_id, ":order"=>$maxOrderValue);
-				Yii::app()->db->createCommand($sql)->execute($parameters);
+				if (is_null($throughCatItemToCat)) {
+
+					$sql = "INSERT INTO $table (itemId, catId, `order`, is_through_display_child,through_display_count) VALUES (:itemId, :catId, :order, 1,1)";
+					$parameters = array(":itemId" => $item_id, ":catId" => $parent_id, ":order" => $maxOrderValue);
+					Yii::app()->db->createCommand($sql)->execute($parameters);
+
+					$maxOrderValue++;
+				} else {
+                    echo 'увеличиваем количество мнимых карточек
+                    ';
+					$throughCatItemToCat->through_display_count++;
+					$throughCatItemToCat->save();
+				}
 
 				if (CatCategory::model()->findByPk($parent_id)->pid == -1) {
 	    			break;
@@ -125,7 +142,14 @@ class CatItemsToCatController extends Controller
     					':itemId' => $item_id,
     					':catId' => $parent_id
     				)
-    			))->delete();
+    			));
+
+                if ($itemsToCat->through_display_count==1){
+                    $itemsToCat->delete();
+                } else {
+                    $itemsToCat->through_display_count--;
+                    $itemsToCat->save();
+                }
 
     			if ($cat_level == -1) {
 	    			break;
@@ -136,6 +160,7 @@ class CatItemsToCatController extends Controller
 
 	    	$parent_id = CatCategory::model()->findByPk($parent_id)->pid;
 	    }
+
     	$model->through_display = $value;
     	$model->save();
    }
