@@ -29,7 +29,8 @@ class ChangeCatItemsJob extends BaseJob{
 
 			Yii::log("Старт сбора данных с " . $file, 'trace', 'catItemJob');
 			$websiteName = Yii::app()->params['adminEmail'];
-            echo $file;
+            echo $file.'
+            ';
 		    $json = require($file); 
 
 		    $filename = $json['name'];
@@ -94,24 +95,24 @@ class ChangeCatItemsJob extends BaseJob{
 
 		    if (!$items) {
 
-		      $to = Yii::app()->params['adminEmail'];
-		      if(Yii::app()->params['programmerEmail']){
-		      	$to = " ," . Yii::app()->params['programmerEmail'];
-		      }
-
-		      $subject = "Задание не удалось выполнить($filename)";
-
-		      $headers = "From: susan@example.com\r\n";
-		      $headers .= "Reply-To: susan@example.com\r\n";
-		      $headers .= "CC: susan@example.com\r\n";
-		      $headers .= "MIME-Version: 1.0\r\n";
-		      $headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
-
-		      $message = "Не удалось найти карточек для парсера $filename";
-
-		      mail($to, $subject, $message, $headers);
-
-		      echo 'no changes';
+//		      $to = Yii::app()->params['adminEmail'];
+//		      if(Yii::app()->params['programmerEmail']){
+//		      	$to = " ," . Yii::app()->params['programmerEmail'];
+//		      }
+//
+//		      $subject = "Задание не удалось выполнить($filename)";
+//
+//		      $headers = "From: susan@example.com\r\n";
+//		      $headers .= "Reply-To: susan@example.com\r\n";
+//		      $headers .= "CC: susan@example.com\r\n";
+//		      $headers .= "MIME-Version: 1.0\r\n";
+//		      $headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
+//
+//		      $message = "Не удалось найти карточек для парсера $filename";
+//
+//		      mail($to, $subject, $message, $headers);
+//
+//		      echo 'no changes';
 		      //return true;
 
 		      //exit();
@@ -119,10 +120,13 @@ class ChangeCatItemsJob extends BaseJob{
 
 	        $changed = array();
 	        Yii::import('application.modules.catalog.models.CatItemsToItems');
-
+            echo $logMessage = 'Перебираем все спарсенные элементы и обновляем те что уже имеют привязку:';
+            Yii::log($logMessage, 'trace', 'cron');
 		    foreach ($items as $item) {
-		    	if(isset($item->linking) & isset($item->item)){
 
+		    	if(isset($item->linking) && isset($item->item)){
+                    echo $logMessage = $item->linking->name;
+                    Yii::log($logMessage, 'trace', 'cron');
 		    		$changedParents = '';
 
 		    		if (isset($item->linking->parents)) {
@@ -135,11 +139,14 @@ class ChangeCatItemsJob extends BaseJob{
 		                    ));
 
 		                    $parentId = $parentModel->toId;
-
-			                if(! CatItemsToItems::model()->find(array(
-			                    'condition'=>'itemId=:itemId',
-			                    'params'=>array(':itemId'=>$parentId))
-			                )){
+                            echo 'Ищем связи по itemId в CatItemsToItems по:'.$parentId;
+                            $relations = CatItemsToItems::model()->find(array(
+                                'condition'=>'itemId=:parentId and toItemId=:toItemId',
+                                'params'=>array(':parentId'=>$parentId,':toItemId'=>$item->item->id)));
+                            echo 'надено:'.count($relations);
+			                if(count($relations)==0)
+			                {
+                                echo 'Создаем связь!';
 			                    $currentItemId = $item->item->id;
 
 			                    $CatItemsToItems = new CatItemsToItems();
@@ -152,11 +159,7 @@ class ChangeCatItemsJob extends BaseJob{
 			                    $changedParents .= $item->item->name . ", ";
 			                }
 
-			               
-
-			                
 			            }
-
 			        }
 
 
