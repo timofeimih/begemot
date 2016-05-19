@@ -1,27 +1,34 @@
 <?php
 /* Для того чтобы экземпляр класса рассмативался как файл для парсинга данных, его название должно заканчиваться на ParserJob.php (Пример названия: ArgoParserJob.php) */
 class BaseParser extends BaseJob{
-    protected $items = array();
-    public $itemsImages = array();
-    public $itemsChilds = array();
-    public $itemsGroup = array();
+    protected $items = [];
+    public $itemsImages = [];
+    public $itemsChilds = [];
+    public $itemsGroup = [];
+    public $itemsModif = [];
     protected $time = 0;
     protected $name = '';
 
 
-    public function addItem($id, $price, $name, $text, $quantity)
+    public function addItem($id, $price, $name, $text, $quantity,$anotherParams=null)
     {
 
         $name = str_replace('&quot;',"\"",  $name);
         $text = str_replace('&quot;', "'",$text);
 
-        $this->items[] = array(
+        $itemsArray = array(
             'id' => $id,
             'price' => $price,
             'name' => $name,
             'text' => $text,
             'quantity' => $quantity,
         );
+
+        if (!is_null($anotherParams)){
+            $itemsArray['anotherParams'] = $anotherParams;
+        }
+
+        $this->items[] =$itemsArray;
 
     }
 
@@ -55,6 +62,7 @@ class BaseParser extends BaseJob{
                 'images'=>$this->itemsImages,
                 'childs'=>$this->itemsChilds,
                 'groups'=>$this->itemsGroup,
+                'modifs'=>$this->itemsModif,
 
             )
         );

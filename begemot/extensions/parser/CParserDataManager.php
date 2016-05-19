@@ -118,6 +118,14 @@ class CParserDataManager
         return $resultArray;
     }
 
+    public function getModifArray (){
+
+
+
+
+        return [];
+    }
+
     public function getChildsGroupsArray (){
 
         $WebParserDataArray = WebParserData::model()->findAll(array(
