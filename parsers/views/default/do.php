@@ -501,6 +501,15 @@ require(dirname(__FILE__).'/../menu.php');
 		            alert(data.responseText);
 		        });
 			}
+
+			if (button.attr("data-modifs") != "") {
+
+				$.post("/parsers/default/updateModifs", {"fromId": button.attr("data-id"), 'id': toId, 'modifs': button.attr("data-modif")}, function(data){
+
+				}).fail(function(data){
+					alert(data.responseText);
+				});
+			}
 		})
 
 	})
