@@ -84,7 +84,7 @@ class DefaultController extends Controller
 			
 		}
 
-		
+		$this->layout = 'begemot.views.layouts.column1';
 
 
 		$this->render('admin',array(

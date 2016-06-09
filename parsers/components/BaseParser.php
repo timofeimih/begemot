@@ -8,8 +8,81 @@ class BaseParser extends BaseJob{
     public $itemsModif = [];
     protected $time = 0;
     protected $name = '';
+    public $processId = null;
+
+    /**
+     * Процесс завершения
+     */
+    public function archiveWebParseData()
+    {
+        $processId = $this->processId;
+        $dataManager = new CParserDataManager($processId);
+
+        $logMessage = 'Зашли в archiveWebParseData';
+        Yii::log($logMessage, 'trace', 'cron');
+
+        $dataTreeArray = $dataManager->getDataTreeArray();
+
+        $logMessage = 'Количества данных на обработку:' . var_export(count($dataTreeArray), true);
+        Yii::log($logMessage, 'trace', 'cron');
+
+        foreach ($dataTreeArray as $id => $dataArray) {
+            $logMessage = 'Данные:' . var_export($dataArray, true);
+            Yii::log($logMessage, 'trace', 'cron');
 
 
+            if (!isset($dataArray['price']))
+                $price = '';
+            else{
+                $price = $dataArray['price'];
+                unset( $dataArray['price']);
+            }
+
+            if (!isset($dataArray['title']))
+                $title = '';
+            else{
+                $title = $dataArray['title'];
+                unset( $dataArray['title']);
+            }
+
+            if (!isset($dataArray['text']))
+                $text = '';
+            else{
+                $text = $dataArray['text'];
+                unset( $dataArray['text']);
+            }
+
+            if (!isset($dataArray['quantity']))
+                $quantity = '';
+            else{
+                $quantity = $dataArray['quantity'];
+                unset( $dataArray['quantity']);
+            }
+            if (isset($dataArray['parents']))
+                unset( $dataArray['parents']);
+
+            $this->addItem($id, $price, $title,$text, $quantity, $dataArray);
+
+        }
+
+        $this->itemsImages = $dataManager->getFilesArray();
+        $this->itemsChilds = $dataManager->getChildsArray();
+        $this->itemsGroup = $dataManager->getChildsGroupsArray();
+        $this->itemsModif = $dataManager->getModifArray();
+
+        BaseParser::saveTofile();
+    }
+
+    /**
+     * Сохраняем массив элементов и их данных
+     *
+     * @param $id
+     * @param $price
+     * @param $name
+     * @param $text
+     * @param $quantity
+     * @param null $anotherParams
+     */
     public function addItem($id, $price, $name, $text, $quantity,$anotherParams=null)
     {
 
@@ -31,6 +104,7 @@ class BaseParser extends BaseJob{
         $this->items[] =$itemsArray;
 
     }
+
 
     public function addImagesArray ($imagesArray)
     {

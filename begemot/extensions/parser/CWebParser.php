@@ -420,12 +420,14 @@ class CWebParser
 
                 foreach ($scenarioItem['dataFields'] as $fieldName => $fieldFilter) {
 
+                    $downloadImageFlag = false;
+                    $leftTableExtractFlag = false;
+
                     //Перебираем все фильтры. Пропускаем процедурный, ибо он
                     //применяется ко всем фильтрам
                     if ($fieldName === '@') continue;
                     $this->log('Обрабатываем поле ' . $fieldName . ' с фильтром ' . $fieldFilter);
                     //Вытащили данные. Значений можем получить много, либо одно
-
 
                     if (strlen ($fieldFilter)>0 && $fieldFilter{0} == '@') {
                         $filterArray = explode(' ', $fieldFilter);
@@ -447,7 +449,7 @@ class CWebParser
                     /*
                      *Разбираем таблицу на несколько по первому столбцу и каждой колонке
                      */
-                    if (isset($leftTableExtractFlag)) {
+                    if (isset($leftTableExtractFlag) && $leftTableExtractFlag == true) {
                         require_once(dirname(__FILE__) . '/HTMLTablesHelper.php');
                         $this->log('leftTableExtractFlag включен');
 
@@ -822,6 +824,11 @@ class CWebParser
 
                 $filterResults = $this->executeFilter($concatFilter,$task);
                 if (is_array($filterResults)){
+                    $this->log('Фильтр процедурный ' . print_r($filterResults,true));
+                    if (count($filterResults)==0) {
+                        $this->log('Нет совпадений! Выходим. ');
+                        return '';
+                    }
                     $dataForConcat[] = $filterResults[0];
                 }else{
                     $dataForConcat[] = $filterResults;

@@ -24,7 +24,7 @@ class DefaultController extends Controller
         return array(
 
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
-                'actions' => array('linking', 'ignoreImage', 'updateCategories', 'updateOptions', 'updateModifs', 'create', 'update', 'index', 'view', 'do', 'syncCard', 'updateCard', 'doChecked', 'deleteLinking', 'parseChecked', 'parseNew', 'getParsedForCatItem', 'cron'),
+                'actions' => array('linking', 'ignoreImage', 'updateOtherFields', 'updateCategories', 'updateOptions', 'updateModifs', 'create', 'update', 'index', 'view', 'do', 'syncCard', 'updateCard', 'doChecked', 'deleteLinking', 'parseChecked', 'parseNew', 'getParsedForCatItem', 'cron'),
                 'expression' => 'Yii::app()->user->canDo("")'
             ),
             array('deny',  // deny all users
@@ -139,33 +139,22 @@ class DefaultController extends Controller
 ';
 
 
-                echo $catModifId = $itemId;
-                echo '
+            echo $catModifId = $itemId;
+            echo '
 ';
-                if ($modifOwner = ParsersLinking::model()->find(array(
-                        'condition' => 'fromId=:fromId',
-                        'params' => array(':fromId' => $modif))
-                )
-                ) {
-                    echo $catModifOwner = $modifOwner->toId;
-                    echo '<br>';
+            if ($modifOwner = ParsersLinking::model()->find(array(
+                    'condition' => 'fromId=:fromId',
+                    'params' => array(':fromId' => $modif))
+            )
+            ) {
+                echo $catModifOwner = $modifOwner->toId;
+                echo '<br>';
 
-                    Yii::import('application.modules.catalog.models.CatItems');
-                    $catModifModel = CatItem::model()->findByPk($catModifId);
-                    $catModifModel->modOfThis = $catModifOwner;
-                    $catModifModel->save();
-                }
-
-//
-//                    Yii::import('application.modules.catalog.models.CatItemsToItems');
-//
-//                    $item = new CatItemsToItems();
-//
-//                    $item->itemId = $parentId;
-//                    $item->toItemId = $itemId;
-//
-//                    $item->save();
-
+                Yii::import('application.modules.catalog.models.CatItems');
+                $catModifModel = CatItem::model()->findByPk($catModifId);
+                $catModifModel->modOfThis = $catModifOwner;
+                $catModifModel->save();
+            }
 
         }
 
@@ -177,6 +166,45 @@ class DefaultController extends Controller
         echo json_encode($return);
 
 
+    }
+
+    public function actionUpdateOtherFields()
+    {
+        $id = $_POST['id'];
+        $attrArray = [
+            'parsers_stock_id' => $id
+        ];
+
+        $otherFieldsModels = ParsersOtherFields::model()->findAllByAttributes($attrArray);
+
+        if (is_array($otherFieldsModels) && count($otherFieldsModels) > 0) {
+
+
+            if ($parserLinking = ParsersLinking::model()->find(array(
+                    'condition' => 'fromId=:fromId',
+                    'params' => array(':fromId' => $id))
+            )
+            ) {
+                $catItemId = $parserLinking->toId;
+                Yii::import('application.modules.catalog.models.CatItems');
+                $model = CatItem::model()->findByPk($catItemId);
+                $columnsArrray = $model->tableSchema->columnNames;
+                $columnsArrray = array_flip($columnsArrray);
+                echo 'id найденой модели CatItem - '.$model->id;
+                foreach ($otherFieldsModels as $field) {
+                    $fieldName = $field->name;
+                    if (isset($columnsArrray[$fieldName])){
+                        echo 'Совпало поле '.$fieldName;
+                        $model->$fieldName = $field->value;
+                    }
+                }
+                if (!$model->save()){
+                  echo 'Ошибка осхранения модели';
+                }
+
+            }
+
+        }
     }
 
     public function actionUpdateOptions()
@@ -220,7 +248,8 @@ class DefaultController extends Controller
 
     }
 
-    public function actionUpdateCategories()
+    public
+    function actionUpdateCategories()
     {
 
         $itemId = $_POST['id'];
@@ -271,7 +300,8 @@ class DefaultController extends Controller
 
     }
 
-    public function actionGetParsedForCatItem($itemId, $file)
+    public
+    function actionGetParsedForCatItem($itemId, $file)
     {
         $catItems = CatItem::model()->findByPk($itemId);
 
@@ -282,7 +312,8 @@ class DefaultController extends Controller
         ));
     }
 
-    public function actionUpdateCard()
+    public
+    function actionUpdateCard()
     {
 
         if (isset($_POST['id'])) {
@@ -300,7 +331,8 @@ class DefaultController extends Controller
         }
     }
 
-    public function actionDoChecked()
+    public
+    function actionDoChecked()
     {
 
         if (isset($_POST['item'])) {
@@ -319,7 +351,8 @@ class DefaultController extends Controller
         $this->redirect($_POST['url']);
     }
 
-    public function actionParseNew($className)
+    public
+    function actionParseNew($className)
     {
 
         $class = new $className;
@@ -356,7 +389,8 @@ class DefaultController extends Controller
 
     }
 
-    public function actionDo($file, $tab = 'changed')
+    public
+    function actionDo($file, $tab = 'changed')
     {
 
 
@@ -538,12 +572,14 @@ class DefaultController extends Controller
 
     }
 
-    public function deteleLinkingButton($data)
+    public
+    function deteleLinkingButton($data)
     {
         return "<input type='button' value='Удалить связь' data-id='{$data->id}' class='deleteLinking btn'>";
     }
 
-    public function getSyncButtons($data, $row)
+    public
+    function getSyncButtons($data, $row)
     {
         $return = "<button type='button'  data-filename='{$data->filename}' class='composite btn btn-info' name='{$data->name}'>Объединить с ...</button>";
         if ($data->findedByArticle()) {
@@ -582,12 +618,14 @@ class DefaultController extends Controller
         return $return;
     }
 
-    public function getAddAsNewButton($data)
+    public
+    function getAddAsNewButton($data)
     {
         return "<button type='button' class='addAsNew' data-filename='{$data->filename}' data-id='{$data->id}' data-price='{$data->price}' data-name='{$data->name}' data-images='{$data->images}'  data-parents='{$data->parents}' data-groups='{$data->groups}' data-text='{$data->text}' data-modif='{$data->modifs}'>Добавить как новый</button>";
     }
 
-    public function actionLinking()
+    public
+    function actionLinking()
     {
 
         $model = ParsersLinking::model()->findAll(array('order' => 'filename ASC'));
@@ -606,7 +644,8 @@ class DefaultController extends Controller
         ));
     }
 
-    public function actionIndex()
+    public
+    function actionIndex()
     {
         $timeFile = array();
 
@@ -625,7 +664,8 @@ class DefaultController extends Controller
 
     }
 
-    public function getFiles()
+    public
+    function getFiles()
     {
         $fileListOfDirectory = array();
         $timeArray = array();
@@ -685,7 +725,8 @@ class DefaultController extends Controller
         return $fileListOfDirectory;
     }
 
-    public function actionDeleteLinking($id)
+    public
+    function actionDeleteLinking($id)
     {
         $model = ParsersLinking::model()->findByPk($id);
 

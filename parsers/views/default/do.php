@@ -510,6 +510,12 @@ require(dirname(__FILE__).'/../menu.php');
 					alert(data.responseText);
 				});
 			}
+
+			$.post("/parsers/default/updateOtherFields", {"id": button.attr("data-id")}, function(data){
+			}).fail(function(data){
+				alert(data.responseText);
+			});
+
 		})
 
 	})
