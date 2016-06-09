@@ -101,8 +101,25 @@ class PBox {
             return '<img src=""/>';
         }
         
-    }  
+    }
     
+    public function getFirstImage ($tag){
+
+        if (is_null($this->favPictures )){
+            $array = $this->pictures;
+        } else{
+            $array = $this->favPictures;
+        }
+        if (is_array($array)){
+            $id = key($array);
+
+            return $this->getImage($id, $tag);
+        } else{
+            return '';
+        }
+
+    }
+
     public function getImageCount(){
         return count($this->pictures);
     }
