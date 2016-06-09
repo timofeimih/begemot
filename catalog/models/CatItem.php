@@ -271,6 +271,7 @@ class CatItem extends ContentKitModel
         $criteria->compare('name', $this->name, true);
         $criteria->compare('name_t', $this->name_t, true);
         $criteria->compare('status', $this->status);
+        $criteria->compare('article', $this->article);
         $criteria->compare('data', $this->data, true);
         $criteria->order = '`id` desc';
         return new CActiveDataProvider($this, array(

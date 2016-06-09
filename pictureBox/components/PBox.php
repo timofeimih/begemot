@@ -102,25 +102,7 @@ class PBox {
         }
         
     }  
-
-    public function getFirstImage ($tag){
-
-        if (is_null($this->favPictures )){
-            $array = $this->pictures;
-        } else{
-            $array = $this->favPictures;
-        }
-        if (is_array($array)){
-            $id = key($array);
-
-            return $this->getImage($id, $tag);
-        } else{
-            return '';
-        }
-
-    }
-
-
+    
     public function getImageCount(){
         return count($this->pictures);
     }
@@ -186,6 +168,21 @@ class PBox {
         $data=$this->favPictures;
 
         PictureBox::crPhpArr($data, $this->favDataFile);
+
+    }
+
+    public function copyAllOriginalImages($destDir){
+        $imagesArray = $this->pictures;
+
+        $webRoot = Yii::getPathOfAlias('webroot');
+
+        foreach ($imagesArray as $imageArray){
+            if (isset($imageArray['original'])){
+                echo $file1=$webRoot.$imageArray['original'];
+                echo $file2 = $destDir.'/'.basename($imageArray['original']);
+                copy($file1,$file2);
+            }
+        }
 
     }
 

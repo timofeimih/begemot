@@ -86,6 +86,8 @@ class CWebParser
 
     public function CWebParser($parserName, $host, $scenario, $processId)
     {
+        $this->log('==================================================================================================');
+        $this->log('==================================================================================================');
         $this->log('Запускаем парсер ' . $parserName . ' хост: ' . $host . ' Id процесса:' . $processId);
         Yii::import('begemot.extensions.parser.models.*');
 
@@ -132,8 +134,10 @@ class CWebParser
         $processId = $this->processId;
 
         $webParserProcess = WebParserProcess::model()->findByPk($processId);
-
-        return $webParserProcess->status;
+        if (!is_null($webParserProcess))
+            return $webParserProcess->status;
+        else
+            return 'Процесса не существует!';
 
     }
 
@@ -348,9 +352,13 @@ class CWebParser
                     $searchHrefsDocumentPart = pq($navigationRule);
 
                     //Перебираем все части кода которые нашли по правилу сценария
+                    $this->log('Правило:' . $navigationRule);
+                    $this->log('Вернуло массив данных с количеством элементов:' . count($searchHrefsDocumentPart));
                     foreach ($searchHrefsDocumentPart as $navigationPart) {
                         //Создаем ScenarioTask для каждого найденного урл
+
                         $urlArray = $this->getAllUrlFromContent($navigationPart);
+                        $this->log('Ищем url в полученных данных. Нашли:' . count($urlArray));
                         foreach ($urlArray as $url) {
 
                             $target_type = WebParserDataEnums::TASK_TARGET_DATA_TYPE_URL;
@@ -412,22 +420,45 @@ class CWebParser
 
                 foreach ($scenarioItem['dataFields'] as $fieldName => $fieldFilter) {
 
+                    $downloadImageFlag = false;
+                    $leftTableExtractFlag = false;
+
                     //Перебираем все фильтры. Пропускаем процедурный, ибо он
                     //применяется ко всем фильтрам
                     if ($fieldName === '@') continue;
                     $this->log('Обрабатываем поле ' . $fieldName . ' с фильтром ' . $fieldFilter);
                     //Вытащили данные. Значений можем получить много, либо одно
 
-                    if ($fieldFilter{0} == '@') {
+                    if (strlen ($fieldFilter)>0 && $fieldFilter{0} == '@') {
                         $filterArray = explode(' ', $fieldFilter);
+
                         if ($filterArray[0] == '@download') {
                             $downloadImageFlag = true;
-                            unset($filterArray[0]);
-                            $fieldFilter = implode(' ',$filterArray);
                         }
+
+                        if ($filterArray[0] == '@leftTableExtract') {
+                            $leftTableExtractFlag = true;
+                        }
+
+                        unset($filterArray[0]);
+                        $fieldFilter = implode(' ', $filterArray);
                     }
 
                     $pqData = $this->executeFilter($fieldFilter, $task);
+
+                    /*
+                     *Разбираем таблицу на несколько по первому столбцу и каждой колонке
+                     */
+                    if (isset($leftTableExtractFlag) && $leftTableExtractFlag == true) {
+                        require_once(dirname(__FILE__) . '/HTMLTablesHelper.php');
+                        $this->log('leftTableExtractFlag включен');
+
+//                        $this->log(print_r($task->getUrl(),true));
+                        if (count($pqData) == 0) continue;
+                        $pqData = leftTableExtract($pqData[0]);
+
+                    }
+
                     //$this->logVar($pqData);
                     //Если получили одно значение, преобразовываем его в массив для простоты обработки
                     if (!is_array($pqData)) $pqData = array($pqData);
@@ -440,7 +471,7 @@ class CWebParser
                         // Проверяем что мы доставли. Если это с флагом @download
                         // то создаем задачу на скачивание, иначе просто создаем
                         // элемент данных в БД
-                        if (isset($downloadImageFlag)) {
+                        if (isset($downloadImageFlag) && $downloadImageFlag==true) {
                             /*
                              * Создаем задачу на скачку изображение
                              * и создаем terget на скачку с id данных
@@ -451,7 +482,7 @@ class CWebParser
 
                             $planeData = urldecode($planeData);
 
-                            if (!(bool)parse_url($planeData)){
+                            if (!(bool)parse_url($planeData)) {
                                 $this->logError('Не является ссылкой  ' . $planeData);
                                 continue;
                             }
@@ -527,6 +558,13 @@ class CWebParser
                                             $dataFieldModel->fieldGroupId = array_shift($filterResult);
                                         else
                                             $dataFieldModel->fieldGroupId = $filterResult;
+                                        break;
+                                    case WebParserDataEnums::DATA_MODIF_OF_ID_ARRAY_KEY :
+                                        $filterResult = $this->executeFilter($massFilter, $task);
+                                        if (is_array($filterResult))
+                                            $dataFieldModel->fieldModifId = array_shift($filterResult);
+                                        else
+                                            $dataFieldModel->fieldModifId = $filterResult;
                                         break;
                                 }
                             }
@@ -607,27 +645,31 @@ class CWebParser
             $this->log('Определили тип цели  ' . $task->target_type);
 
             $targetDownloadObject = $this->getTargetFromTask($task);
-            $this->log('id  ' . $targetDownloadObject->id);
+            if (!is_null($targetDownloadObject)) {
+                $this->log('id  ' . $targetDownloadObject->id);
 
 
-            //Проверяем и создаем директории
-            $fieldIdDir = null;
-            $dirArray = [
-                'rootDir' => 'files/webParser/',
-                'processDir' => 'files/webParser/process_' . $this->processId . '/',
-                'fieldIdDir' => 'files/webParser/process_' . $this->processId . '/item_' . $targetDownloadObject->id . '/',
+                //Проверяем и создаем директории
+                $fieldIdDir = null;
+                $dirArray = [
+                    'rootDir' => 'files/webParser/',
+                    'processDir' => 'files/webParser/process_' . $this->processId . '/',
+                    'fieldIdDir' => 'files/webParser/process_' . $this->processId . '/item_' . $targetDownloadObject->id . '/',
 
-            ];
+                ];
 
-            $this->checkAndCreateDirs($dirArray);
+                $this->checkAndCreateDirs($dirArray);
 
 
-            extract($dirArray);
-            $targetDownloadObject->file = $this->downloadFile($targetDownloadObject->fileUrl, $fieldIdDir);
-            // $this->log('Ломаем'.$file);
-            $targetDownloadObject->save();
+                extract($dirArray);
+                $targetDownloadObject->file = $this->downloadFile($targetDownloadObject->fileUrl, $fieldIdDir);
+                // $this->log('Ломаем'.$file);
+                $targetDownloadObject->save();
+
+            } else {
+                $this->logError('Ошибка! $targetDownloadObject - NULL');
+            }
         }
-
 
 
         $task->completeTask();
@@ -761,17 +803,51 @@ class CWebParser
     private function executeFilter($filter, $task)
     {
 
-        $this->log('Зашли в executeFilter и выполняем фильтр:'.$filter);
+        $this->log('Зашли в executeFilter и выполняем фильтр:' . $filter);
 
-        if ($filter{0} == "!"){
-            return str_replace ('!','',$filter);
+        if(strstr($filter, '+')){
+            $this->log('В фильтре найден знак конкатенации "+". ' . $filter);
+
+            /*
+             * В случае фильтра с конкатенацией фильтр разбивается на несколько фильтров
+             * по разделителю "+". Каждый фильтр будет выполнен. С каждого результата будет взят
+             * первый элемент результата, если фильтр вернул больше одного совпадения. Все данные от
+             * каждого фильтра объединяются в одну строку.
+             */
+
+            $concatFilters = explode('+',$filter);
+
+            $dataForConcat = [];
+
+            foreach ($concatFilters as $concatFilter){
+                $concatFilter = trim ($concatFilter);
+
+                $filterResults = $this->executeFilter($concatFilter,$task);
+                if (is_array($filterResults)){
+                    $this->log('Фильтр процедурный ' . print_r($filterResults,true));
+                    if (count($filterResults)==0) {
+                        $this->log('Нет совпадений! Выходим. ');
+                        return '';
+                    }
+                    $dataForConcat[] = $filterResults[0];
+                }else{
+                    $dataForConcat[] = $filterResults;
+                }
+
+            }
+
+            return implode('',$dataForConcat);
         }
 
-        if ($filter{0} == "@") {
+        if (strlen ($filter)>0 && $filter{0} == "!") {
+            return str_replace('!', '', $filter);
+        }
+
+        if (strlen ($filter)>0 && $filter{0} == "@") {
             //Процедурный фильтр
             $this->log('Фильтр процедурный.');
             if ($filter == WebParserDataEnums::DATA_FILTER_URL) {
-                $this->log('Фильтр процедурный '.WebParserDataEnums::DATA_FILTER_URL);
+                $this->log('Фильтр процедурный ' . WebParserDataEnums::DATA_FILTER_URL);
                 return $task->getUrl();
             }
         }
@@ -815,8 +891,9 @@ class CWebParser
 
         return $returnArray;
 
-
     }
+
+
 
     private function startNewParseProccess()
     {
@@ -962,7 +1039,7 @@ class CWebParser
             $url_data = parse_url($url);
 
             if (isset($url_data['host'])) {
-                if ($url_data['host'] != $this->host) {
+                if ($url_data['host'] != $this->host && $url_data['host'] != 'www.' . $this->host) {
                     unset ($urlArray[$key]);
                 } else {
                     $urlArray[$key] = $this->removeHostFromUrl($url);

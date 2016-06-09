@@ -22,6 +22,7 @@ class TaskManager {
     public function createTask($taskType,$target_id,$target_type, $scenarioItemName, $status = null)
     {
 
+
         $newTask = new ScenarioTask();
         $newTask->target_id = $target_id;
         $newTask->target_type = $target_type;
@@ -36,4 +37,9 @@ class TaskManager {
         $newTask->save();
     }
 
+    private function logError($message)
+    {
+        Yii::log($message, 'trace', 'webParser');
+        Yii::getLogger()->flush(true);
+    }
 }

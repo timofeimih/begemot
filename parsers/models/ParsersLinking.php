@@ -42,7 +42,7 @@ class ParsersLinking extends CActiveRecord
                     $criteria->compare('id',$id);
 		$criteria->compare('fromId',$this->fromId,true);
 		$criteria->compare('toId',$this->toId,true);
-		
+		$criteria->compare('filename',$this->filename,true);
 
 
 		return new CActiveDataProvider($this, array(

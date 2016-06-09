@@ -22,7 +22,7 @@ class DefaultController extends Controller
 		return array(
 
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('index', 'turnOnOff', 'changeTime', 'setTask', 'jobs', 'removeTask', 'runJob'),
+				'actions'=>array('index', 'turnOnOff', 'changeTime', 'setTask', 'jobs', 'removeTask', 'runJob','manualRunJob'),
                 'expression'=>'Yii::app()->user->canDo("")'
 			),
 			array('deny',  // deny all users
@@ -53,14 +53,58 @@ class DefaultController extends Controller
 			
 		}
 	}
+	public function actionManualRunJob()
+	{
+        $jobManager = new JobManager();
 
+        $all = $jobManager->getListCronJob();
+        $jobName = $_POST['name'];
+		$item = $all[$jobName];
+
+        $className = $item['filename'];
+        $classItem = new $className;
+
+
+        $logMessage = 'JobManager ManualRunJob - запускаем в ручном режиме '.$jobName;
+        Yii::log($logMessage,'trace','cron');
+        $classItem->runJob($item);
+
+        $tmpJobList = $jobManager->getListCronJob();
+        if (isset($tmpJobList[$jobName])){
+            $tmpJobList[$jobName]['lastExecuted'] = time();
+            $jobManager->saveConfigFile($tmpJobList);
+        }
+
+        //echo $_POST['name'];
+       // print_r($item);
+
+
+
+//		if (isset($_POST['name'])) {
+//
+//			$params = null;
+//			if (isset($_POST['type'])){
+//				$params =['type'=>$_POST['type']];
+//			}
+//			$class = new $_POST['name'];
+//			if(!$class->runJob($params))  throw new CHttpException(400,'Ошибка');
+//
+//		} else{
+//			throw new CHttpException(400,'Ошибка');
+//		}
+	}
     public function actionRunJob()
     {
 
 
         if (isset($_POST['name'])) {
+
+			$params = null;
+			if (isset($_POST['type'])){
+				$params =['type'=>$_POST['type']];
+			}
             $class = new $_POST['name'];
-            if(!$class->runJob())  throw new CHttpException(400,'Ошибка');
+            if(!$class->runJob($params))  throw new CHttpException(400,'Ошибка');
 
         } else{
             throw new CHttpException(400,'Ошибка');

@@ -118,6 +118,26 @@ class CParserDataManager
         return $resultArray;
     }
 
+    public function getModifArray (){
+
+        $resultArray = [];
+
+        $WebParserDataArray = WebParserData::model()->findAll(array(
+            'condition'=>'processId=:processId',
+            'params'=>array(':processId'=> $this->processId ),
+            'select'=>'fieldId,fieldModifId',
+            'distinct'=>true,
+        ));
+
+        foreach ($WebParserDataArray as $WebParserData){
+            if ($WebParserData->fieldModifId!==null){
+                $resultArray[$WebParserData->fieldId] = $WebParserData->fieldModifId;
+            }
+        }
+
+        return $resultArray;
+    }
+
     public function getChildsGroupsArray (){
 
         $WebParserDataArray = WebParserData::model()->findAll(array(

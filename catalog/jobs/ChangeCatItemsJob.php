@@ -29,12 +29,14 @@ class ChangeCatItemsJob extends BaseJob{
 
 			Yii::log("Старт сбора данных с " . $file, 'trace', 'catItemJob');
 			$websiteName = Yii::app()->params['adminEmail'];
-            echo $file;
+//            echo $file.'
+//            ';
 		    $json = require($file); 
 
 		    $filename = $json['name'];
 
 		    ParsersStock::model()->deleteAll(array('condition' => "`filename`='" . $filename . "'"));
+			ParsersOtherFields::model()->deleteAll(array('condition' => "`filename`='" . $filename . "'"));
 
 		    $length = count($json['items']);
 
@@ -79,14 +81,56 @@ class ChangeCatItemsJob extends BaseJob{
 
 					$itemParsed['groups'] = json_encode($json['groups'][$itemParsed['id']]);
 				}
+//                echo 'Массив модификаций';
+//                print_r($json['modifs']);
+                if (isset($json['modifs'][$itemParsed['id']])){
+//                    echo 'Есть совпадение:';
+                    print_r($json['modifs'][$itemParsed['id']]);
+                }
+
+//                echo 'ИД:';
+                print_r($itemParsed);
+				if(isset( $json['modifs'][$itemParsed['id']] )){
+					 $itemParsed['modifs'] = json_encode($json['modifs'][$itemParsed['id']]);
+                    Yii::log("Модификации: " . $itemParsed['modifs'], 'trace', 'cron');
+				}
 
 				$new->attributes = $itemParsed;
 
 				if (!$new->save()){
-				  print_r($new->errors);
-				  Yii::log(print_r($new->errors), 'trace', 'cron');
+
+				  Yii::log(print_r($new->getErrors(),true), 'trace', 'cron');
 				} else{
 					Yii::log("Сохранил в базу запись с ID: " . $itemParsed['id'], 'trace', 'cron');
+
+                    Yii::log("Проверяем есть ли дополнительные поля " , 'trace', 'cron');
+                    if (isset($itemParsed['anotherParams'])){
+
+                        Yii::log("Есть ".count($itemParsed['anotherParams'])." полей." , 'trace', 'cron');
+
+                        $lastInsertId = $new->id;
+
+                        foreach ($itemParsed['anotherParams'] as $name => $otherParamValue){
+
+                            $parsersOtherFields = new ParsersOtherFields();
+
+                            $parsersOtherFields->name = $name;
+                            $parsersOtherFields->value = $otherParamValue;
+                            $parsersOtherFields->parsers_stock_id = $lastInsertId;
+                            $parsersOtherFields->filename = $filename;
+							Yii::log("Пытаемся сохранить!" , 'trace', 'cron');
+                            if (!$parsersOtherFields->save()){
+								Yii::log("Ошибка сохранения!" , 'trace', 'cron');
+
+                            } else {
+								Yii::log("Сохранилось!" , 'trace', 'cron');
+							}
+
+                        }
+
+                    }
+
+
 				}
 		    }
 
@@ -94,24 +138,24 @@ class ChangeCatItemsJob extends BaseJob{
 
 		    if (!$items) {
 
-		      $to = Yii::app()->params['adminEmail'];
-		      if(Yii::app()->params['programmerEmail']){
-		      	$to = " ," . Yii::app()->params['programmerEmail'];
-		      }
-
-		      $subject = "Задание не удалось выполнить($filename)";
-
-		      $headers = "From: susan@example.com\r\n";
-		      $headers .= "Reply-To: susan@example.com\r\n";
-		      $headers .= "CC: susan@example.com\r\n";
-		      $headers .= "MIME-Version: 1.0\r\n";
-		      $headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
-
-		      $message = "Не удалось найти карточек для парсера $filename";
-
-		      mail($to, $subject, $message, $headers);
-
-		      echo 'no changes';
+//		      $to = Yii::app()->params['adminEmail'];
+//		      if(Yii::app()->params['programmerEmail']){
+//		      	$to = " ," . Yii::app()->params['programmerEmail'];
+//		      }
+//
+//		      $subject = "Задание не удалось выполнить($filename)";
+//
+//		      $headers = "From: susan@example.com\r\n";
+//		      $headers .= "Reply-To: susan@example.com\r\n";
+//		      $headers .= "CC: susan@example.com\r\n";
+//		      $headers .= "MIME-Version: 1.0\r\n";
+//		      $headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
+//
+//		      $message = "Не удалось найти карточек для парсера $filename";
+//
+//		      mail($to, $subject, $message, $headers);
+//
+//		      echo 'no changes';
 		      //return true;
 
 		      //exit();
@@ -119,11 +163,16 @@ class ChangeCatItemsJob extends BaseJob{
 
 	        $changed = array();
 	        Yii::import('application.modules.catalog.models.CatItemsToItems');
-
+             $logMessage = 'Перебираем все спарсенные элементы и обновляем те что уже имеют привязку:';
+            Yii::log($logMessage, 'trace', 'cron');
 		    foreach ($items as $item) {
-		    	if(isset($item->linking) & isset($item->item)){
 
-		    		$changedParents = '';
+		    	if(isset($item->linking) && isset($item->item)){
+                     $logMessage = $item->linking->name;
+                    Yii::log($logMessage, 'trace', 'cron');
+
+					//Обновляем опции
+					$changedParents = '';
 
 		    		if (isset($item->linking->parents)) {
 		    			$parents = json_decode($item->linking->parents);
@@ -135,11 +184,14 @@ class ChangeCatItemsJob extends BaseJob{
 		                    ));
 
 		                    $parentId = $parentModel->toId;
-
-			                if(! CatItemsToItems::model()->find(array(
-			                    'condition'=>'itemId=:itemId',
-			                    'params'=>array(':itemId'=>$parentId))
-			                )){
+                             'Ищем связи по itemId в CatItemsToItems по:'.$parentId;
+                            $relations = CatItemsToItems::model()->find(array(
+                                'condition'=>'itemId=:parentId and toItemId=:toItemId',
+                                'params'=>array(':parentId'=>$parentId,':toItemId'=>$item->item->id)));
+                             'надено:'.count($relations);
+			                if(count($relations)==0)
+			                {
+                                 'Создаем связь!';
 			                    $currentItemId = $item->item->id;
 
 			                    $CatItemsToItems = new CatItemsToItems();
@@ -152,14 +204,10 @@ class ChangeCatItemsJob extends BaseJob{
 			                    $changedParents .= $item->item->name . ", ";
 			                }
 
-			               
-
-			                
 			            }
-
 			        }
 
-
+					//Обновляем цену
 		    		if ($item->linking->price != $item->item->price || $item->linking->quantity != $item->item->quantity) {
 
 				        $changed[] = array(
@@ -174,6 +222,28 @@ class ChangeCatItemsJob extends BaseJob{
 				        $item->item->quantity = $item->linking->quantity;
 				        $item->item->save();
 				    }
+
+					//Обновляем доп. поля
+					$attr =[
+						'parsers_stock_id' => $item->fromId
+					];
+
+					$otherFields = ParsersOtherFields::model()->findAllByAttributes($attr);
+
+					if (is_array($otherFields) && count($otherFields)>0){
+						foreach ($otherFields as $otherField){
+							$columnsArrray = $item->item->tableSchema->columnNames;
+							$columnsArrray = array_flip($columnsArrray);
+
+							if (isset($columnsArrray[$otherField->name])){
+								$otherFieldName = $otherField->name;
+								$item->item->$otherFieldName = $otherField->value;
+								$item->item->save();
+							}
+						}
+					}
+
+
 				}
 		    }
 		      

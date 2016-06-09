@@ -22,7 +22,7 @@ class DefaultController extends Controller
 		return array(
 
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('admin','delete','orderUp','orderDown','manageGallery','create','update','index','view'),
+				'actions'=>array('index','newMigration'),
                 'expression'=>'Yii::app()->user->canDo("")'
 			),
 			array('deny',  // deny all users
@@ -84,7 +84,7 @@ class DefaultController extends Controller
 			
 		}
 
-		
+		$this->layout = 'begemot.views.layouts.column1';
 
 
 		$this->render('admin',array(
@@ -94,5 +94,19 @@ class DefaultController extends Controller
 		));
                        
 	}
+	public function actionNewMigration($filename)
+	{
+		 $migrationsPath = Yii::getPathOfAlias('migrations.database-migrations');
 
+		 $maigrationTemplate = Yii::getPathOfAlias('migrations.components.migrationTemplate').'.php';
+		//echo '<pre>';
+		 $file = file_get_contents($maigrationTemplate);
+        $newClassName = 'm'.date("Ymd_his",time()).'_'.$filename;
+        $newFileName = $migrationsPath.'/'.'m'.date("Ymd_his",time()).'_'.$filename.'.php';
+
+        $file = str_replace('<class_name>',$newClassName,$file);
+
+		file_put_contents($newFileName,$file);
+		$this->redirect(array('index'));
+	}
 }

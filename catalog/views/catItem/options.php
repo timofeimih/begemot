@@ -1,4 +1,4 @@
-    <h2>Опции</h2>
+    <h4>Опции</h4>
 
 
     <form method='post'>
@@ -20,7 +20,7 @@
 
                         <?php $checked = in_array($item->id, $arrayOfItems) ? "selected" : "" ?>
 
-                        <option <?php echo $checked?> value="<?php echo $item->id?>">123<?php echo $item->name?>(<?php echo number_format($item->price, 0, ',', ' ');?> руб.)</option>
+                        <option <?php echo $checked?> value="<?php echo $item->id?>"><?php echo $item->name?>(<?php echo number_format($item->price, 0, ',', ' ');?> руб.)</option>
 
 
                     <?php endforeach;
@@ -73,7 +73,7 @@
     $related = CatItemsToItems::model()->with('item')->findAll(array('select'=>'itemId', 'condition' => 'toItemId='.$model->id));
     if ((!$model->isNewRecord) && (count($related) > 0)):
         ?>
-        <h2>Сопутствует</h2>
+        <h4>Сопутствует</h4>
         <p>Список других товаров, у которых текущий товар указан как сопутствующий товар или в виде опции.</p>
         <?php
         foreach ($related as $item): ?>
@@ -101,7 +101,7 @@
     ?>
 
 
-<h2>Добавить как опцию в карочки</h2>
+<h4>Добавить как опцию в карочки</h4>
 
         <select id='custom-headers2' multiple='multiple' name='items[]' class='searchable2'>
             <?php
@@ -175,7 +175,7 @@
     $related = CatItemsToItems::model()->with('toItem')->findAll(array('select'=>'itemId', 'condition' => 'itemId='.$model->id));
     if ((!$model->isNewRecord) & $related):
         ?>
-        <h2>Уже в опция у данных карточек</h2>
+        <h4>Уже в опция у данных карточек</h4>
         <?php
 
         $arrayOfItems = array_filter($arrayOfItems);

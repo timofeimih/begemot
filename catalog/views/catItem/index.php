@@ -45,6 +45,7 @@ $this->menu = $menu;
                     ),
                 ),            
 		'id',
+        'article',
         array(
             'header' => 'Парсится',
             'type'=>'raw',

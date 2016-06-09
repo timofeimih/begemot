@@ -95,52 +95,80 @@ class CatItemsToCatController extends Controller
 
     public function actionChangeThroughDisplayValue($cat_id, $item_id, $value)
     {
-        $model = CatItemsToCat::model()->find(array(
-            'condition' => 'catId = :cat AND itemId = :item',
-            'params' => array(':cat' => $cat_id, ':item' => $item_id)
-        ));
 
-        $parent_id = CatCategory::model()->findByPk($cat_id)->pid;
-        $root_id = CatCategory::model()->findByPk($parent_id)->pid;
-        $table = CatItemsToCat::model()->tableName();
-        $maxOrderValue = (Yii::app()->db->createCommand()
-                ->select('max(`order`) as max')
-                ->from($table)
-                ->queryScalar()) + 1;
+    	$model = CatItemsToCat::model()->find(array(
+    		'condition' => 'catId = :cat AND itemId = :item',
+    		'params' => array(':cat' => $cat_id, ':item' => $item_id)
+    	));
 
-        while (true) {
-            // CHECKED
-            if ($value == 1) {
+    	$parent_id = CatCategory::model()->findByPk($cat_id)->pid;
+    	//$root_id = CatCategory::model()->findByPk($parent_id)->pid;
+		$table = CatItemsToCat::model()->tableName();
+		$maxOrderValue = (Yii::app()->db->createCommand()
+					->select('max(`order`) as max')
+					->from($table)
+					->queryScalar()) + 1;
 
-                $sql = "INSERT INTO $table (itemId, catId, `order`, is_through_display_child) VALUES (:itemId, :catId, :order, 1)";
-                $parameters = array(":itemId" => $item_id, ":catId" => $parent_id, ":order" => $maxOrderValue);
-                Yii::app()->db->createCommand($sql)->execute($parameters);
+    	while (true) {
 
-                if (CatCategory::model()->findByPk($parent_id)->pid == -1) {
-                    break;
+			$attr = [
+				'itemId'=>$item_id,
+				'catId'=>$parent_id
+			];
+			$throughCatItemToCat = CatItemsToCat::model()->findByAttributes($attr);
+            echo $item_id.' '.$parent_id;
+			// CHECKED
+			if ($value == 1) {
+
+				if (is_null($throughCatItemToCat)) {
+
+					$sql = "INSERT INTO $table (itemId, catId, `order`, is_through_display_child,through_display_count) VALUES (:itemId, :catId, :order, 1,1)";
+					$parameters = array(":itemId" => $item_id, ":catId" => $parent_id, ":order" => $maxOrderValue);
+					Yii::app()->db->createCommand($sql)->execute($parameters);
+
+					$maxOrderValue++;
+				} else {
+                    echo 'увеличиваем количество мнимых карточек
+                    ';
+					$throughCatItemToCat->through_display_count++;
+					$throughCatItemToCat->save();
+				}
+
+				if (CatCategory::model()->findByPk($parent_id)->pid == -1) {
+	    			break;
+	    		}
+						    
+	    	} else {
+
+	    		$cat_level = CatCategory::model()->findByPk($parent_id)->pid;
+				// UNCHECKED
+    			$itemsToCat = CatItemsToCat::model()->find(array(
+    				'condition' => 'itemId = :itemId AND catId = :catId',
+    				'params' => array(
+    					':itemId' => $item_id,
+    					':catId' => $parent_id
+    				)
+    			));
+
+                if ($itemsToCat->through_display_count==1){
+                    $itemsToCat->delete();
+                } else {
+                    $itemsToCat->through_display_count--;
+                    $itemsToCat->save();
                 }
 
-            } else {
+    			if ($cat_level == -1) {
+	    			break;
+	    		}
+    		}
 
-                $cat_level = CatCategory::model()->findByPk($parent_id)->pid;
-                // UNCHECKED
-                $itemsToCat = CatItemsToCat::model()->find(array(
-                    'condition' => 'itemId = :itemId AND catId = :catId',
-                    'params' => array(
-                        ':itemId' => $item_id,
-                        ':catId' => $parent_id
-                    )
-                ))->delete();
+    		
 
-                if ($cat_level == -1) {
-                    break;
-                }
-            }
+	    	$parent_id = CatCategory::model()->findByPk($parent_id)->pid;
+	    }
 
+    	$model->through_display = $value;
+    	$model->save();
+   }
 
-            $parent_id = CatCategory::model()->findByPk($parent_id)->pid;
-        }
-        $model->through_display = $value;
-        $model->save();
-    }
 }

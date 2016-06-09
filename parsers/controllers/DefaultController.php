@@ -2,7 +2,8 @@
 
 class DefaultController extends Controller
 {
-    public $layout='begemot.views.layouts.column2';
+    public $layout = 'begemot.views.layouts.column2';
+
     /**
      * @return array action filters
      */
@@ -12,6 +13,7 @@ class DefaultController extends Controller
             'accessControl', // perform access control for CRUD operations
         );
     }
+
     /**
      * Specifies the access control rules.
      * This method is used by the 'accessControl' filter.
@@ -22,11 +24,11 @@ class DefaultController extends Controller
         return array(
 
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
-                'actions'=>array('linking', 'ignoreImage', 'updateCategories', 'updateOptions', 'create','update','index','view', 'do', 'syncCard', 'updateCard', 'doChecked', 'deleteLinking', 'parseChecked', 'parseNew', 'getParsedForCatItem', 'cron'),
-                'expression'=>'Yii::app()->user->canDo("")'
+                'actions' => array('linking', 'ignoreImage', 'updateOtherFields', 'updateCategories', 'updateOptions', 'updateModifs', 'create', 'update', 'index', 'view', 'do', 'syncCard', 'updateCard', 'doChecked', 'deleteLinking', 'parseChecked', 'parseNew', 'getParsedForCatItem', 'cron'),
+                'expression' => 'Yii::app()->user->canDo("")'
             ),
             array('deny',  // deny all users
-                'users'=>array('*'),
+                'users' => array('*'),
             ),
         );
     }
@@ -38,7 +40,7 @@ class DefaultController extends Controller
             $md5 = $_POST['md5'];
             $sha1 = $_POST['sha1'];
             $image = $_POST['image'];
-        
+
             $dir = Yii::getPathOfAlias('webroot') . '/files/pictureBox/ignoredImages';
 
             if (!file_exists($dir))
@@ -59,21 +61,19 @@ class DefaultController extends Controller
 
             if ($model->save()) {
                 echo "1";
-            }
-            else{
+            } else {
                 throw new Exception('errors', 1);
-                
+
             }
         } else throw new Exception("Присланы не все параметры", 1);
-        
-    }
 
+    }
 
 
     public function actionParseChecked()
     {
         $files = $_GET['parse'];
-        $finded = ParsersLinking::model()->findAllByAttributes(array('filename'=>$files));
+        $finded = ParsersLinking::model()->findAllByAttributes(array('filename' => $files));
         $items = array();
 
         foreach ($finded as $item) {
@@ -81,7 +81,7 @@ class DefaultController extends Controller
                 $items[] = $item;
             }
         }
-        $this->render('parseChecked',array(
+        $this->render('parseChecked', array(
             'items' => $items,
         ));
 
@@ -91,27 +91,26 @@ class DefaultController extends Controller
     {
         $model = new ParsersLinking;
 
-        $return = array('code'=> true, 'toUpdate' => '', 'toAllLinks' => '');
+        $return = array('code' => true, 'toUpdate' => '', 'toAllLinks' => '');
 
-        if(isset($_POST['ParsersLinking']))
-        {
-            $model->attributes=$_POST['ParsersLinking'];
+        if (isset($_POST['ParsersLinking'])) {
+            $model->attributes = $_POST['ParsersLinking'];
 
-            if($model->save()){
+            if ($model->save()) {
 
                 $stockModel = ParsersStock::model()->findByPk($_POST['ParsersLinking']['fromId']);
                 $stockModel->linked = 1;
                 $stockModel->save();
 
                 if ($model->linking->price != $model->item->price || $model->linking->quantity != $model->item->quantity) {
-                    $return['toUpdate'] = $this->renderPartial('oneItem',array(
-                        'item'=>$model,
+                    $return['toUpdate'] = $this->renderPartial('oneItem', array(
+                        'item' => $model,
                     ), true);
                 }
 
 
-                $return['toAllLinks'] = $this->renderPartial('oneItemLinking',array(
-                    'item'=>$model,
+                $return['toAllLinks'] = $this->renderPartial('oneItemLinking', array(
+                    'item' => $model,
                 ), true);
             }
 
@@ -124,6 +123,90 @@ class DefaultController extends Controller
 
     }
 
+
+    public function actionUpdateModifs()
+    {
+
+        echo $itemId = $_POST['id'];
+        echo '
+';
+        if (isset($_POST['modifs'])) {
+
+            $_POST['modifs'] = json_decode($_POST['modifs']);
+
+            echo $modif = $_POST['modifs'];
+            echo '
+';
+
+
+            echo $catModifId = $itemId;
+            echo '
+';
+            if ($modifOwner = ParsersLinking::model()->find(array(
+                    'condition' => 'fromId=:fromId',
+                    'params' => array(':fromId' => $modif))
+            )
+            ) {
+                echo $catModifOwner = $modifOwner->toId;
+                echo '<br>';
+
+                Yii::import('application.modules.catalog.models.CatItems');
+                $catModifModel = CatItem::model()->findByPk($catModifId);
+                $catModifModel->modOfThis = $catModifOwner;
+                $catModifModel->save();
+            }
+
+        }
+
+
+        $return = array('code' => true);
+
+
+        //ob_clean();
+        echo json_encode($return);
+
+
+    }
+
+    public function actionUpdateOtherFields()
+    {
+        $id = $_POST['id'];
+        $attrArray = [
+            'parsers_stock_id' => $id
+        ];
+
+        $otherFieldsModels = ParsersOtherFields::model()->findAllByAttributes($attrArray);
+
+        if (is_array($otherFieldsModels) && count($otherFieldsModels) > 0) {
+
+
+            if ($parserLinking = ParsersLinking::model()->find(array(
+                    'condition' => 'fromId=:fromId',
+                    'params' => array(':fromId' => $id))
+            )
+            ) {
+                $catItemId = $parserLinking->toId;
+                Yii::import('application.modules.catalog.models.CatItems');
+                $model = CatItem::model()->findByPk($catItemId);
+                $columnsArrray = $model->tableSchema->columnNames;
+                $columnsArrray = array_flip($columnsArrray);
+                echo 'id найденой модели CatItem - '.$model->id;
+                foreach ($otherFieldsModels as $field) {
+                    $fieldName = $field->name;
+                    if (isset($columnsArrray[$fieldName])){
+                        echo 'Совпало поле '.$fieldName;
+                        $model->$fieldName = $field->value;
+                    }
+                }
+                if (!$model->save()){
+                  echo 'Ошибка осхранения модели';
+                }
+
+            }
+
+        }
+    }
+
     public function actionUpdateOptions()
     {
 
@@ -134,10 +217,11 @@ class DefaultController extends Controller
         if (isset($_POST['parents'])) {
             foreach ($_POST['parents'] as $parent) {
 
-                if($parentModel = ParsersLinking::model()->find(array(
-                    'condition'=>'fromId=:fromId',
-                    'params'=>array(':fromId'=>$parent))
-                )){
+                if ($parentModel = ParsersLinking::model()->find(array(
+                        'condition' => 'fromId=:fromId',
+                        'params' => array(':fromId' => $parent))
+                )
+                ) {
                     $parentId = $parentModel->toId;
 
                     Yii::import('application.modules.catalog.models.CatItemsToItems');
@@ -150,16 +234,12 @@ class DefaultController extends Controller
                     $item->save();
                 }
 
-               
-
-                
             }
 
-        }else throw new Exception("Нету родительских опций", 1);
-        
-        
+        } else throw new Exception("Нету родительских опций", 1);
 
-        $return = array('code'=> true);
+
+        $return = array('code' => true);
 
 
         //ob_clean();
@@ -168,7 +248,8 @@ class DefaultController extends Controller
 
     }
 
-    public function actionUpdateCategories()
+    public
+    function actionUpdateCategories()
     {
 
         $itemId = $_POST['id'];
@@ -178,10 +259,11 @@ class DefaultController extends Controller
         if (isset($_POST['groups'])) {
             foreach ($_POST['groups'] as $group_name) {
 
-                if($group_relation = ParsersCategoryConnection::model()->find(array(
-                    'condition'=>'connect_name=:connect_name',
-                    'params'=>array(':connect_name'=>$group_name))
-                )){
+                if ($group_relation = ParsersCategoryConnection::model()->find(array(
+                        'condition' => 'connect_name=:connect_name',
+                        'params' => array(':connect_name' => $group_name))
+                )
+                ) {
 
                     Yii::import('application.modules.catalog.models.CatItemsToCat');
 
@@ -200,18 +282,16 @@ class DefaultController extends Controller
                             $item->save();
                         }
                     }
-                   
+
                 }
 
-               
 
-                
             }
 
-        }else throw new Exception("Нету категорий", 1);
-        
+        } else throw new Exception("Нету категорий", 1);
 
-        $return = array('code'=> true);
+
+        $return = array('code' => true);
 
 
         //ob_clean();
@@ -220,18 +300,20 @@ class DefaultController extends Controller
 
     }
 
-    public function actionGetParsedForCatItem($itemId, $file)
+    public
+    function actionGetParsedForCatItem($itemId, $file)
     {
         $catItems = CatItem::model()->findByPk($itemId);
 
-        $this->renderPartial('listForCatItems',array(
+        $this->renderPartial('listForCatItems', array(
 
             'itemList' => ParsersStock::model()->findAllByAttributes(array('filename' => $file, 'linked' => 0)),
             'itemId' => $itemId
         ));
     }
 
-    public function actionUpdateCard()
+    public
+    function actionUpdateCard()
     {
 
         if (isset($_POST['id'])) {
@@ -243,17 +325,17 @@ class DefaultController extends Controller
             ob_clean();
             if ($model->save()) {
                 echo "1";
-            }
-            else{
+            } else {
                 echo "0";
             }
         }
     }
 
-    public function actionDoChecked()
+    public
+    function actionDoChecked()
     {
 
-        if(isset($_POST['item'])){
+        if (isset($_POST['item'])) {
             foreach ($_POST['item'] as $item) {
 
 
@@ -269,16 +351,17 @@ class DefaultController extends Controller
         $this->redirect($_POST['url']);
     }
 
-    public function actionParseNew($className)
-    {   
+    public
+    function actionParseNew($className)
+    {
 
         $class = new $className;
         $class->runJob();
         $json = $class->getLastParsedData();
 
         ParsersStock::model()->deleteAll(array('condition' => "`filename`='" . $class->getName() . "'"));
-        
-    
+
+
         foreach ($json['items'] as $item) {
             $new = new ParsersStock;
             $item = (array)$item;
@@ -286,8 +369,8 @@ class DefaultController extends Controller
             $item['name'] = substr($item['name'], 0, 99);
 
             if (ParsersLinking::model()->find(array(
-                'condition'=>'fromId=:fromId',
-                'params'=>array(':fromId'=>$item['id'])))
+                'condition' => 'fromId=:fromId',
+                'params' => array(':fromId' => $item['id'])))
             ) {
                 $item['linked'] = 1;
             }
@@ -301,19 +384,20 @@ class DefaultController extends Controller
         $tempfile = require(dirname(Yii::app()->request->scriptFile) . "/files/parsersData/time.txt");
 
 
-        echo date("d.m.Y H:i", $tempfile[$class->getName()]);
+        //   echo date("d.m.Y H:i", $tempfile[$class->getName()]);
 
 
     }
 
-    public function actionDo($file, $tab = 'changed')
+    public
+    function actionDo($file, $tab = 'changed')
     {
 
-        
+
         $catItems = array();
         $itemList = array();
 
-        
+
         if ($tab == 'allSynched') {
             $itemList = ParsersLinking::model()->findAllByAttributes(array('filename' => $file), array('order' => 'id ASC'));
 
@@ -331,7 +415,7 @@ class DefaultController extends Controller
                         $newImages = [];
 
                         $images = json_decode($item->linking->images);
-                        
+
                         $parsedImages[$item->item->id]['item'] = $item;
                         $parsedImages[$item->item->id]['images'] = [];
 
@@ -348,7 +432,7 @@ class DefaultController extends Controller
                             }
 
                             if (!in_array($hashMd5, $hashesMd5) & !in_array($hashSha1, $hashesSha1)) {
-                            
+
                                 $parsedImages[$item->item->id]['images'][] = [
                                     'md5' => $hashMd5,
                                     'sha1' => $hashSha1,
@@ -364,7 +448,7 @@ class DefaultController extends Controller
                         $itemData = array();
                         $datafile = Yii::getPathOfAlias('webroot') . '/files/pictureBox/catalogItem/' . $item->item->id . '/data.php';
 
-                        if(file_exists($datafile)){
+                        if (file_exists($datafile)) {
                             $itemData = require($datafile);
 
 
@@ -384,11 +468,10 @@ class DefaultController extends Controller
                         if (count($parsedImages[$item->item->id]['images']) == 0) {
                             unset($parsedImages[$item->item->id]);
                         }
-                            
 
-                        
+
                     }
-                    
+
                 }
 
             }
@@ -406,7 +489,7 @@ class DefaultController extends Controller
                             $itemList[] = $item;
                         }
                     }
-                    
+
                 }
 
             }
@@ -439,8 +522,7 @@ class DefaultController extends Controller
             $itemList->linked = 0;
             $itemList->ids = array();
 
-            
-           
+
         }
 
         if ($tab == 'newWithId') {
@@ -450,7 +532,7 @@ class DefaultController extends Controller
                 if ($item->article != '') {
                     $ids[] = $item->article;
                 }
-    
+
             }
 
             if (!$ids) {
@@ -476,12 +558,10 @@ class DefaultController extends Controller
         }
 
         if (isset($_GET['ParsersStock']))
-                $itemList->Attributes = $_GET['ParsersStock'];
+            $itemList->Attributes = $_GET['ParsersStock'];
 
 
-
-
-        $this->render('do',array(
+        $this->render('do', array(
             // 'models'=>$models,
             // 'return' => $return,
             'filename' => $file,
@@ -492,26 +572,29 @@ class DefaultController extends Controller
 
     }
 
-    public function deteleLinkingButton($data)
+    public
+    function deteleLinkingButton($data)
     {
         return "<input type='button' value='Удалить связь' data-id='{$data->id}' class='deleteLinking btn'>";
     }
 
-    public function getSyncButtons($data, $row){
+    public
+    function getSyncButtons($data, $row)
+    {
         $return = "<button type='button'  data-filename='{$data->filename}' class='composite btn btn-info' name='{$data->name}'>Объединить с ...</button>";
-        if ($data->findedByArticle()){
+        if ($data->findedByArticle()) {
             $return .= "<form action='/parsers/default/syncCard' data-removeAfter='.item-{$data->id}' class='ajaxSubmit'>
                 <input type='hidden' name='ParsersLinking[fromId]' id='name' value='{$data->id}'><br/>
                 <input type='hidden' name='ParsersLinking[toId]' id='itemId' value='{$data->findedByArticle()}' >
                 <input type='hidden' name='ParsersLinking[filename]' id='itemId' value='{$data->filename}' >
-                <button type='submit' class='compositeRightNow btn btn-primary' data-id='{$data->findedByArticle()}' title=''>Привязать сразу по артиклю к (<a style='color:white;text-decoration:underline' href='" . $this->createUrl('/catalog/catItem/update', array('id' => $data->findedByArticle() )) . "'>{$data->findedByArticle()}</a>)</button></td>
+                <button type='submit' class='compositeRightNow btn btn-primary' data-id='{$data->findedByArticle()}' title=''>Привязать сразу по артиклю к (<a style='color:white;text-decoration:underline' href='" . $this->createUrl('/catalog/catItem/update', array('id' => $data->findedByArticle())) . "'>{$data->findedByArticle()}</a>)</button></td>
             </form>";
         }
         $images = json_decode($data->images);
 
-        if($images){
+        if ($images) {
 
-                $return .= "<div style='display:none'><table id='images-" . str_replace('/', '', $data->id) . "'>
+            $return .= "<div style='display:none'><table id='images-" . str_replace('/', '', $data->id) . "'>
                     <thead>
                         <tr>
                             <td>Изображение</td>
@@ -519,27 +602,30 @@ class DefaultController extends Controller
                         </tr>
                     </thead>
                     <tbody>";
-                        foreach ($images as $image){
-                            $imageUrl = str_replace(Yii::getPathOfAlias('webroot'), '', $image);
-                            $return .="<tr>
+            foreach ($images as $image) {
+                $imageUrl = str_replace(Yii::getPathOfAlias('webroot'), '', $image);
+                $return .= "<tr>
                                 <td><img src='{$imageUrl}' width: 100px></td>
                                 <td><input type='checkbox' name='images[]' value='{$image}'></td>
                             </tr>";
-                        }
-                            
-                        
-                    $return .= "</tbody>
-                </table></div>"; 
             }
+
+
+            $return .= "</tbody>
+                </table></div>";
+        }
 
         return $return;
     }
 
-    public function getAddAsNewButton($data){ 
-        return "<button type='button' class='addAsNew' data-filename='{$data->filename}' data-id='{$data->id}' data-price='{$data->price}' data-name='{$data->name}' data-images='{$data->images}'  data-parents='{$data->parents}' data-groups='{$data->groups}' data-text='{$data->text}'>Добавить как новый</button>";
+    public
+    function getAddAsNewButton($data)
+    {
+        return "<button type='button' class='addAsNew' data-filename='{$data->filename}' data-id='{$data->id}' data-price='{$data->price}' data-name='{$data->name}' data-images='{$data->images}'  data-parents='{$data->parents}' data-groups='{$data->groups}' data-text='{$data->text}' data-modif='{$data->modifs}'>Добавить как новый</button>";
     }
 
-    public function actionLinking()
+    public
+    function actionLinking()
     {
 
         $model = ParsersLinking::model()->findAll(array('order' => 'filename ASC'));
@@ -552,22 +638,23 @@ class DefaultController extends Controller
             }
         }
 
-        $this->render('linking',array(
+        $this->render('linking', array(
             'buttons' => $buttons,
             'items' => $model
         ));
     }
 
-    public function actionIndex()
+    public
+    function actionIndex()
     {
         $timeFile = array();
 
-        $fileData =  $this->getFiles();
+        $fileData = $this->getFiles();
 
-        if(file_exists(Yii::app()->basePath.'/../files/parsersData/time.txt'));
-            $timeFile = require(Yii::app()->basePath.'/../files/parsersData/time.txt');
+        if (file_exists(Yii::app()->basePath . '/../files/parsersData/time.txt')) ;
+        $timeFile = require(Yii::app()->basePath . '/../files/parsersData/time.txt');
 
-        $this->render('index',array(
+        $this->render('index', array(
             // 'models'=>$models,
             // 'return' => $return,
             'fileListOfDirectory' => $fileData,
@@ -577,37 +664,36 @@ class DefaultController extends Controller
 
     }
 
-    public function getFiles()
+    public
+    function getFiles()
     {
         $fileListOfDirectory = array();
         $timeArray = array();
 
 
-        $parserDataDir = Yii::getPathOfAlias('webroot').'/files/parsersData/';
-        $parserTimeFile = $parserDataDir.'time.txt';
+        $parserDataDir = Yii::getPathOfAlias('webroot') . '/files/parsersData/';
+        $parserTimeFile = $parserDataDir . 'time.txt';
 
-        if ( ! is_writable($parserDataDir)) {
-            throw new Exception($parserDataDir. "не может быть изменена. Недостаточно прав", 503);
-            
+        if (!is_writable($parserDataDir)) {
+            throw new Exception($parserDataDir . "не может быть изменена. Недостаточно прав", 503);
+
         }
 
 
-
-        if ( ! file_exists($parserTimeFile)) {
+        if (!file_exists($parserTimeFile)) {
 
             $myfile = fopen($parserTimeFile, "w");
             fclose($myfile);
 
             PictureBox::crPhpArr(array(), $parserTimeFile);
         }
-        
+
         if (file_exists($parserTimeFile)) {
             $timeArray = require($parserTimeFile);
         }
 
 
-        foreach(glob(Yii::app()->basePath.'/jobs/*ParserJob.php') as $path) {  
-
+        foreach (glob(Yii::app()->basePath . '/jobs/*ParserJob.php') as $path) {
 
 
             $className = basename($path);
@@ -617,47 +703,44 @@ class DefaultController extends Controller
 
             $time = '';
 
-            if(count($timeArray)){
+            if (count($timeArray)) {
                 foreach ($timeArray as $key => $value) {
 
-                    if ($key == $class->getName()){
-                       $time = date("d.m.Y H:i", $value) ."<br/>";
+                    if ($key == $class->getName()) {
+                        $time = date("d.m.Y H:i", $value) . "<br/>";
 
-                       break;
-                        
-                    } else{
+                        break;
+
+                    } else {
                         $time = "Еще не выполнялась<br/>";
                     }
                 }
             }
-            
 
 
-            array_push ( $fileListOfDirectory, array('name' => $class->getName(), 'time' => $time, 'className' => $className) );
+            array_push($fileListOfDirectory, array('name' => $class->getName(), 'time' => $time, 'className' => $className));
         }
-        
 
 
         return $fileListOfDirectory;
     }
 
-    public function actionDeleteLinking($id)
+    public
+    function actionDeleteLinking($id)
     {
-        $model=ParsersLinking::model()->findByPk($id);
+        $model = ParsersLinking::model()->findByPk($id);
 
         $stockModel = ParsersStock::model()->findByPk($model->fromId);
         if (isset($stockModel)) {
             $stockModel->linked = 0;
             $stockModel->save();
         }
-       
 
 
         ob_clean();
         if ($model->delete()) {
             echo "1";
-        }
-        else{
+        } else {
             echo "0";
         }
 

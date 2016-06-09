@@ -1,5 +1,12 @@
 
 <h1>Миграция базы данных</h1>
+
+<form class="form-search" action="/migrations/default/newMigration" method="GET">
+	<label class="control-label" for="inputEmail">Имя файла миграции:</label>
+	<input name="filename" type="text" class="input-medium search-query">
+	<button type="submit" class="btn">Создать заготовку файла миграции</button>
+</form>
+
 <div class="center-block"><?php echo $return?>(Переключатели меняются не сразу, а в течении нескольких секунд)</div>
 <table>
 	<thead>

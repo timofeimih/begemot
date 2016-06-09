@@ -30,7 +30,12 @@ class CatItemController extends Controller
         return array(
 
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
-                'actions' => array('delete', 'create', 'update','removeFromCat', 'togglePublished','toggleTop','index', 'view', 'deleteItemToCat', 'tidyItemText', 'getItemsFromCategory', 'options', 'test'),
+
+                'actions' => array(
+                    'delete',
+                    'deleteModifFromItem',
+                    'create', 'update', 'togglePublished', 'toggleTop', 'index', 'view', 'deleteItemToCat', 'tidyItemText', 'getItemsFromCategory', 'options', 'test'),
+
                 'expression' => 'Yii::app()->user->canDo("Catalog")'
             ),
             array('deny',  // deny all users
@@ -67,11 +72,16 @@ class CatItemController extends Controller
         if (isset($_POST['CatItem'])) {
             $model->attributes = $_POST['CatItem'];
             if ($model->save()) {
-                
+
                 if (isset($_POST['returnId'])) {
                     echo $model->id;
 
                 } else $this->redirect(array('view', 'id' => $model->id));
+
+
+            } else {
+                throw new Exception(json_encode($model->getErrors()), 1);
+
 
             }
 
@@ -192,6 +202,20 @@ class CatItemController extends Controller
         // --change positions
 
 
+        if (isset($_POST['saveModif'])) {
+            if (isset($_POST['modif'])) {
+                foreach ($_POST['modif'] as $itemId) {
+                    $item = CatItem::model()->findByPk($itemId);
+                    $item->modOfThis = $id;
+                    $item->save();
+                    $this->redirect ('/catalog/catItem/update/id/'.$id.'/tab/modifications');
+
+                }
+            }
+
+        }
+
+
         if (isset($_POST['saveItemsToItems'])) {
             CatItemsToItems::model()->deleteAll(array("condition" => 'itemId=' . $id . " OR toItemId=" . $id));
 
@@ -203,7 +227,7 @@ class CatItemController extends Controller
                     $item->toItemId = $itemId;
 
                     $item->save();
-                    
+
                 }
 
             }
@@ -272,7 +296,7 @@ class CatItemController extends Controller
                 $itemToCat->item->catId = $itemToCat->catId;
                 $itemToCat->item->save();
             }
-            $this->redirect(array('update','id'=>$model->id,'tab'=>$tab));
+            $this->redirect(array('update', 'id' => $model->id, 'tab' => $tab));
         }
 
         $this->render('update', array(
@@ -316,11 +340,26 @@ class CatItemController extends Controller
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
 
         //Удаляем привязки к категориям
-        $CatItemsRelations = CatItemsToCat::model()->findAll('itemId = '.$id);
+        $CatItemsRelations = CatItemsToCat::model()->findAll('itemId = ' . $id);
 
-        foreach ($CatItemsRelations as $catItemToCat){
+        foreach ($CatItemsRelations as $catItemToCat) {
             $catItemToCat->delete();
         }
+
+
+        //Удаляем привязки к категориям
+        $ParsersLinkingRelations = ParsersLinking::model()->findAll('toId = ' . $id);
+
+        foreach ($ParsersLinkingRelations as $parsersLinking) {
+
+
+            $parsersStock = $parsersLinking->linking;
+            $parsersStock->linked = 0;
+            $parsersStock->save();
+
+            $parsersLinking->delete();
+        }
+
 
         if (!isset($_GET['ajax']))
             $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
@@ -355,10 +394,10 @@ class CatItemController extends Controller
 
         $model->published = ($model->published) ? 0 : 1;
 
-        if($model->save()){
-          echo "saved";
-        } else{
-          throw new Exception("Error Processing Request", 1);
+        if ($model->save()) {
+            echo "saved";
+        } else {
+            throw new Exception("Error Processing Request", 1);
         }
     }
 
@@ -370,19 +409,27 @@ class CatItemController extends Controller
 
         $model->top = ($model->top) ? 0 : 1;
 
-        if($model->save()){
-          echo "saved";
-        } else{
-          throw new Exception("Error Processing Request", 1);
+        if ($model->save()) {
+            echo "saved";
+        } else {
+            throw new Exception("Error Processing Request", 1);
         }
     }
 
-    public function actionRemoveFromCat($id,$catId)
+
+    public function actionDeleteModifFromItem($itemId)
     {
-        $model = $this->loadModel($id);
-        CatalogModule::checkEditAccess($model->authorId);
+
         if (Yii::app()->request->isAjaxRequest) {
-            CatItemsToCat::model()->deleteAll(array('condition' => '`catId`=' . $catId . ' and `itemId`=' . $id));
+
+            $item = CatItem::model()->findByPk($itemId);
+            print_r($item->modOfThis );
+            $item->modOfThis = null;
+
+            if(!$item->save()){
+                echo 'Ошибка!';
+            }
+
         }
     }
 
