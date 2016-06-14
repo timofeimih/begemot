@@ -3,7 +3,7 @@
 // This is the configuration for yiic console application.
 // Any writable CConsoleApplication properties can be configured here.
 return array(
-    'basePath'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
+    'basePath'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'../..',
     'name'=>'My Console Application',
  
     'import'=>array(
@@ -14,7 +14,7 @@ return array(
     'application.modules.catalog.models.CatItemsRow',
         'application.modules.catalog.components.*',
         'application.modules.crontabs.components.*',
-        'application.modules.begemot.commands.ParseCommand',
+        'application.modules.begemot.commands.CheckCronCommand',
         'application.modules.jobs.components.*', // components for jobs
         'application.jobs.*',
     'application.moodules.parsers.*',
@@ -22,7 +22,7 @@ return array(
     'preload' => array('log'),
     'commandMap' => array(
       'parse'=>array(
-         'class'=>'application.modules.begemot.commands.ParseCommand',
+         'class'=>'application.modules.begemot.commands.CheckCronCommand',
       ),
     ),
 
