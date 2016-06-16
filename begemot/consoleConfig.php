@@ -14,7 +14,7 @@ return array(
     'application.modules.catalog.models.CatItemsRow',
         'application.modules.catalog.components.*',
         'application.modules.crontabs.components.*',
-        'application.modules.begemot.commands.ParseCommand',
+        'application.modules.begemot.commands.CheckCronCommand,
         'application.modules.jobs.components.*', // components for jobs
         'application.jobs.*',
     'application.moodules.parsers.*',

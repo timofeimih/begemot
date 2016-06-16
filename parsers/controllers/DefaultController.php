@@ -190,16 +190,16 @@ class DefaultController extends Controller
                 $model = CatItem::model()->findByPk($catItemId);
                 $columnsArrray = $model->tableSchema->columnNames;
                 $columnsArrray = array_flip($columnsArrray);
-                echo 'id найденой модели CatItem - '.$model->id;
+                echo 'id найденой модели CatItem - ' . $model->id;
                 foreach ($otherFieldsModels as $field) {
                     $fieldName = $field->name;
-                    if (isset($columnsArrray[$fieldName])){
-                        echo 'Совпало поле '.$fieldName;
+                    if (isset($columnsArrray[$fieldName])) {
+                        echo 'Совпало поле ' . $fieldName;
                         $model->$fieldName = $field->value;
                     }
                 }
-                if (!$model->save()){
-                  echo 'Ошибка осхранения модели';
+                if (!$model->save()) {
+                    echo 'Ошибка осхранения модели';
                 }
 
             }
@@ -389,8 +389,7 @@ class DefaultController extends Controller
 
     }
 
-    public
-    function actionDo($file, $tab = 'changed')
+    public function actionDo($file, $tab = 'changed')
     {
 
 
