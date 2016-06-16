@@ -2,10 +2,7 @@
 /* @var $this CatItemController */
 /* @var $model CatItem */
 
-$this->breadcrumbs = array(
-    'Cat Items' => array('index'),
-    'Manage',
-);
+
 
 $this->menu = require dirname(__FILE__) . '/../catItem/commonMenu.php';
 ?>
@@ -46,7 +43,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
         ),
         array('name' => 'item_name', 'value' => '$data->item->name'),
         array(
-            'header' => 'Переключатель публикации',
+            'header' => 'Pub',
             'type'=>'raw',
             'value'=>'$data->item->isPublished()',
         ),
@@ -54,6 +51,12 @@ $this->widget('bootstrap.widgets.TbGridView', array(
             'header' => 'Top',
             'type'=>'raw',
             'value'=>'$data->item->isTop()',
+        ),
+        array(
+            'header' => 'Убрать из раздела',
+            'htmlOptions' => array('width' => 120),
+            'type'=>'raw',
+            'value'=>'$data->item->removeFromCategory()',
         ),
         array(
             'class' => 'bootstrap.widgets.TbButtonColumn',
@@ -89,7 +92,22 @@ $this->widget('bootstrap.widgets.TbGridView', array(
             $.get('/catalog/catItem/toggleTop/id/' + $(this).attr('data-id'), function(data){
                 button.before("<span class='toDelete'>Сохранено<br/></span>");
                 setTimeout(function() { button.parent().find(".toDelete").remove() }, 500);
-                
+
+            })
+        })
+
+        $(document).on("click", ".removeBtn", function(){
+            var button = $(this);
+
+            $.get('/catalog/catItem/RemoveFromCat/id/' + $(this).attr('data-id')+ <?php echo '"/catId/'.$_GET['id'].'"';?>, function(data){
+                button.before("<span class='toDelete'>Сохранено<br/></span>");
+                setTimeout(function() {
+                    button.parent().parent().remove();
+                 //   button.parent().find(".toDelete").remove();
+                    }, 500
+                );
+
+
             })
         })
     })

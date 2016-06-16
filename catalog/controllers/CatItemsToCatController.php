@@ -2,94 +2,100 @@
 
 class CatItemsToCatController extends Controller
 {
-    	public $layout='begemot.views.layouts.column2';
-     
-      
-     
-    	public function filters()
-	{
-		return array(
-			'accessControl', // perform access control for CRUD operations
-			'postOnly + delete', // we only allow deletion via POST request
-			'ajaxOnly + changeThroughDisplayValue',
-		);
-	}
-        
-    	public function accessRules()
-	{
-		return array(
+    public $layout = 'begemot.views.layouts.column2';
 
-			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('delete','orderUp','orderDown', 'changeThroughDisplayValue', 
-					// 'index',
-					'admin'),
+
+    public function filters()
+    {
+        return array(
+            'accessControl', // perform access control for CRUD operations
+            'postOnly + delete', // we only allow deletion via POST request
+            'ajaxOnly + changeThroughDisplayValue',
+        );
+    }
+
+    public function accessRules()
+    {
+        return array(
+
+            array('allow', // allow admin user to perform 'admin' and 'delete' actions
+                'actions' => array('delete', 'orderUp', 'orderDown', 'changeThroughDisplayValue',
+                    // 'index',
+                    'admin'),
 
                 'expression' => 'Yii::app()->user->canDo("Catalog")'
 
-			),
-			array('deny',  // deny all users
-				'users'=>array('*'),
-			),
-		);
-	}
-	public function actionDelete($id)
-	{
-		$this->loadModel($id)->delete();
+            ),
+            array('deny',  // deny all users
+                'users' => array('*'),
+            ),
+        );
+    }
 
-		// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-		if(!isset($_GET['ajax']))
-			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
+    public function actionDelete($id)
+    {
+        $this->loadModel($id)->delete();
 
-	}
-        
-        public function behaviors(){
-                return array(
-                        'CBOrderControllerBehavior' => array(
-                                'class' => 'begemot.extensions.order.BBehavior.CBOrderControllerBehavior',
-                                'groupName'=>'catId'
-                        )
-                );
-        }
-        
-        public function actionOrderUp($id){
-            $model = $this->loadModel($id);
-      
-            $this->groupId = $model->catId;
-            $this->orderUp($id);
+        // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
+        if (!isset($_GET['ajax']))
+            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
 
-        }
-        
-        public function actionOrderDown($id){
-            $model = $this->loadModel($id);
-      
+    }
 
-            $this->groupId = $model->catId;
-            $this->orderDown($id);
-        } 
-	
-        public function actionAdmin($id)
-	{
-            $model = new CatItemsToCat('search');
-            $model->unsetAttributes(); 
-            if(isset($_GET['CatItemsToCat']))
-               $model->attributes=$_GET['CatItemsToCat'];
-            $this->render('admin',array(
-                'category'=> CatCategory::model()->findByPk($id),
-                'id'=> $id,
-                'model'=> $model,
-            ));
-	}        
-        
-	public function loadModel($id)
-	{
-		$model= CatItemsToCat::model()->findByPk($id);
-		if($model===null)
-			throw new CHttpException(404,'The requested page does not exist.');
-		return $model;
-	}
+    public function behaviors()
+    {
+        return array(
+            'CBOrderControllerBehavior' => array(
+                'class' => 'begemot.extensions.order.BBehavior.CBOrderControllerBehavior',
+                'groupName' => 'catId'
+            )
+        );
+    }
+
+    public function actionOrderUp($id)
+    {
+        $model = $this->loadModel($id);
+
+        $this->groupId = $model->catId;
+        $this->orderUp($id);
+
+    }
+
+    public function actionOrderDown($id)
+    {
+        $model = $this->loadModel($id);
+
+
+        $this->groupId = $model->catId;
+        $this->orderDown($id);
+    }
+
+    public function actionAdmin($id)
+    {
+        $model = new CatItemsToCat('search');
+        $model->unsetAttributes();
+        $model->dbCriteria->order="`t`.`order` ASC";
+        if (isset($_GET['CatItemsToCat']))
+            $model->attributes = $_GET['CatItemsToCat'];
+
+        $this->render('admin', array(
+            'category' => CatCategory::model()->findByPk($id),
+            'id' => $id,
+            'model' => $model,
+        ));
+    }
+
+    public function loadModel($id)
+    {
+        $model = CatItemsToCat::model()->findByPk($id);
+        if ($model === null)
+            throw new CHttpException(404, 'The requested page does not exist.');
+        return $model;
+    }
 
     public function actionChangeThroughDisplayValue($cat_id, $item_id, $value)
     {
+
     	$model = CatItemsToCat::model()->find(array(
     		'condition' => 'catId = :cat AND itemId = :item',
     		'params' => array(':cat' => $cat_id, ':item' => $item_id)
@@ -164,4 +170,5 @@ class CatItemsToCatController extends Controller
     	$model->through_display = $value;
     	$model->save();
    }
+
 }
