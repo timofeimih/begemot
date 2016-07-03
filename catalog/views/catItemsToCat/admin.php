@@ -62,7 +62,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
             'class' => 'bootstrap.widgets.TbButtonColumn',
             'viewButtonUrl' => 'Yii::app()->controller->createUrl("/catalog/site/itemView",array("item"=>$data->itemId, "name_t"=>$data->item->name_t, "catId" => $data->item->catId))',
             'updateButtonUrl' => 'Yii::app()->controller->createUrl("catItem/update",array("id"=>$data->itemId))',
-            // 'updateButtonUrl'=>'"catItem/update/id/".$data->itemId',
+            'deleteButtonUrl'=>'"/cat   alog/catItem/delete/id/".$data->itemId',
         ),
         array(
             'class' => 'begemot.extensions.order.gridView.CBOrderColumn',
@@ -99,7 +99,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
         $(document).on("click", ".removeBtn", function(){
             var button = $(this);
 
-            $.get('/catalog/catItem/RemoveFromCat/id/' + $(this).attr('data-id')+ <?php echo '"/catId/'.$_GET['id'].'"';?>, function(data){
+            $.get('/catalog/catItem/DeleteItemToCat/itemId/' + $(this).attr('data-id')+ <?php echo '"/catId/'.$_GET['id'].'"';?>, function(data){
                 button.before("<span class='toDelete'>Сохранено<br/></span>");
                 setTimeout(function() {
                     button.parent().parent().remove();
