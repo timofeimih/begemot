@@ -346,6 +346,7 @@ require(dirname(__FILE__).'/../menu.php');
 <?php if ($tab == "allSynched"): ?>
 
 <?php
+	
 	Yii::import('begemot.extensions.grid.EImageColumn');
 
  $this->widget('bootstrap.widgets.TbGridView',array(
@@ -370,7 +371,7 @@ require(dirname(__FILE__).'/../menu.php');
                 'width' => 120,
                 'height' => 120,
             ),
-        ),   
+        ),
 
         array(
             'header' => 'Связан с ',
