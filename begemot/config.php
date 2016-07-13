@@ -90,7 +90,7 @@ return array(
             # registration path
             'registrationUrl' => array('/user/registration'),
             # recovery password path
-            'recoveryUrl' => array('/user/recovery'),
+            'recoveryUrl' => array('/user/recovery/recovery'),
             # login form path
             'loginUrl' => array('/user/login'),
             # page after login
