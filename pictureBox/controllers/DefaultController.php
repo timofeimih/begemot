@@ -12,12 +12,16 @@ class DefaultController extends Controller
 
     public function actionTest()
     {
-        $id = 'catalogItem';
-        $elemId = 100;
-        $pictureId = 2;
-        $config = require Yii::getPathOfAlias('application') . '/config/catalog/categoryItemPictureSettings.php';
+//        Yii::import('begemot.extensions.bootstrap.widgets.TbMenu');
+        $this->layout='begemot.views.layouts.column1';
 
-        $this->renderImageAgain($id, $elemId, $pictureId, $config);
+//        $id = 'catalogItem';
+//        $elemId = 100;
+//        $pictureId = 2;
+//        $config = require Yii::getPathOfAlias('application') . '/config/catalog/categoryItemPictureSettings.php';
+//
+//        $this->renderImageAgain($id, $elemId, $pictureId, $config);
+        $this->render('test');
     }
 
     //Функция пересборки изображений
@@ -32,74 +36,17 @@ class DefaultController extends Controller
     public function actionAjaxFlipImages($id, $elementId, $pictureid1, $pictureid2)
     {
 
+        $PBox = new PBox($id,$elementId);
+        $PBox->swapImages($pictureid1,$pictureid2);
 
-        $dataFilename = Yii::getPathOfAlias('webroot') . '/' . 'files/pictureBox/' . $id . '/' . $elementId . '/data.php';
+    }
 
-        $data = require $dataFilename;
-        $images = $data['images'];
-
-        $config = $this->getConfigFromSession($id, $elementId);
-        $filters = $config['imageFilters'];
-
-        $dir = Yii::getPathOfAlias('webroot');
-
-        $file1 = $dir . $images[$pictureid1]['original'];
-        $file2 = $dir . $images[$pictureid2]['original'];
-
-        $this->flipFiles($file1, $file2);
-
-        //Перекидываем title и alt
-        $titleTmp = (isset($images[$pictureid1]['title']) ? $images[$pictureid1]['title'] : '');
-        $altTmp = (isset($images[$pictureid1]['alt']) ? $images[$pictureid1]['alt'] : '');
-
-        $images[$pictureid1]['title'] = isset($images[$pictureid2]['title']) ? $images[$pictureid2]['title'] : '';
-        $images[$pictureid1]['alt'] = isset($images[$pictureid2]['alt']) ? $images[$pictureid2]['alt'] : '';
-
-        $images[$pictureid2]['title'] = $titleTmp;
-        $images[$pictureid2]['alt'] = $altTmp;
-
-
-        foreach ($filters as $filterName => $filterUselessData) {
-            echo '<br>';
-            echo '<br>';
-            echo 'Имя фильтра:'.$filterName.'<br>';
-
-            if (isset($images[$pictureid1][$filterName])) {
-                echo 'Существует!<br>';
-                $fileNameArray = explode('.', $images[$pictureid1]['original']);
-
-                $ext = end($fileNameArray);
-                $file1 = $dir . '/files/pictureBox/' . $id . '/' . $elementId . '/' . $pictureid1 . '_' . $filterName . '.' . $ext;
-                $file2 = $dir . '/files/pictureBox/' . $id . '/' . $elementId . '/' . $pictureid2 . '_' . $filterName . '.' . $ext;
-
-                if (isset($images[$pictureid2][$filterName])) {
-
-                    $images[$pictureid2][$filterName] = '/files/pictureBox/' . $id . '/' . $elementId . '/' . $pictureid2 . '_' . $filterName . '.' . $ext;
-                    $images[$pictureid1][$filterName] = '/files/pictureBox/' . $id . '/' . $elementId . '/' . $pictureid1 . '_' . $filterName . '.' . $ext;
-                } else {
-                    $images[$pictureid2][$filterName] = '/files/pictureBox/' . $id . '/' . $elementId . '/' . $pictureid2 . '_' . $filterName . '.' . $ext;
-                    unset($images[$pictureid1][$filterName]);
-                }
-            } else if (isset($images[$pictureid2][$filterName])) {
-                echo 'Не cуществует!<br>';
-                $fileNameArray = explode('.', $images[$pictureid2]['original']);
-
-                $ext = end($fileNameArray);
-                $file1 = $dir . '/files/pictureBox/' . $id . '/' . $elementId . '/' . $pictureid2 . '_' . $filterName . '.' . $ext;
-                $file2 = $dir . '/files/pictureBox/' . $id . '/' . $elementId . '/' . $pictureid1 . '_' . $filterName . '.' . $ext;
-
-                $images[$pictureid1][$filterName] = '/files/pictureBox/' . $id . '/' . $elementId . '/' . $pictureid1 . '_' . $filterName . '.' . $ext;
-                unset($images[$pictureid2][$filterName]);
-
-            } else {
-                continue;
-            }
-
-            $this->flipFiles($file1, $file2);
-        }
-        $data['images'] = $images;
-        PictureBox::crPhpArr($data, $dataFilename);
-
+    public function actionNewSortOrder($galleryId,$id)
+    {
+        $PBox = new PBox($galleryId,$id);
+        $PBox->sortArray = $_REQUEST['sort'];
+        $PBox->saveSortArray();
+        return true;
     }
 
     public function actionUpload()
@@ -131,7 +78,7 @@ class DefaultController extends Controller
             $model = new UploadifyFile;
 
             $model->uploadifyFile = $uploadedFile = CUploadedFile::getInstanceByName('Filedata');
-            echo 123123;
+
             if ($model->validate()) {
 
                 Yii::import('application.modules.pictureBox.components.picturebox');
@@ -163,6 +110,8 @@ class DefaultController extends Controller
                     $this->addFilteredImage($newImageId, $filterName, '/files/pictureBox/' . $id . '/' . $elementId . '/' . $filteredImageFile, $dir);
                     //chmod(Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/' . $filteredImageFile, 0777);
                 }
+
+                $this->updateSortData ($id, $elementId);
             }
         }
     }
@@ -266,7 +215,7 @@ class DefaultController extends Controller
             throw new Exception("Нету изображений", 1);
             
         }
-        
+        $this->updateSortData ($id, $elementId);
         echo $return;
         return $return;
     }
@@ -277,39 +226,19 @@ class DefaultController extends Controller
 
         $this->layout = 'pictureBox.views.layouts.ajax';
 
+        $PBox = new PBox($id,$elementId);
 
-        $pictureBoxDir = Yii::getPathOfAlias('webroot') . '/files/pictureBox';
-        if (!file_exists($pictureBoxDir)) {
-            mkdir($pictureBoxDir, 0777);
-        }
-
-        $idDir = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id;
-
-        if (!file_exists($idDir)) {
-            mkdir($idDir, 0777);
-        }
-
-        $elementIdDir = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId;
-
-        if (!file_exists($elementIdDir)) {
-
-            mkdir($elementIdDir, 0777);
-        }
-
-
-        $dataFile = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/data.php';
-
-        if (file_exists($dataFile)) {
-
-            $data = require($dataFile);
-        } else {
-            PictureBox::crPhpArr(array('images' => array()), $dataFile);
-            $data = array('images' => array());
-        }
+        $data['images'] = $PBox->getSortedImageList();
 
         $config = $this->getConfigFromSession($id, $elementId);
 
-        $this->render('ajaxLayout', array('elementId' => $elementId, 'id' => $id, 'imageNumber' => $imageNumber, 'data' => $data, 'config' => $config));
+        $viewFile = 'ajaxLayout';
+
+        if (isset($_REQUEST['theme'])){
+            $viewFile = $_REQUEST['theme'];
+        }
+
+        $this->render($viewFile, array('elementId' => $elementId, 'id' => $id, 'imageNumber' => $imageNumber, 'data' => $data, 'config' => $config));
     }
 
     //возвращает новое имя добавленного изображения с
@@ -433,7 +362,7 @@ class DefaultController extends Controller
                 PictureBox::crPhpArr($data, $dataFile);
             }
 
-
+            $this->updateSortData ($id, $elementId);
         }
     }
 
@@ -455,6 +384,7 @@ class DefaultController extends Controller
                 PictureBox::crPhpArr($data, Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/data.php');
 
             }
+            $this->updateSortData ($id, $elementId);
         }
     }
 
@@ -659,6 +589,58 @@ class DefaultController extends Controller
         } else {
             return 'Config in session not exist!';
         }
+    }
+
+    static function updateSortData ($id, $elementId){
+
+        $dataDir = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId;
+        $sortFile = $dataDir.'/sort.php';
+
+        $maxSortPosition = 0;
+
+        if (!file_exists($sortFile)){
+            PictureBox::crPhpArr([], $sortFile);
+            $sortData = [];
+
+        } else {
+            $sortData = require($sortFile);
+            //Определяем максимальный индекс сортировки
+            foreach ($sortData as $sortIndex){
+                if ($maxSortPosition<$sortIndex) $maxSortPosition = $sortIndex;
+            }
+
+        }
+
+        $imagesData = require ($dataDir.'/data.php');
+
+        $images = $imagesData['images'];
+
+        /*
+           Добавляем изображения, которые не отсортированы
+            то есть чьих id нет в массиве $sortData
+        */
+
+        foreach ($images as $key=>$image){
+            if (!isset($sortData[$key])){
+                $maxSortPosition++;
+                $sortData[$key] = $maxSortPosition;
+            }
+        }
+
+        /*
+         *  теперь в обратную сторону. смотрим, что бы
+         * все id изображений существовали в массиве $sortData,
+         * если нет, это значит изображение удалили и из сортировки его тоже надо удалить
+         */
+
+        foreach ($sortData as $key =>$sortKey){
+
+            if (!isset($images[$key])) unset ($sortData[$key]);
+
+        }
+
+
+        PictureBox::crPhpArr($sortData, $sortFile);
     }
 
     private function flipFiles($file1, $file2)

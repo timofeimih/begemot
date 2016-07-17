@@ -55,7 +55,7 @@ Yii::app()->clientScript->registerCssFile($assetsDir.'/js/jquery.imgareaselect/c
 $dropzoneInit = "
 $(document).ready(
     function (){
-        var myDropzone = new Dropzone('div#myId',
+        var myDropzone".($config['divId'])." = new Dropzone('div#dropzone_".($config['divId'])."',
             {
                 url: '/pictureBox/default/upload',
                 acceptedFiles:'image/*',
@@ -72,7 +72,7 @@ $(document).ready(
 );
 ";
 
-Yii::app()->clientScript->registerScript('dropzone',$dropzoneInit,4);
+Yii::app()->clientScript->registerScript('dropzone-'.$config['divId'],$dropzoneInit,4);
 
 
 
@@ -218,7 +218,7 @@ $('#myModal').on('hide', function() {
 ";
 Yii::app()->clientScript->registerScript('image-resize',$script,4);
 
-Yii::app()->clientScript->registerScriptFile( $assetsDir.'/js/jquery.imgareaselect/scripts/jquery.imgareaselect.pack.js', 0);
+Yii::app()->clientScript->registerScriptFile( $assetsDir.'/js/jquery.imgareaselect/scripts/jquery.imgareaselect.js', 0);
 
 
 $script = '
@@ -289,7 +289,7 @@ $thisPictureBoxScript = '
 
 
                 refreshPictureBox("'.$config['divId'].'",PB_'.$config['divId'].');
-               
+       
                 
     ';
 Yii::app()->clientScript->registerScript('pictureBox-js-'.$config['divId'], $thisPictureBoxScript, 2);
@@ -301,7 +301,7 @@ Yii::app()->clientScript->registerScript('pictureBox-js-'.$config['divId'], $thi
 
 </div>
 
-<div id="myId" class="mydropzone" style="text-align: center;color:green;font-size:30px;"><span>Нажми, или перетащи сюда файлы!</span></div>
+<div id="dropzone_<?php echo $config['divId']?>" class="mydropzone" style="text-align: center;color:green;font-size:30px;"><span>Нажми, или перетащи сюда файлы!</span></div>
 
 
 

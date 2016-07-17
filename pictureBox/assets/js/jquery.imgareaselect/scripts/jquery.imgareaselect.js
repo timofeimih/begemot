@@ -23,6 +23,7 @@ function div() {
 }
 
 $.imgAreaSelect = function (img, options) {
+    alert(123);
     var
 
         $img = $(img),

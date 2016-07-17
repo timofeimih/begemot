@@ -13,6 +13,5 @@ class PictureBoxModule extends CWebModule {
         ));
         Yii::app()->getAssetManager()->publish(Yii::getPathOfAlias('application.modules.pictureBox.assets'));
     }
-   
 
 }

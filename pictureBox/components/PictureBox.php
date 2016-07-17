@@ -10,8 +10,10 @@ class PictureBox extends CWidget {
     //например:1,2,3,4 и т.д. 
     public $elementId = null;
     public $config = array();
-    
+
     public $divId = 'pictureBox';
+
+    public $theme = 'default';
 
     public function init() {
         if (!file_exists(Yii::app()->basePath . '/../files/pictureBox/')) {
@@ -20,26 +22,29 @@ class PictureBox extends CWidget {
     }
 
     public function run() {
-        
+
         $this->config = array_merge_recursive(PictureBox::getDefaultConfig(),$this->config);
 
         if (session_id()=='')
             session_start();
-        
-        $_SESSION['pictureBox']=array($this->id.'_'.$this->elementId=>$this->config);
-        
-        
+        $this->divId=$this->id.'_'.$this->elementId;
+        $this->config['divId'] = $this->divId;
+
+
+        $_SESSION['pictureBox'][$this->divId] = $this->config;
+
+
         $this->renderContent();
     }
 
     public static function getDefaultConfig(){
         $defaultConfig = array(
-    
+
             'nativeFilters'=>array(
-              'admin' =>true,
-            ),    
+                'admin' =>true,
+            ),
             'filtersTitles'=>array(
-              'admin' =>'Системный',  
+                'admin' =>'Системный',
 
             ),
             'imageFilters' => array(
@@ -59,18 +64,25 @@ class PictureBox extends CWidget {
     }
 
     protected function renderContent() {
-        $this->render('pictureBox.components.view.pictureBoxView',array('id'=>$this->id,'elementId'=>$this->elementId,'config'=>$this->config));   
-        
+
+        if ($this->theme=='default'){
+            $theme = 'pictureBox.components.view.pictureBoxView';
+        } else {
+            $theme = 'pictureBox.components.view.'.$this->theme;
+        }
+
+        $this->render($theme,array('id'=>$this->id,'elementId'=>$this->elementId,'config'=>$this->config));
+
     }
 
     static public function crPhpArr($array, $file) {
-        
-      
+
+
         $code = "<?php
   return
  " . var_export($array, true) . ";
 ?>";
-          file_put_contents($file, $code);
+        file_put_contents($file, $code);
 
 
     }
