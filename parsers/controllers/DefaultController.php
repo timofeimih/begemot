@@ -643,9 +643,9 @@ class DefaultController extends Controller
         ));
     }
 
-    public
-    function actionIndex()
+    public function actionIndex()
     {
+
         $timeFile = array();
 
         $fileData = $this->getFiles();
@@ -663,15 +663,20 @@ class DefaultController extends Controller
 
     }
 
-    public
-    function getFiles()
+    public function getFiles()
     {
+
         $fileListOfDirectory = array();
         $timeArray = array();
 
 
         $parserDataDir = Yii::getPathOfAlias('webroot') . '/files/parsersData/';
         $parserTimeFile = $parserDataDir . 'time.txt';
+  
+
+        if (!file_exists($parserDataDir)){
+            mkdir($parserDataDir);
+        }
 
         if (!is_writable($parserDataDir)) {
             throw new Exception($parserDataDir . "не может быть изменена. Недостаточно прав", 503);
