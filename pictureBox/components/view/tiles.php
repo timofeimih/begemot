@@ -1,132 +1,115 @@
-
 <?php
 $pbPath = Yii::getPathOfAlias('pictureBox');
 Yii::app()->clientScript->registerCssFile('/protected/modules/pictureBox/assets/css/tiles.css');
+
+
+$dropZoneAssetDir = Yii::app()->getAssetManager()->publish(Yii::getPathOfAlias('begemot.extensions.dropzone.assets'));
+
+Yii::app()->clientScript->registerCssFile($dropZoneAssetDir . '/dropzone.css');
+Yii::app()->clientScript->registerScriptFile($dropZoneAssetDir . '/dropzone.js', 1);
 
 Yii::app()->clientScript->registerScriptFile('https://code.jquery.com/ui/1.12.0/jquery-ui.js');
 
 $script = '
 
-            function loadPage(page,state,divId){
-
-                    state.imageNumber=page;
-
-                refreshPictureBox(divId,state)
-            }
-
-            function setTitleAlt(state,divId){
-                 var title = $("#"+divId+" input[name=title]").val();
-                 var alt = $("#"+divId+" input[name=alt]").val();
-                 var data = {};
-                 data.title = title;
-                 data.alt = alt;
-                 data.id = state.id;
-                 data.elementId = state.elementId;
-                 data.pictureId = state.pictureBoxPage;
-
-                $.ajax({
-                    url:"/pictureBox/default/ajaxSetTitle",
-                    data:data,
-                    cache:false,
-                    async:true,
-                    type:"post",
-                    success:function(html){
-
-                         alert("Сохранено. ");
-                         refreshPictureBox(divId,state);
-
-                    }
-                });
 
 
-            }
-
-            function refreshPictureBox(divId,state){
-
-                $.ajax({
-                    url:"/pictureBox/default/ajaxLayout",
-                    data:state,
-                    cache:false,
-                    async:false,
-                    success:function(html){
-
-                        $("#"+divId).html(html);
-
-
-                    },
-                    error:function(param,param1,param2){
-                        alert(param.responseText);
-                    }
-                });
-            }
-
-              $( function() {
-                $( "#sortable" ).sortable(
-                    {
-                        cursor: "move",
-                        stop: function( event, ui ) {updateSortArray()}
-                    }
-                );
-              //  $( "#sortable" ).disableSelection();
-              } );
-
-              function updateSortArray(){
-                var sortArray=Object();
-                var sortIndex = 0;
-                $("div#'.$config['divId'].' ul.tiles img").each(
-                    function(index, domElement){
-                        
-                        sortArray[$(domElement).attr("data-id")+""]=sortIndex;
-                        sortIndex++;
-
-                });
-
-                $.ajax({
-                        url:"/pictureBox/default/newSortOrder",
-                        data:{
-                            sort:sortArray,
-                            galleryId:"'.$id.'",
-                            id:'.$elementId.'
-
-                        },
-                        cache:false,
-                        async:false,
-                        success:function(html){
-
-
-
-
-                        },
-                        error:function(param,param1,param2){
-                            alert(param.responseText);
-                        }
-                    });
-
-              }
-
+          var $config = \'' . serialize($_SESSION['pictureBox'][$id . '_' . $elementId]) . '\';
 ';
 
-Yii::app()->clientScript->registerScript('pictureBox-js-'.$config['divId'], $script, 0);
+Yii::app()->clientScript->registerScript('pictureBox-js-' . $config['divId'], $script, 0);
 
+Yii::app()->clientScript->registerScriptFile('/protected/modules/pictureBox/assets/js/jquery.pictureBox.js', 0);
 
 $thisPictureBoxScript = '
-                var PB_'.$config['divId'].' = {};
-                PB_'.$config['divId'].'.pictureBoxPage = 1;
-                PB_'.$config['divId'].'.id = "'.$id.'";
-                PB_'.$config['divId'].'.elementId = '.$elementId.';
-                PB_'.$config['divId'].'.theme = "tiles";
+                var pbOptions = {
+
+                    id : "' . $id . '",
+                    elementId : ' . $elementId . ',
+                    theme : "tiles",
+                    divId:"' . $config['divId'] . '"
+                }
+                var pictureBox_' . $config['divId'] . ' = new PictureBox(pbOptions);
+                 pictureBox_' . $config['divId'] . '.refreshPictureBox();
 
 
-                refreshPictureBox("'.$config['divId'].'",PB_'.$config['divId'].');
+
+
 
 
     ';
-Yii::app()->clientScript->registerScript('pictureBox-js-'.$config['divId'], $thisPictureBoxScript, 2);
+Yii::app()->clientScript->registerScript('pictureBox-js-' . $config['divId'], $thisPictureBoxScript, 2);
 
+
+Yii::app()->clientScript->registerScriptFile('/protected/modules/pictureBox/assets/js/jquery.imgareaselect/scripts/jquery.imgareaselect.js', 0);
+Yii::app()->clientScript->registerCssFile('/protected/modules/pictureBox/assets/js/jquery.imgareaselect/css/imgareaselect-default.css');
 
 ?>
 
 
-<div id="<?php echo $config['divId']?>" style="width:100%;">
+<div id="<?php echo $config['divId'] ?>" style="width:100%;">
 
 </div>
+<div id="dropzone_<?php echo $config['divId'] ?>" class="mydropzone"
+     style="text-align: center;color:green;font-size:30px;"><span>Нажми, или перетащи сюда файлы!</span></div>
+
+<div class="modal hide fade" id="titleModal">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3>Редактирование alt и title изображения</h3>
+    </div>
+    <div class="modal-body">
+        <form>
+            <div class="form-group">
+                <label for="altInput">Alt</label>
+                <input type="text" class="form-control" id="altInput" placeholder="Alt">
+            </div>
+            <div class="form-group">
+                <label for="titleInput">Title</label>
+                <input type="text" class="form-control" id="titleInput" placeholder="Title">
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <a href="#" onclick="$('#titleModal').modal('hide')" class="btn">Отмена</a>
+        <a href="#" id="altTitleSaveBtn" class="btn btn-primary">Сохранить</a>
+    </div>
+</div>
+
+
+<div class="modal hide fade" id="imageModal" style="margin:0;left:0;width:100%;top:20px;height:80%">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3>Изменение пропорций</h3>
+    </div>
+    <div class="modal-body" id="imageAreaParent" style="max-height:95%;">
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        
+    </div>
+    <div class="modal-footer">
+        <a href="#" onclick="$('#imageModal').modal('hide')" class="btn">Отмена</a>
+        <a href="#" id="resizeImgSaveBtn" onclick="$('#imageModal').modal('hide')"  class="btn btn-primary">Сохранить</a>
+    </div>
+</div>
+

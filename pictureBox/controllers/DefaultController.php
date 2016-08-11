@@ -13,7 +13,7 @@ class DefaultController extends Controller
     public function actionTest()
     {
 //        Yii::import('begemot.extensions.bootstrap.widgets.TbMenu');
-        $this->layout='begemot.views.layouts.column1';
+        $this->layout = 'begemot.views.layouts.column1';
 
 //        $id = 'catalogItem';
 //        $elemId = 100;
@@ -36,14 +36,14 @@ class DefaultController extends Controller
     public function actionAjaxFlipImages($id, $elementId, $pictureid1, $pictureid2)
     {
 
-        $PBox = new PBox($id,$elementId);
-        $PBox->swapImages($pictureid1,$pictureid2);
+        $PBox = new PBox($id, $elementId);
+        $PBox->swapImages($pictureid1, $pictureid2);
 
     }
 
-    public function actionNewSortOrder($galleryId,$id)
+    public function actionNewSortOrder($galleryId, $id)
     {
-        $PBox = new PBox($galleryId,$id);
+        $PBox = new PBox($galleryId, $id);
         $PBox->sortArray = $_REQUEST['sort'];
         $PBox->saveSortArray();
         return true;
@@ -58,7 +58,7 @@ class DefaultController extends Controller
         $elementId = $_POST['elementId'];
 
         $config = unserialize($_POST['config']);
-       // file_put_contents(Yii::getPathOfAlias('webroot') . '/log.log3', var_export($config, true));
+        // file_put_contents(Yii::getPathOfAlias('webroot') . '/log.log3', var_export($config, true));
 
         $dir = Yii::getPathOfAlias('webroot') . '/files/pictureBox';
 
@@ -111,12 +111,13 @@ class DefaultController extends Controller
                     //chmod(Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/' . $filteredImageFile, 0777);
                 }
 
-                $this->updateSortData ($id, $elementId);
+                $this->updateSortData($id, $elementId);
             }
         }
     }
 
-    public function actionUploadArray(){
+    public function actionUploadArray()
+    {
         $images = json_decode($_POST['images']);
         $return = '';
 
@@ -163,17 +164,17 @@ class DefaultController extends Controller
                         $hashesSha1[] = $item['sha1'];
 
                     }
-                    
+
                 }
             }
-            
-            
+
+
             foreach ($images as $image) {
 
                 $hashMd5 = hash_file('md5', $image);
                 $hashSha1 = hash_file('sha1', $image);
-                if ( !in_array($hashMd5, $hashesMd5) & !in_array($hashSha1, $hashesSha1) ) {
-                    
+                if (!in_array($hashMd5, $hashesMd5) & !in_array($hashSha1, $hashesSha1)) {
+
 
                     Yii::import('application.modules.pictureBox.components.picturebox');
 
@@ -211,11 +212,11 @@ class DefaultController extends Controller
 
             }
 
-        } else{
+        } else {
             throw new Exception("Нету изображений", 1);
-            
+
         }
-        $this->updateSortData ($id, $elementId);
+        $this->updateSortData($id, $elementId);
         echo $return;
         return $return;
     }
@@ -226,7 +227,7 @@ class DefaultController extends Controller
 
         $this->layout = 'pictureBox.views.layouts.ajax';
 
-        $PBox = new PBox($id,$elementId);
+        $PBox = new PBox($id, $elementId);
 
         $data['images'] = $PBox->getSortedImageList();
 
@@ -234,7 +235,7 @@ class DefaultController extends Controller
 
         $viewFile = 'ajaxLayout';
 
-        if (isset($_REQUEST['theme'])){
+        if (isset($_REQUEST['theme'])) {
             $viewFile = $_REQUEST['theme'];
         }
 
@@ -306,6 +307,52 @@ class DefaultController extends Controller
         }
     }
 
+    public function actionAjaxGetFavArray($elementId, $id, $pictureId = null)
+    {
+        $this->layout = 'pictureBox.views.layouts.ajax';
+        if (Yii::app()->request->isAjaxRequest) {
+
+            $favFile = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/favData.php';
+            $favArray = require($favFile);
+            echo json_encode($favArray);
+        }
+    }
+
+    public function actionAjaxGetAltArray($elementId, $id, $pictureId = null)
+    {
+        $this->layout = 'pictureBox.views.layouts.ajax';
+        if (Yii::app()->request->isAjaxRequest) {
+
+            $dataFile = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/data.php';
+            $dataArray = require($dataFile);
+
+
+
+            $resultArray = [];
+            if (isset($dataArray['images'])) {
+                $dataArray = $dataArray['images'];
+
+
+                foreach ($dataArray as $imageKey => $imageArray) {
+                    $altArray = [];
+                    if (isset($imageArray['title'])) {
+                        $altArray['title'] = $imageArray['title'];
+                    }
+
+                    if (isset($imageArray['alt'])) {
+                        $altArray['alt'] = $imageArray['alt'];
+                    }
+                    $resultArray[$imageKey] = $altArray;
+                }
+
+
+            }
+
+
+            echo json_encode($resultArray);
+        }
+    }
+
     public function actionAjaxSetTitle()
     {
         $this->layout = 'pictureBox.views.layouts.ajax';
@@ -317,27 +364,24 @@ class DefaultController extends Controller
             $filesList = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/data.php';
 
 
-
             if (file_exists($filesList)) {
+
                 $data = require($filesList);
                 $images = $data['images'];
 
                 $imagesCounter = 0;
-                foreach ($images as $imageKey => $image) {
-                    $imagesCounter++;
-                    if ($imagesCounter == $pictureId) {
 
-                        if (isset($_REQUEST['title']))
-                            $image['title'] = $_REQUEST['title'];
 
-                        if (isset($_REQUEST['alt']))
-                            $image['alt'] = $_REQUEST['alt'];
+                if (isset($_REQUEST['title']))
+                    $data['images'][$pictureId]['title'] = $_REQUEST['title'];
 
-                        $data['images'][$imageKey] = $image;
-                        PictureBox::crPhpArr($data, $filesList);
-                        break;
-                    }
-                }
+                if (isset($_REQUEST['alt']))
+                    $data['images'][$pictureId]['alt'] = $_REQUEST['alt'];
+
+
+                PictureBox::crPhpArr($data, $filesList);
+
+
             } else {
 
                 return false;
@@ -362,7 +406,7 @@ class DefaultController extends Controller
                 PictureBox::crPhpArr($data, $dataFile);
             }
 
-            $this->updateSortData ($id, $elementId);
+            $this->updateSortData($id, $elementId);
         }
     }
 
@@ -379,12 +423,12 @@ class DefaultController extends Controller
                 //die($fullFilePath);
                 if (file_exists($fullFilePath)) {
                     unlink($fullFilePath);
-                 }
+                }
                 unset($data['images'][$pictureId][$filterName]);
                 PictureBox::crPhpArr($data, Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/data.php');
 
             }
-            $this->updateSortData ($id, $elementId);
+            $this->updateSortData($id, $elementId);
         }
     }
 
@@ -591,27 +635,28 @@ class DefaultController extends Controller
         }
     }
 
-    static function updateSortData ($id, $elementId){
+    static function updateSortData($id, $elementId)
+    {
 
         $dataDir = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId;
-        $sortFile = $dataDir.'/sort.php';
+        $sortFile = $dataDir . '/sort.php';
 
         $maxSortPosition = 0;
 
-        if (!file_exists($sortFile)){
+        if (!file_exists($sortFile)) {
             PictureBox::crPhpArr([], $sortFile);
             $sortData = [];
 
         } else {
             $sortData = require($sortFile);
             //Определяем максимальный индекс сортировки
-            foreach ($sortData as $sortIndex){
-                if ($maxSortPosition<$sortIndex) $maxSortPosition = $sortIndex;
+            foreach ($sortData as $sortIndex) {
+                if ($maxSortPosition < $sortIndex) $maxSortPosition = $sortIndex;
             }
 
         }
 
-        $imagesData = require ($dataDir.'/data.php');
+        $imagesData = require($dataDir . '/data.php');
 
         $images = $imagesData['images'];
 
@@ -620,8 +665,8 @@ class DefaultController extends Controller
             то есть чьих id нет в массиве $sortData
         */
 
-        foreach ($images as $key=>$image){
-            if (!isset($sortData[$key])){
+        foreach ($images as $key => $image) {
+            if (!isset($sortData[$key])) {
                 $maxSortPosition++;
                 $sortData[$key] = $maxSortPosition;
             }
@@ -633,7 +678,7 @@ class DefaultController extends Controller
          * если нет, это значит изображение удалили и из сортировки его тоже надо удалить
          */
 
-        foreach ($sortData as $key =>$sortKey){
+        foreach ($sortData as $key => $sortKey) {
 
             if (!isset($images[$key])) unset ($sortData[$key]);
 
@@ -646,33 +691,33 @@ class DefaultController extends Controller
     private function flipFiles($file1, $file2)
     {
         echo 'Меняем файлы:<br>';
-        echo $file1.'<br>';
-        echo $file2.'<br>';
+        echo $file1 . '<br>';
+        echo $file2 . '<br>';
 
         if (!file_exists($file1) && !file_exists($file2)) {
-            echo 'Оба файла не существует. Нечего менять местами'.'<br>';
+            echo 'Оба файла не существует. Нечего менять местами' . '<br>';
             return;
         }
 
         if (file_exists($file1)) {
-            echo 'Первый файл существует. Переименовываем его во временный '.$file1 . '_tmp'.'<br>';
+            echo 'Первый файл существует. Переименовываем его во временный ' . $file1 . '_tmp' . '<br>';
             rename($file1, $file1 . '_tmp');
 
             if (file_exists($file2)) {
                 rename($file2, $file1);
-                rename($file1. '_tmp', $file2);
+                rename($file1 . '_tmp', $file2);
             } else {
-                rename($file1. '_tmp', $file2);
+                rename($file1 . '_tmp', $file2);
             }
 
         } else {
-            echo 'Первый файл НЕ существует.'.'<br>';
-            if (file_exists($file2)){
-                echo 'Второй файл существует, поэтому просто.'.'<br>';
-                rename($file2,$file1);
+            echo 'Первый файл НЕ существует.' . '<br>';
+            if (file_exists($file2)) {
+                echo 'Второй файл существует, поэтому просто.' . '<br>';
+                rename($file2, $file1);
                 return;
             }
-  
+
         }
 
 

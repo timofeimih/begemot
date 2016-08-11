@@ -111,7 +111,7 @@ function setResizeImage(src,width,height,data){
             resizeData.originalSize = true;
             $('#ladybug_ant').css('width','auto');
         }
-        console.log( resizeData.originalSize);
+
 	}
 
 
@@ -138,6 +138,7 @@ $('#ladybug_ant').imgAreaSelect({
     onSelectEnd: selectParamSave  });
 
 }
+
 var selectParamSave = function(img, selection){
 
     resizeData.selection = selection;
