@@ -313,7 +313,12 @@ class DefaultController extends Controller
         if (Yii::app()->request->isAjaxRequest) {
 
             $favFile = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/favData.php';
-            $favArray = require($favFile);
+            if (file_exists($favFile)){
+
+                $favArray = require($favFile);
+            } else {
+                $favArray = [];
+            }
             echo json_encode($favArray);
         }
     }

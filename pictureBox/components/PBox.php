@@ -209,7 +209,8 @@ class PBox
 
     public function getSortedImageList()
     {
-
+        Yii::import("pictureBox.controllers.DefaultController");
+        Yii::import("pictureBox.components.PictureBox");
         $sortArray = array_flip($this->getSortArray());
         ksort($sortArray);
 

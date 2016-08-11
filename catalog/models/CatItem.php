@@ -300,23 +300,14 @@ class CatItem extends ContentKitModel
     //get picture list array
     public function getItemPictures()
     {
+        Yii::import("pictureBox.components.PBox");
+        $PBox = new PBox("catalogItem", $this->id);
 
-        $imagesDataPath = Yii::getPathOfAlias('webroot') . '/files/pictureBox/catalogItem/' . $this->id;
-        $favFilePath = $imagesDataPath . '/data.php';
-        $images = array();
+        $images = $PBox->getSortedImageList();
 
-        if (file_exists($favFilePath)) {
-
-            $images = require($favFilePath);
-            if (isset($images['images']))
-                return $images['images'];
-            else
-                return array();
-        } else {
+        return $images;
 
 
-            return array();
-        }
 
     }
 

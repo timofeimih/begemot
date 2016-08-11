@@ -397,6 +397,7 @@ if ($tab == 'data')
                 'id' => 'catalogItem',
                 'elementId' => $model->id,
                 'config' => $picturesConfig,
+                'theme' => 'tiles'
             )
         );
     } else {
