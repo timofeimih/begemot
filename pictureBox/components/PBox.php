@@ -52,8 +52,8 @@ class PBox
 
         $this->dataFile = $dataFile;
 
-        $this->favDataFile = $favDatafile = $pictureBoxDir . $galleryId . '/' . $id . '/favData.php';
-
+        $this->favDataFile = $favDatafile = $pictureBoxDir .'/'. $galleryId . '/' . $id . '/favData.php';
+//        print_r($favDatafile);
         if (file_exists($dataFile)) {
             $array = require($dataFile);
             $this->pictures = $array['images'];
@@ -115,11 +115,13 @@ class PBox
     public function getFirstImageHtml($tag, $htmlOptions = array())
     {
 
+
         if (is_null($this->favPictures)) {
             $array = $this->pictures;
         } else {
             $array = $this->favPictures;
         }
+
         if (is_array($array)) {
             $id = key($array);
 
