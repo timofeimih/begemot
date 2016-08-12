@@ -334,6 +334,10 @@ class CatItem extends ContentKitModel
     public function getItemMainPicture($tag = null)
     {
 
+            Yii::import("pictureBox.components.PBox");
+            $PBox = new PBox("catalogItem", $this->id);
+            $image = $PBox->getFirstImage($tag);
+            return $image;
 
         $imagesDataPath = Yii::getPathOfAlias('webroot') . '/files/pictureBox/catalogItem/' . $this->id;
         $favFilePath = $imagesDataPath . '/favData.php';
