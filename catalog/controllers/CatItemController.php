@@ -32,7 +32,8 @@ class CatItemController extends Controller
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
 
                 'actions' => array(
-                    'delete',
+                    'delete','createColor','deleteColor','setColor',
+                    'setColorTo','unsetColorTo',
                     'deleteModifFromItem',
                     'create', 'update', 'togglePublished', 'toggleTop', 'index', 'view', 'deleteItemToCat', 'tidyItemText', 'getItemsFromCategory', 'options', 'test'),
 
@@ -490,6 +491,62 @@ class CatItemController extends Controller
         if (isset($_POST['ajax']) && $_POST['ajax'] === 'cat-item-form') {
             echo CActiveForm::validate($model);
             Yii::app()->end();
+        }
+    }
+
+    public function actionDeleteColor($colorId){
+        if (Yii::app()->request->isAjaxRequest){
+
+            $color = CatColor::model()->findByPk($colorId);
+            $color->delete();
+            CatColorToCatItem::model()->deleteAllByAttributes(['colorId'=>$colorId]);
+
+            return true;
+        }
+    }
+
+    public function actionSetColor($colorId,$colorCode){
+        if (Yii::app()->request->isAjaxRequest){
+            $color = CatColor::model()->findByPk($colorId);
+            $color->colorCode=$colorCode;
+            $color->save();
+  
+            return true;
+        }
+    }
+    public function actionCreateColor($colorName,$colorCode,$catItemId)
+    {
+
+        $color = new CatColor();
+        $color->name = $colorName;
+        $color->colorCode = $colorCode;
+        $color->save();
+
+        $colorToCatItem = new CatColorToCatItem();
+        $colorToCatItem->catItemId =$catItemId;
+        $colorToCatItem->colorId =$color->id;
+        $colorToCatItem->save();
+
+        $this->redirect('/catalog/catItem/update/id/1309/tab/colors');
+    }
+
+    public function actionSetColorTo($colorId,$catItemId){
+        if (Yii::app()->request->isAjaxRequest){
+            $color = new CatColorToCatItem();
+            $color->catItemId = $catItemId;
+            $color->colorId = $colorId;
+            $color->save();
+
+            return true;
+        }
+    }
+
+    public function actionUnsetColorTo($colorId,$catItemId){
+        if (Yii::app()->request->isAjaxRequest) {
+            $color = CatColorToCatItem::model()->findByAttributes(['colorId' => $colorId,'catItemId'=>$catItemId]);
+            $color->delete();
+
+            return true;
         }
     }
 
