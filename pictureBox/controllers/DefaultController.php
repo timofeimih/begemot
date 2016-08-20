@@ -57,6 +57,10 @@ class DefaultController extends Controller
         $id = $_POST['id'];
         $elementId = $_POST['elementId'];
 
+        if (isset ($_POST['mode']) && $_POST['mode']=='killEmAll'){
+            $this->actionAjaxDeleteAllImages($id,$elementId);
+        }
+
         $config = unserialize($_POST['config']);
         // file_put_contents(Yii::getPathOfAlias('webroot') . '/log.log3', var_export($config, true));
 
@@ -391,6 +395,14 @@ class DefaultController extends Controller
 
                 return false;
             }
+        }
+    }
+
+    public function actionAjaxDeleteAllImages($id, $elementId ){
+        if (Yii::app()->request->isAjaxRequest) {
+            $PBox = new PBox($id,$elementId);
+            $PBox->deleteAll();
+            return true;
         }
     }
 

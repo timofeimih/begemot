@@ -17,7 +17,6 @@ class PBox
     public $favPictures;
 
 
-
     public $dataFile = null;
     public $favDataFile = null;
 
@@ -30,7 +29,6 @@ class PBox
 
     public function __construct($galleryId, $id)
     {
-
 
 
         $pictureBoxDir = Yii::getPathOfAlias('webroot') . '/files/pictureBox';
@@ -48,12 +46,12 @@ class PBox
             mkdir($elementIdDir, 0777);
         }
 
-        $dataFile = $elementIdDir. '/data.php';
+        $dataFile = $elementIdDir . '/data.php';
 
         $this->dataFile = $dataFile;
 
-        $this->favDataFile = $favDatafile = $pictureBoxDir .'/'. $galleryId . '/' . $id . '/favData.php';
-//        print_r($favDatafile);
+        $this->favDataFile = $favDatafile = $pictureBoxDir . $galleryId . '/' . $id . '/favData.php';
+
         if (file_exists($dataFile)) {
             $array = require($dataFile);
             $this->pictures = $array['images'];
@@ -115,13 +113,11 @@ class PBox
     public function getFirstImageHtml($tag, $htmlOptions = array())
     {
 
-
         if (is_null($this->favPictures)) {
             $array = $this->pictures;
         } else {
             $array = $this->favPictures;
         }
-
         if (is_array($array)) {
             $id = key($array);
 
@@ -217,34 +213,36 @@ class PBox
         ksort($sortArray);
 
         $images = $this->pictures;
-
-        $imagesWithSort = array_replace(array_fill_keys($sortArray, ''), $images);
+        $imagesWithSort = [];
+        if (is_array($images))
+            $imagesWithSort = array_replace(array_fill_keys($sortArray, ''), $images);
 
         return $imagesWithSort;
     }
 
     public function getSortArray()
     {
-        if ($this->sortArray == null){
+        if ($this->sortArray == null) {
             $pictureBoxDir = Yii::getPathOfAlias('webroot') . '/files/pictureBox/';
-            $elemDir =$pictureBoxDir.'/'.$this->galleryId.'/'.$this->id.'/';
-            $sortFile = $elemDir.'sort.php';
-            if (!file_exists($sortFile)){
-                DefaultController::updateSortData($this->galleryId,$this->id);
+            $elemDir = $pictureBoxDir . '/' . $this->galleryId . '/' . $this->id . '/';
+            $sortFile = $elemDir . 'sort.php';
+            if (!file_exists($sortFile)) {
+                DefaultController::updateSortData($this->galleryId, $this->id);
             }
-            $this->sortArray = require ($sortFile);
+            $this->sortArray = require($sortFile);
         }
 
         return $this->sortArray;
 
     }
 
-    public function saveSortArray (){
+    public function saveSortArray()
+    {
         $pictureBoxDir = Yii::getPathOfAlias('webroot') . '/files/pictureBox/';
-        $elemDir =$pictureBoxDir.'/'.$this->galleryId.'/'.$this->id.'/';
-        $sortFile = $elemDir.'sort.php';
+        $elemDir = $pictureBoxDir . '/' . $this->galleryId . '/' . $this->id . '/';
+        $sortFile = $elemDir . 'sort.php';
 
-        PictureBox::crPhpArr($this->sortArray,$sortFile);
+        PictureBox::crPhpArr($this->sortArray, $sortFile);
     }
 
     public function saveToFile()
@@ -277,7 +275,8 @@ class PBox
 
     }
 
-    public function swapImages($pictureid1,$pictureid2){
+    public function swapImages($pictureid1, $pictureid2)
+    {
         $sortArrray = $this->getSortArray();
 
         $tmpElement = $sortArrray[$pictureid1];
@@ -289,6 +288,14 @@ class PBox
         $this->saveSortArray();
     }
 
+    public function deleteAll(){
+
+        $dir = dirname($this->dataFile);
+
+        foreach (glob($dir.'/*.*') as $filename) {
+            unlink ($filename);
+        }
+    }
 }
 
 ?>

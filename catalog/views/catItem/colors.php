@@ -22,7 +22,20 @@ $colors = CatColorToCatItem::model()->findAll();
             <td><?= $color->color->name ?></td>
             <td class="colorTd" width="100"
                 style="cursor: pointer;background-color: <?= $color->color->colorCode ?>"></td>
-            <td></td>
+            <td><?php
+
+                $picturesConfig = [];
+
+                $this->widget(
+                    'application.modules.pictureBox.components.PictureBox', array(
+                        'id' => 'colorItem',
+                        'elementId' => $color->color->id,
+                        'config' => $picturesConfig,
+                        'theme' => 'oneSmall'
+                    )
+                );
+
+                ?></td>
             <td><input class="colorCheckbox" type="checkbox"
                        value="" checked></td>
             <td><a class="colorDeleteBtn btn btn-danger">Удалить</a></td>
@@ -31,7 +44,7 @@ $colors = CatColorToCatItem::model()->findAll();
 </table>
 
 <?php
-    $colors = CatColor::model()->findAll();
+$colors = CatColor::model()->findAll();
 ?>
 <h2>Остальные цвета</h2>
 <table id="bottomTable" class="table table-striped">
@@ -43,12 +56,25 @@ $colors = CatColorToCatItem::model()->findAll();
     <td>Удалить</td>
     </thead>
     <?php foreach ($colors as $color): ?>
-        <?php if ($color->isLinkedWithColor($_REQUEST['id'])) continue;?>
+        <?php if ($color->isLinkedWithColor($_REQUEST['id'])) continue; ?>
         <tr data-color-id="<?= $color->id ?>" data-cat-item-id="<?= $_REQUEST['id'] ?>">
             <td><?= $color->name ?></td>
             <td class="colorTd" width="100"
                 style="cursor: pointer;background-color: <?= $color->colorCode ?>"></td>
-            <td></td>
+            <td><?php
+
+                $picturesConfig = [];
+
+                $this->widget(
+                    'application.modules.pictureBox.components.PictureBox', array(
+                        'id' => 'colorItem',
+                        'elementId' => $color->id,
+                        'config' => $picturesConfig,
+                        'theme' => 'oneSmall'
+                    )
+                );
+
+                ?></td>
             <td><input class="colorCheckbox" type="checkbox"
                        value=""></td>
             <td><a class="colorDeleteBtn btn btn-danger">Удалить</a></td>
