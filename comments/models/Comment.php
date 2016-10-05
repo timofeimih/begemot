@@ -88,7 +88,7 @@ class Comment extends CActiveRecord {
         $modelConfig = $commentsModule->getModelConfig($this);
         $rules = array(
             array('owner_name, owner_id, comment_text', 'required'),
-            array('owner_id, parent_comment_id, creator_id, create_time, update_time, status', 'numerical', 'integerOnly' => true),
+            array('owner_id, parent_comment_id, creator_id, create_time, update_time, status, likeField, dislikeField', 'numerical', 'integerOnly' => true),
             array('user_name, owner_name', 'length', 'max' => 50),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
@@ -104,7 +104,9 @@ class Comment extends CActiveRecord {
     public function relations() {
         $relations = array(
             'parent' => array(self::BELONGS_TO, 'Comment', 'parent_comment_id'),
-            'childs' => array(self::HAS_MANY, 'Comment', 'parent_comment_id'),
+            'childs' => array(self::HAS_MANY, 'Comment', 'parent_comment_id'),  
+            'likes' => array(self::STAT, 'CommentsLikesAndDislikes', 'comment_id', 'condition' => 'like_or_dislike = 1'),
+            'dislikes' => array(self::STAT, 'CommentsLikesAndDislikes', 'comment_id', 'condition' => 'like_or_dislike = 0'),
         );
         $userConfig = Yii::app()->getModule('comments')->userConfig;
         //if defined in config class exists
@@ -250,7 +252,7 @@ class Comment extends CActiveRecord {
         if(isset($this->config['orderComments']) && ($this->config['orderComments'] === 'ASC' || $this->config['orderComments'] === 'DESC'))
             $criteria->order .= $this->config['orderComments'];
         //if premoderation is seted and current user isn't superuser
-        if($this->config['premoderate'] === true && Yii::app()->user->isAdmin() === false)
+        if(isset($this->config['orderComments']) && $this->config['premoderate'] === true && Yii::app()->user->isAdmin() === false)
             $criteria->compare('t.status', self::STATUS_APPROWED);
         $relations = $this->relations();
         //if User model has been configured
@@ -259,6 +261,10 @@ class Comment extends CActiveRecord {
         $comments = self::model()->findAll($criteria);
 
         return $this->buildTree($comments);
+    }
+
+    public function test(){
+        return var_dump($this->config);
     }
 
     public function beforeValidate() {
@@ -297,7 +303,9 @@ class Comment extends CActiveRecord {
         if (isset($this->user)) {
             //if User model has been configured and comment posted by registered user
             $userConfig = Yii::app()->getModule('comments')->userConfig;
-            $userName .= $this->user->$userConfig['nameProperty'];
+            $userName .= $this->user->profile->Name . " ";
+            $userName .= $this->user->profile->Lastname;
+
             if (isset($userConfig['emailProperty']))
                 $userName .= '(' . $this->user->$userConfig['emailProperty'] . ')';
         }
@@ -305,6 +313,16 @@ class Comment extends CActiveRecord {
             $userName = $this->user_name . '(' . $this->user_email . ')';
         }
         return $userName;
+    }
+
+    public function getProfileImage(){
+        $image = "/files/pictureBox/profile/" . $this->getOwnerModel()->id . "/2.png";
+        $polyfill = "/img/nouser.png";
+        if(file_exists(Yii::app()->basePath . "/.." . $image)){
+            return $image;
+        }
+
+        return $polyfill;
     }
 
     /*

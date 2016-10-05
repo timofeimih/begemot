@@ -132,6 +132,7 @@ return array(
                         'data'=>array('id'=>'id'),
                     ),
                 ),
+                
                 'CatItem'=>array(
 
                     'registeredOnly'=>false,

@@ -63,6 +63,110 @@ class PictureBox extends CWidget {
         return $defaultConfig;
     }
 
+    public function actionUploadOnlyOneImage($id, $elementId, $image, $temporaryDir = false)
+    {
+
+        $id = $id;
+        $elementId = $elementId;
+
+        if (isset ($_POST['mode']) && $_POST['mode']=='killEmAll'){
+            $this->actionAjaxDeleteAllImages($id,$elementId);
+        }
+
+        $catalogItemConfig = require Yii::getPathOfAlias('application') . '/config/picture/tasksItemPicture.php';
+
+        $config = array_merge_recursive(PictureBox::getDefaultConfig(), $catalogItemConfig);
+
+        $dir = Yii::getPathOfAlias('webroot') . '/files/pictureBox';
+
+        if (!file_exists($dir))
+            mkdir($dir, 0777);
+
+        $dir = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/';
+
+        if (!file_exists($dir))
+            mkdir($dir, 0777);
+        $dir = Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/';
+
+        if (!file_exists($dir))
+            mkdir($dir, 0777);
+
+
+
+        $temp = explode('.', $image);
+        $imageExt = end($temp);
+
+        $newImageId = 1;
+
+        rename($image, $dir . "/1." . $imageExt);
+
+        $resultFiltersStack = array();
+
+        foreach ($config['nativeFilters'] as $filterName => $toggle) {
+            if ($toggle && isset($config['imageFilters'][$filterName])) {
+                $resultFiltersStack[$filterName] = $config['imageFilters'][$filterName];
+            }
+        }
+
+        $config['imageFilters'] = $resultFiltersStack;
+
+        Yii::import('application.modules.pictureBox.components.FiltersManager');
+        Yii::import('application.modules.pictureBox.components.filters.*');
+        $filterManager = new FiltersManager($dir . "/" . $newImageId . '.' . $imageExt, $config);
+        $filters = $filterManager->getFilteredImages();
+
+        foreach ($filters as $filterName => $filteredImageFile) {
+            $this->addFilteredImage($newImageId, $filterName, '/files/pictureBox/' . $id . '/' . $elementId . '/' . $filteredImageFile, $dir);
+            //chmod(Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/' . $filteredImageFile, 0777);
+        }
+
+        //$this->updateSortData($id, $elementId);
+    }
+
+    private function addFilteredImage($imageId, $filterName, $filteredImageFile, $dir)
+    {
+
+        if (!file_exists($dir . '/data.php')) {
+            PictureBox::crPhpArr(array(), $dir . '/data.php');
+            $data = array();
+            $data['images'] = array();
+            $data['filters'] = array();
+        } else {
+            $data = require $dir . '/data.php';
+        }
+
+        $data['images'][$imageId][$filterName] = $filteredImageFile;
+
+        PictureBox::crPhpArr($data, $dir . '/data.php');
+    }
+
+    //возвращает новое имя добавленного изображения с
+    //с которым его надо сохранить
+    private function addImage($dir, $fileName, $fileExt, $id, $elementId)
+    {
+
+        $imageId = 1;
+
+        if (!file_exists($dir . '/data.php')) {
+            PictureBox::crPhpArr(array(), $dir . '/data.php');
+            $data = array();
+            $data['images'] = array();
+            $data['filters'] = array();
+        } else {
+            $data = require $dir . '/data.php';
+        }
+
+        $originalFile = '/files/pictureBox/' . $id . '/' . $elementId . '/' . $imageId . '.' . $fileExt;
+
+        $data['images'][$imageId] = array(
+            'original' => $originalFile
+        );
+
+        PictureBox::crPhpArr($data, $dir . '/data.php');
+
+        return ($imageId);
+    }
+
     protected function renderContent() {
 
         if ($this->theme=='default'){

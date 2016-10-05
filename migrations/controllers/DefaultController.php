@@ -2,7 +2,7 @@
 
 class DefaultController extends Controller
 {
-    	public $layout='begemot.views.layouts.column2';
+    public $layout='begemot.views.layouts.column2';
 	/**
 	 * @return array action filters
 	 */

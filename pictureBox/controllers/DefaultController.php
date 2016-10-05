@@ -132,7 +132,7 @@ class DefaultController extends Controller
         if ($images) {
 
             $id = 'catalogItem';
-            $elementId = $_POST['id'];;
+            $elementId = $_POST['id'];
 
             $catalogItemConfig = require Yii::getPathOfAlias('application') . '/config/catalog/categoryItemPictureSettings.php';
 
@@ -224,6 +224,7 @@ class DefaultController extends Controller
         echo $return;
         return $return;
     }
+
 
     public function actionAjaxLayout($id, $elementId, $imageNumber = 1)
     {

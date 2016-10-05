@@ -88,6 +88,18 @@ class User extends CActiveRecord
 	}
 
 	/**
+	* Returns User model by its email
+	* 
+	* @param string $email 
+	* @access public
+	* @return User
+	*/
+	public function findByEmail($email)
+	{
+		return self::model()->findByAttributes(array('email' => $email));
+	}
+
+	/**
 	 * @return array customized attribute labels (name=>label)
 	 */
 	public function attributeLabels()
@@ -134,7 +146,7 @@ class User extends CActiveRecord
     {
         return CMap::mergeArray(Yii::app()->getModule('user')->defaultScope,array(
             'alias'=>'user',
-            'select' => 'user.id, user.username, user.email, user.create_at, user.lastvisit_at, user.superuser, user.status',
+            'select' => 'user.id, user.username, user.password, user.email, user.create_at, user.lastvisit_at, user.superuser, user.status',
         ));
     }
 	

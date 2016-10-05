@@ -44,6 +44,10 @@ class WebUser extends CWebUser
         $userAttributes = CMap::mergeArray(array(
             'email' => $user->email,
             'username' => $user->username,
+            'name' => $user->profile->Name,
+            'lastName' => $user->profile->Name,
+            'avatar' => '/img/user-full.jpg',
+            'miniAvatar' => '/img/nouser.png',
             'create_at' => $user->create_at,
             'lastvisit_at' => $user->lastvisit_at,
         ), $user->profile->getAttributes());

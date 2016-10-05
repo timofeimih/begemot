@@ -64,7 +64,7 @@ class ECommentsBaseWidget extends CWidget
             }
             $this->registerScripts();
 
-            $this->theme = Yii::app()->theme->name;
+            $this->theme = isset(Yii::app()->theme->name) ? Yii::app()->theme->name : "classic";
 
         }
 
