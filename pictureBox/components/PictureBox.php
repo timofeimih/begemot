@@ -73,7 +73,7 @@ class PictureBox extends CWidget {
             $this->actionAjaxDeleteAllImages($id,$elementId);
         }
 
-        $catalogItemConfig = require Yii::getPathOfAlias('application') . '/config/picture/tasksItemPicture.php';
+        $catalogItemConfig = require Yii::getPathOfAlias('application') . '/config/picture/' . $id . 'Picture.php';
 
         $config = array_merge_recursive(PictureBox::getDefaultConfig(), $catalogItemConfig);
 
@@ -97,9 +97,13 @@ class PictureBox extends CWidget {
         $imageExt = end($temp);
 
         $newImageId = 1;
+        $newImagePath = $dir . "1." . $imageExt;
 
-        rename($image, $dir . "/1." . $imageExt);
+        if($image != $newImagePath){
+            copy($image, $newImagePath);
 
+        }
+            
         $resultFiltersStack = array();
 
         foreach ($config['nativeFilters'] as $filterName => $toggle) {

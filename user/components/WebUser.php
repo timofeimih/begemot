@@ -46,7 +46,7 @@ class WebUser extends CWebUser
             'username' => $user->username,
             'name' => $user->profile->Name,
             'lastName' => $user->profile->Name,
-            'avatar' => '/img/user-full.jpg',
+            'avatar' => '/img/nouser-full.jpg',
             'miniAvatar' => '/img/nouser.png',
             'create_at' => $user->create_at,
             'lastvisit_at' => $user->lastvisit_at,

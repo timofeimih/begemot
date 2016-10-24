@@ -1,6 +1,6 @@
 <?php
 
-Yii::import('application.modules.tasks.models._base.BaseTasks');
+Yii::import('application.modules.tasksModule.models._base.BaseTasks');
 
 class Tasks extends BaseTasks
 {

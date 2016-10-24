@@ -58,10 +58,6 @@ class CommentController extends Controller
 //				'actions'=>array('postComment', 'captcha'),
 //                'users'=>array('*')
 //			),
-            array('allow',
-                'actions'=>array('test'),
-                'roles'=>array('user'),
-            ),
 			array('allow',
 				'actions'=>array('admin', 'delete', 'approve', 'likeOrDislike'),
                 'expression'=>'Yii::app()->user->canDo("")'
@@ -81,12 +77,19 @@ class CommentController extends Controller
 	public function actionDelete($id)
 	{
 		// we only allow deletion via POST request
-                $result = array('deletedID' => $id);
-                if($this->loadModel($id)->setDeleted())
-                    $result['code'] = 'success';
-                else 
-                    $result['code'] = 'fail';
-                echo CJSON::encode($result);
+        $result = array('deletedID' => $id);
+        $comment = $this->loadModel($id);
+        if($comment->setDeleted()){
+            $result['code'] = 'success';
+
+            $model=$comment->owner_name::model()->findByPk($comment->owner_id);
+            $model->comments--;
+            if($model->comments < 0) $model->comments = 0;
+            $model->save();
+        }
+        else 
+            $result['code'] = 'fail';
+        echo CJSON::encode($result);
 	}
         
         /**
@@ -96,12 +99,12 @@ class CommentController extends Controller
 	public function actionApprove($id)
 	{
 		// we only allow deletion via POST request
-                $result = array('approvedID' => $id);
-                if($this->loadModel($id)->setApproved())
-                    $result['code'] = 'success';
-                else 
-                    $result['code'] = 'fail';
-                echo CJSON::encode($result);
+        $result = array('approvedID' => $id);
+        if($this->loadModel($id)->setApproved())
+            $result['code'] = 'success';
+        else 
+            $result['code'] = 'fail';
+        echo CJSON::encode($result);
 	}
 
 	/**
@@ -133,19 +136,46 @@ class CommentController extends Controller
                 Yii::app()->end();
             }
             else{
-                $comment->save();
 
-                $comments[] = $comment;
-                $theme = isset(Yii::app()->theme->name) ? Yii::app()->theme->name : "classic";
-                $newComment = new Comment();
-                $newComment->owner_name = Yii::app()->user->name . " " . Yii::app()->user->lastName;
-                $newComment->owner_id = Yii::app()->user->id;
+                if($comment->save()){
+                    $model=$comment->owner_name::model();
+                    $transaction=$model->dbConnection->beginTransaction();
+                    try
+                    {
+
+                        $model=$model->findByPk($comment->owner_id);
+
+                        if(isset($model->comments)){
+                            $model->comments++;
+
+                            if($model->save())
+                                $transaction->commit();
+                            else
+                                $transaction->rollback();
+                        }
+                        
+                    }
+                    catch(Exception $e)
+                    {
+                        $transaction->rollback();
+                        throw $e;
+                        Yii::log($e, 3, 'transaction_error');
+                    }
+
+                    $comments[] = $comment;
+                    $theme = isset(Yii::app()->theme->name) ? Yii::app()->theme->name : "classic";
+                    $newComment = new Comment();
+                    $newComment->owner_name = Yii::app()->user->name . " " . Yii::app()->user->lastName;
+                    $newComment->owner_id = Yii::app()->user->id;
 
 
-                Yii::app()->clientScript->scriptMap['*.js'] = false;
-                Yii::app()->clientScript->scriptMap['*.css'] = false;
-                $this->renderPartial('webroot.themes.' . $theme . '.ECommentsWidgetCommentsAjax', array('comments' => $comments, 'theme' => $theme, 'newComment' => $newComment));
-                Yii::app()->end();
+                    Yii::app()->clientScript->scriptMap['*.js'] = false;
+                    Yii::app()->clientScript->scriptMap['*.css'] = false;
+                    $this->renderPartial('webroot.themes.' . $theme . '.ECommentsWidgetCommentsAjax', array('comments' => $comments, 'theme' => $theme, 'newComment' => $newComment));
+                    Yii::app()->end();
+                }
+
+                
             }
         }
 
@@ -211,19 +241,52 @@ class CommentController extends Controller
     }
 
     public function actionLikeOrDislike($id, $doLikeOrDislike){
-        $comment = Comment::model()->findByPk($id);
-        if (isset(Yii::app()->user->id)) {
-            CommentsLikesAndDislikes::model()->deleteAllByAttributes(array('user_id' => Yii::app()->user->id, 'comment_id' => $id));
+
+        if (Yii::app()->user->id != null) {
+            $needToDowngrade = false;
+
+            if(CommentsLikesAndDislikes::model()->deleteAllByAttributes(array('user_id' => Yii::app()->user->id, 'comment_id' => $id))){
+                $needToDowngrade = true;
+            }
             $addNewOne = new CommentsLikesAndDislikes(); 
             $addNewOne->user_id = Yii::app()->user->id;
             $addNewOne->comment_id = $id;
             $addNewOne->like_or_dislike = intval($doLikeOrDislike);
-            $addNewOne->save();
+            if($addNewOne->save()){
+
+                $model=Comments::model();
+                $transaction=$model->dbConnection->beginTransaction();
+                try
+                {
+                    $comment=$model->findByPk($id);
+                    if(intval($doLikeOrDislike)){
+                        $comment->likes++;
+                        if($needToDowngrade) $comment->dislikes--;
+                    } else {
+                        $comment->dislikes++;
+                        if($needToDowngrade) $comment->likes--;
+                    }
+
+                    if($comment->likes < 0) $comment->likes = 0;
+                    if($comment->dislikes < 0) $comment->dislikes = 0;
+                    
+                    if($comment->save())
+                        $transaction->commit();
+                    else
+                        $transaction->rollback();
+                }
+                catch(Exception $e)
+                {
+                    $transaction->rollback();
+                    Yii::log($e, 3, 'transaction_error');
+                }
+            }
 
 
             $comment = Comment::model()->with('likes', 'dislikes')->findByPk($id);
 
             echo json_encode(array('success' => true, 'likes' => $comment->likes, 'dislikes' => $comment->dislikes));
+            return true;
         }
 
         return false;

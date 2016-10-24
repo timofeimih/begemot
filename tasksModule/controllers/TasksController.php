@@ -68,7 +68,7 @@ public $layout='begemot.views.layouts.column2';
 
 		$this->render('update', array(
 				'model' => $model,
-				));
+		));
 	}
 
 	public function actionDelete($id) {

@@ -1,6 +1,6 @@
 <?php
 
-Yii::import('application.modules.tasks.models._base.BaseTasksToUser');
+Yii::import('application.modules.tasksModule.models._base.BaseTasksToUser');
 
 class TasksToUser extends BaseTasksToUser
 {

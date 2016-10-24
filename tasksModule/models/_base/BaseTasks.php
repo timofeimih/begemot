@@ -64,7 +64,7 @@ abstract class BaseTasks extends ContentKitModel {
 	public function checkImage($attribute,$params)
 	{
 		if($this->$attribute != null){
-			$image = htmlentities($this->$attribute);
+			$image = Yii::getPathOfAlias('webroot') . htmlentities($this->$attribute);
 
 			if (isset($_POST['cords_w']) && isset($_POST['cords_h']) && isset($_POST['cords_x1']) && isset($_POST['cords_y1'])) {
 		
@@ -113,6 +113,76 @@ abstract class BaseTasks extends ContentKitModel {
 		else return false;
 	}
 
+	 //get picture list array
+    public function getItemPictures(){
+      
+        $imagesDataPath = Yii::getPathOfAlias('webroot').'/files/pictureBox/tasks/'.$this->id;
+        $favFilePath = $imagesDataPath.'/data.php'; 
+        $images = array();
+       
+        if (file_exists($favFilePath)){
+            
+             $images = require($favFilePath);
+             if (isset($images['images']))
+                return $images['images'];      
+             else
+                 return array();
+        } else {
+    
+            
+             return array();
+        }
+
+    } 
+
+	//get path of one main picture, wich take from fav or common images list
+    public function getItemMainPicture($tag=null, $returnPolyfillImage = true){
+    
+        
+        $imagesDataPath = Yii::getPathOfAlias('webroot').'/files/pictureBox/tasks/'.$this->id;
+        $favFilePath = $imagesDataPath.'/favData.php'; 
+        
+        $images = array ();
+        $itemImage = '';
+        
+
+        $tagPath = ($tag == null) ? "" : "_" . $tag;
+        
+        if (count($images)==0){
+            
+                $images = $this->getItemPictures();
+                if (count($images)>0){
+                    $imagesArray = array_values($images);
+                    $itemImage = $imagesArray[0];
+                } else{
+                	if ($returnPolyfillImage) {
+                		return '/img/project' . $tagPath . '.jpg'; 
+                	}
+                	else{
+                		return false;
+                	}
+                    
+                }
+            
+        }
+        
+        if (is_null($tag)){
+            return str_replace("_admin", "", array_shift($itemImage));
+        }
+        else{
+            if (isset($itemImage[$tag]))
+                return $itemImage[$tag];
+            else{
+            	if ($returnPolyfillImage) {
+            		return '/img/project' . $tagPath . '.jpg'; 
+            	}
+            	else{
+            		return false;
+            	}
+            }
+        }
+    } 
+
 	public function beforeSave(){
 		if(Yii::app()->user->id){
 
@@ -134,6 +204,7 @@ abstract class BaseTasks extends ContentKitModel {
 	public function relations() {
 		return array(
 			'user' => array(self::BELONGS_TO, 'User', 'user_id'),
+			'user_task' => array(self::HAS_MANY, 'TasksToUser', 'task_id'),
 		);
 	}
 
@@ -155,47 +226,6 @@ abstract class BaseTasks extends ContentKitModel {
 		);
 	}
 
-	//get path of one main picture, wich take from fav or common images list
-    public function getItemMainPicture($tag = null)
-    {
-
-            Yii::import("pictureBox.components.PBox");
-            $PBox = new PBox("catalogItem", $this->id);
-            $image = $PBox->getFirstImage($tag);
-            return $image;
-
-        $imagesDataPath = Yii::getPathOfAlias('webroot') . '/files/pictureBox/catalogItem/' . $this->id;
-        $favFilePath = $imagesDataPath . '/favData.php';
-
-        $images = array();
-        $itemImage = '';
-
-        $images = $this->getItemFavPictures();
-        if (count($images) != 0) {
-            $imagesArray = array_values($images);
-            $itemImage = $imagesArray[0];
-        }
-        if (count($images) == 0) {
-
-            $images = $this->getItemPictures();
-            if (count($images) > 0) {
-                $imagesArray = array_values($images);
-                $itemImage = $imagesArray[0];
-            } else {
-                return '#';
-            }
-
-        }
-
-        if (is_null($tag)) {
-            return array_shift($itemImage);
-        } else {
-            if (isset($itemImage[$tag]))
-                return $itemImage[$tag];
-            else
-                return '#';
-        }
-    }
 
 	public function search() {
 		$criteria = new CDbCriteria;

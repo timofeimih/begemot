@@ -88,7 +88,7 @@ class Comment extends CActiveRecord {
         $modelConfig = $commentsModule->getModelConfig($this);
         $rules = array(
             array('owner_name, owner_id, comment_text', 'required'),
-            array('owner_id, parent_comment_id, creator_id, create_time, update_time, status, likeField, dislikeField', 'numerical', 'integerOnly' => true),
+            array('owner_id, parent_comment_id, creator_id, create_time, update_time, status, likes, dislikes', 'numerical', 'integerOnly' => true),
             array('user_name, owner_name', 'length', 'max' => 50),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
@@ -124,6 +124,23 @@ class Comment extends CActiveRecord {
                 'class' => 'zii.behaviors.CTimestampBehavior',
             )
         );
+    }
+
+    public function afterSave(){
+        
+        $messages = preg_match("/((?<!\S)@\w+(?!\S))/", $this->comment_text, $matches);
+        foreach ($matches as $key => $match) {
+            $match = str_replace('@',"", $match);
+
+            if($user = User::model()->findByAttributes(array('username' => $match))){
+                $newComment = new CommentsNew;
+                $newComment->user_id = $user->id;
+                $newComment->comment_id = $this->comment_id;
+                $newComment->save();            
+            }
+        }
+        
+        return true;
     }
 
     /**
@@ -304,6 +321,7 @@ class Comment extends CActiveRecord {
             //if User model has been configured and comment posted by registered user
             $userConfig = Yii::app()->getModule('comments')->userConfig;
             $userName .= $this->user->profile->Name . " ";
+            $userName .= " [" . $this->user->username . "] ";
             $userName .= $this->user->profile->Lastname;
 
             if (isset($userConfig['emailProperty']))
@@ -316,10 +334,12 @@ class Comment extends CActiveRecord {
     }
 
     public function getProfileImage(){
-        $image = "/files/pictureBox/profile/" . $this->getOwnerModel()->id . "/2.png";
+        $imageData = Yii::app()->basePath . "/../files/pictureBox/profile/" . $this->creator_id . "/data.php";
         $polyfill = "/img/nouser.png";
-        if(file_exists(Yii::app()->basePath . "/.." . $image)){
-            return $image;
+        if(file_exists($imageData)){
+            $arr = require($imageData);
+
+            return $arr['images']['1']['miniAvatar'];
         }
 
         return $polyfill;
