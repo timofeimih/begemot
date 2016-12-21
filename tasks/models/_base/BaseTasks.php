@@ -54,7 +54,8 @@ abstract class BaseTasks extends ContentKitModel {
 	public function rules() {
 		return array(
 			array('title, likes, text', 'required'),
-			array('likes, user_id', 'numerical', 'integerOnly'=>true),
+			array('likes, user_id, donatedCount', 'numerical', 'integerOnly'=>true),
+			array('donated, price', 'numerical'),
 			array('title, title_t', 'length', 'max'=>255),
 			array('id, title, title_t, text, update_time, create_time, likes, user_id', 'safe', 'on'=>'search'),
 			array('image', 'checkImage'),
@@ -63,28 +64,37 @@ abstract class BaseTasks extends ContentKitModel {
 
 	public function checkImage($attribute,$params)
 	{
-		if($this->$attribute != null){
-			$image = Yii::getPathOfAlias('webroot') . htmlentities($this->$attribute);
+
+		if($this->$attribute != null && $this->imagePath == null){
+			$image = htmlentities($this->$attribute);
+			if(strpos($image, Yii::getPathOfAlias('webroot')) === false){
+				$image = Yii::getPathOfAlias('webroot') . $image;
+			}
 
 			if (isset($_POST['cords_w']) && isset($_POST['cords_h']) && isset($_POST['cords_x1']) && isset($_POST['cords_y1'])) {
-		
+				
+
+				if(!$this->isNewRecord){
+					if(intval($_POST['new_picture']) == 0 && intval($_POST['current_w']) == intval($_POST['cords_w']))
+						return true;	
+				}
+
 				try {
-					// pixel cache max size
-					IMagick::setResourceLimit(imagick::RESOURCETYPE_MEMORY, 64);
-					// maximum amount of memory map to allocate for the pixel cache
-					IMagick::setResourceLimit(imagick::RESOURCETYPE_MAP, 64);
+
 
 					$image = new Imagick($image);
 					$randId = rand(10000, 1000000);
-					$this->imagePath = Yii::app()->basePath . '/../files/temp/' . $randId .  "-" . Yii::app()->user->id . "." . $image->getImageFormat();
+					$this->imagePath = Yii::getPathOfAlias('webroot') . '/files/temp/' . $randId .  "-" . Yii::app()->user->id . "." . $image->getImageFormat();
 					if (isset($_POST['cords_w']) && isset($_POST['cords_h']) && isset($_POST['cords_x1']) && isset($_POST['cords_y1'])) {
-						$image->cropImage( intval($_POST['cords_w']),  intval($_POST['cords_h']),  intval($_POST['cords_x1']),  intval($_POST['cords_y1']));
-					}
-					
-					$image->writeImage($this->imagePath);
-					$image->clear();
-					$image->destroy();
 
+						$w = intval($_POST['cords_w']) * ($image->getImageWidth() / intval($_POST['current_w']));
+						$postHeight = intval($_POST['cords_h']);
+						$h = $w/1.53;
+						$image->cropImage($w, $h, intval($_POST['cords_x1']), intval($_POST['cords_y1']));
+
+						$image->writeImage($this->imagePath);
+						$image->clear();
+					}
 					
 
 				}
@@ -100,9 +110,9 @@ abstract class BaseTasks extends ContentKitModel {
 	}
 
 	public function afterSave(){
-		if($this->imagePath == null && $this->image != ""){
-			$this->imagePath = $this->image;
-		}
+		// if($this->imagePath == null && $this->image != ""){
+		// 	$this->imagePath = $this->image;
+		// }
 		if($this->imagePath != null){
 			Yii::import('application.modules.pictureBox.components.PictureBox');
 
@@ -150,20 +160,20 @@ abstract class BaseTasks extends ContentKitModel {
         
         if (count($images)==0){
             
-                $images = $this->getItemPictures();
-                if (count($images)>0){
-                    $imagesArray = array_values($images);
-                    $itemImage = $imagesArray[0];
-                } else{
-                	if ($returnPolyfillImage) {
-                		return '/img/project' . $tagPath . '.jpg'; 
-                	}
-                	else{
-                		return false;
-                	}
-                    
-                }
-            
+            $images = $this->getItemPictures();
+            if (count($images)>0){
+                $imagesArray = array_values($images);
+                $itemImage = $imagesArray[0];
+            } else{
+            	if ($returnPolyfillImage) {
+            		return '/img/project' . $tagPath . '.jpg'; 
+            	}
+            	else{
+            		return false;
+            	}
+                
+            }
+        
         }
         
         if (is_null($tag)){
@@ -171,7 +181,7 @@ abstract class BaseTasks extends ContentKitModel {
         }
         else{
             if (isset($itemImage[$tag]))
-                return $itemImage[$tag];
+                return $itemImage[$tag]  . "?" . time();
             else{
             	if ($returnPolyfillImage) {
             		return '/img/project' . $tagPath . '.jpg'; 
@@ -188,24 +198,43 @@ abstract class BaseTasks extends ContentKitModel {
 
 			if($this->isNewRecord){
 				$this->create_time = time();
+				$this->user_id = Yii::app()->user->id;
 			}
 
-			$this->user_id = Yii::app()->user->id;
-			$this->title_t = $this->mb_transliterate($this->title);
-			$this->update_time = time();
-
-			return true;
 		}
+
+		$this->title_t = $this->mb_transliterate($this->title);
+		$this->update_time = time();
+
+		return true;
 		
-		return false;
   	}
        
 
 	public function relations() {
 		return array(
 			'user' => array(self::BELONGS_TO, 'User', 'user_id'),
-			'user_task' => array(self::HAS_MANY, 'TasksToUser', 'task_id'),
+			'user_tasks' => array(self::HAS_MANY, 'TasksToUser', 'task_id'),
+			'payments' => array(self::HAS_MANY, 'Invoice', 'task_id', 'condition' => 'paid_at IS NOT NULL'),
+			'willDoUser' => array(self::HAS_MANY, 'User', 'willDoId')
 		);
+	}
+
+	public function getWhoWillDo()
+	{
+        $model = TasksToUser::model()->findAllByAttributes(array('task_id' => $this->id));
+        return $model;
+	}
+
+	public function getDonatedPercent()
+	{
+
+		
+		if($this->donated > $this->price) 
+			return 100;
+		else if($this->donated > 0)
+			return intval($this->donated / $this->price * 100);
+		else return 0;
 	}
 
 	public function pivotModels() {

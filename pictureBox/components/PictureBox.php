@@ -93,6 +93,11 @@ class PictureBox extends CWidget {
 
 
 
+        if(file_exists($dir . "data.php")){
+            PictureBox::crPhpArr(require($dir . 'data.php'), $dir . '/dataTest.php');
+            $this->deleteAll($id, $elementId);
+        }
+
         $temp = explode('.', $image);
         $imageExt = end($temp);
 
@@ -103,7 +108,8 @@ class PictureBox extends CWidget {
             copy($image, $newImagePath);
 
         }
-            
+
+
         $resultFiltersStack = array();
 
         foreach ($config['nativeFilters'] as $filterName => $toggle) {
@@ -119,12 +125,28 @@ class PictureBox extends CWidget {
         $filterManager = new FiltersManager($dir . "/" . $newImageId . '.' . $imageExt, $config);
         $filters = $filterManager->getFilteredImages();
 
+
+        $images = [];
+
         foreach ($filters as $filterName => $filteredImageFile) {
-            $this->addFilteredImage($newImageId, $filterName, '/files/pictureBox/' . $id . '/' . $elementId . '/' . $filteredImageFile, $dir);
+            $images[$filterName] = $this->addFilteredImage($newImageId, $filterName, '/files/pictureBox/' . $id . '/' . $elementId . '/' . $filteredImageFile, $dir);
+            //PictureBox::crPhpArr($filteredImageFile, $dir . '/dataTest' . $filteredImageFile . '.php');
+
+            
             //chmod(Yii::getPathOfAlias('webroot') . '/files/pictureBox/' . $id . '/' . $elementId . '/' . $filteredImageFile, 0777);
         }
 
+        PictureBox::crPhpArr(['images' => ['1' => $images], 'filters' => []], $dir . 'data.php');
+
         //$this->updateSortData($id, $elementId);
+    }
+
+    static function deleteAll($id, $elementId){
+        Yii::import('application.modules.pictureBox.components.PBox');
+        $PBox = new PBox($id,$elementId);
+        $PBox->deleteAll();
+        return true;
+
     }
 
     private function addFilteredImage($imageId, $filterName, $filteredImageFile, $dir)
@@ -139,9 +161,13 @@ class PictureBox extends CWidget {
             $data = require $dir . '/data.php';
         }
 
+        //PictureBox::crPhpArr($filteredImageFile, $dir . 'dataTest' . $filterName . '.php');
+
         $data['images'][$imageId][$filterName] = $filteredImageFile;
 
-        PictureBox::crPhpArr($data, $dir . '/data.php');
+        //PictureBox::crPhpArr($data, $dir . '/data.php');
+        
+        return $data['images'][$imageId][$filterName];
     }
 
     //возвращает новое имя добавленного изображения с
@@ -159,6 +185,8 @@ class PictureBox extends CWidget {
         } else {
             $data = require $dir . '/data.php';
         }
+
+
 
         $originalFile = '/files/pictureBox/' . $id . '/' . $elementId . '/' . $imageId . '.' . $fileExt;
 

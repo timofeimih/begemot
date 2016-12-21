@@ -53,7 +53,7 @@ class TasksLikesAndDislikes extends CActiveRecord
     {
         return array(
             'like_or_dislike' => 'Like Or Dislike',
-            'task_id' => 'Comment',
+            'task_id' => 'Task',
             'user_id' => 'User',
         );
     }

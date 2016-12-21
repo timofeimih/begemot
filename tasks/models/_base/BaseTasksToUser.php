@@ -40,7 +40,7 @@ abstract class BaseTasksToUser extends GxActiveRecord {
 	public function rules() {
 		return array(
 			array('text, price, task_id', 'required'),
-			array('price, create_time,update_time, user_id, task_id', 'numerical', 'integerOnly'=>true),
+			array('price, create_time,update_time, user_id, task_id, likes', 'numerical', 'integerOnly'=>true),
 			array('video_link', 'length', 'max'=>255),
 			array('video_link', 'youtubeCkecker'),
 			array('video_link,, update_time', 'default', 'setOnEmpty' => true, 'value' => null),
@@ -48,11 +48,8 @@ abstract class BaseTasksToUser extends GxActiveRecord {
 		);
 	}
 
-	public function relations() {
-		return array(
-			'profile' => array(self::HAS_ONE, 'Profile', 'user_id', 'on'=>'user_id=user_id')
-		);
-	}
+
+	
 
 	public function pivotModels() {
 		return array(
@@ -69,9 +66,28 @@ abstract class BaseTasksToUser extends GxActiveRecord {
         return null;
 	}
 
+	public function getUser(){
+		if($this->user_id!=0)  // isnt root?
+        {
+
+            $model = User::model()->findByPk($this->user_id);
+            return $model;
+        }
+        return null;
+	}
+
+	public function isVoted()
+	{
+		if(TasksToUserLikes::model()->findByAttributes(array('tasks_to_user_id' => $this->id, 'user_id' => Yii::app()->user->id))){
+			return true;
+		}
+
+		return false;
+	}
+
 	public function youtubeCkecker($attribute, $params){
 
-		if($this->$attribute != null){
+		if($this->$attribute != null && strlen($this->$attribute) != 11){
 			$url = parse_url($this->$attribute);
 			if($url['path'] != 'youtube.com' || $url['path'] != 'www.youtube.com'){
 				if($url['path'] != "/watch")
@@ -91,9 +107,11 @@ abstract class BaseTasksToUser extends GxActiveRecord {
 			$this->update_time = time();
 
 
-			$url = $this->video_link;
-			parse_str( parse_url( $url, PHP_URL_QUERY ), $video_params );
-			$this->video_link = $video_params['v'];
+			if(strlen($this->video_link) != 11){
+				$url = $this->video_link;
+				parse_str( parse_url( $url, PHP_URL_QUERY ), $video_params );
+				$this->video_link = $video_params['v'];
+			}
 
 			return true;
 		}
@@ -130,14 +148,4 @@ abstract class BaseTasksToUser extends GxActiveRecord {
 			'criteria' => $criteria,
 		));
 	}
-
-	public function getProfileImage(){
-        $image = "/files/pictureBox/profile/" . $this->id . "/1.png";
-        $polyfill = "/img/nouser.png";
-        if(file_exists(Yii::app()->basePath . "/.." . $image)){
-            return $image;
-        }
-
-        return $polyfill;
-    }
 }

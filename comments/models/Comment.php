@@ -129,15 +129,33 @@ class Comment extends CActiveRecord {
     public function afterSave(){
         
         $messages = preg_match("/((?<!\S)@\w+(?!\S))/", $this->comment_text, $matches);
+        $matches = array_unique($matches);
         foreach ($matches as $key => $match) {
             $match = str_replace('@',"", $match);
-
+            
             if($user = User::model()->findByAttributes(array('username' => $match))){
-                $newComment = new CommentsNew;
-                $newComment->user_id = $user->id;
-                $newComment->comment_id = $this->comment_id;
-                $newComment->save();            
+                $transaction=Profile::model()->dbConnection->beginTransaction();
+                try
+                {
+                        $newComment = new CommentsNew;
+                        $newComment->user_id = $user->id;
+                        $newComment->comment_id = $this->comment_id;
+                        $newComment->save();        
+
+                        $profile = Profile::model()->findByPk($user->id);
+                        $profile->commentCount++;
+                        $profile->save();
+
+                        $transaction->commit();
+                }
+                catch(Exception $e)
+                {
+                    $transaction->rollback();
+                    throw $e;
+                    Yii::log($e, 3, 'transaction_error');
+                }
             }
+
         }
         
         return true;

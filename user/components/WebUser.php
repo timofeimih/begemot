@@ -37,6 +37,25 @@ class WebUser extends CWebUser
 
     }
 
+    /**
+    * Returns User model by its email
+    * 
+    * @param string $email 
+    * @access public
+    * @return User
+    */
+    public function findByEmail($email)
+    {
+        return self::model()->findByAttributes(array('email' => $email));
+    }
+
+    public function getCommentsCount()
+    {
+        $user = $this->user($this->id);
+
+        return $user->profile->commentCount;
+    }
+
 
     public function updateSession() {
         $user = $this->user($this->id);
@@ -46,10 +65,15 @@ class WebUser extends CWebUser
             'username' => $user->username,
             'name' => $user->profile->Name,
             'lastName' => $user->profile->Name,
-            'avatar' => '/img/nouser-full.jpg',
-            'miniAvatar' => '/img/nouser.png',
+            'avatar' => Image::getProfileImage($this->id, 'avatar'),
+            'miniAvatar' => Image::getProfileImage($this->id),
             'create_at' => $user->create_at,
             'lastvisit_at' => $user->lastvisit_at,
+            'commentCount' => $user->profile->commentCount, 
+            'donated' => $user->profile->donated, 
+            'doneTasks' => $user->profile->doneTasks, 
+            'money' => $user->profile->money, 
+
         ), $user->profile->getAttributes());
         foreach ($userAttributes as $attrName => $attrValue) {
             $this->setState($attrName, $attrValue);
